@@ -21,7 +21,8 @@ export class AppComponent {
 
 
   toggleSidenav() {
-    if (this.breakpointObserver.isMatched(Breakpoints.Handset))
+    if (this.breakpointObserver.isMatched(Breakpoints.Handset)) {
       this.sidenav.toggle();
+    }
   }
 }
