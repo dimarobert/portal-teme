@@ -2,23 +2,29 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-<p *ngIf="!forecasts"><em>Loading...</em></p>
+<mat-table #table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-<table class='table' *ngIf="forecasts">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Temp. (C)</th>
-      <th>Temp. (F)</th>
-      <th>Summary</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let forecast of forecasts">
-      <td>{{ forecast.dateFormatted }}</td>
-      <td>{{ forecast.temperatureC }}</td>
-      <td>{{ forecast.temperatureF }}</td>
-      <td>{{ forecast.summary }}</td>
-    </tr>
-  </tbody>
-</table>
+  <ng-container matColumnDef="dateFormatted">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.dateFormatted}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="temperatureC">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Temp. (C) </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.temperatureC}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="temperatureF">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Temp. (F) </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.temperatureF}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="summary">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Summary </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.summary}} </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+

@@ -23,8 +23,8 @@ import { LayoutModule } from '@angular/cdk/layout';
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    MaterialComponentsModule,
     BrowserAnimationsModule,
+    MaterialComponentsModule,
     HttpClientModule,
     FormsModule,
     LayoutModule,
