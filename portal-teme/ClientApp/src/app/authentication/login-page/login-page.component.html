@@ -1,0 +1,30 @@
+<div class="login-form">
+  <mat-card class="login-card">
+    <mat-card-title>Login</mat-card-title>
+
+    <mat-card-content>
+      <mat-form-field class="full-width">
+        <input matInput placeholder="Email" [(ngModel)]="email" />
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <input type="password" matInput placeholder="Password" [(ngModel)]="password" />
+      </mat-form-field>
+
+      <div class="mat-form-field-wrapper full-width">
+        <mat-slide-toggle [(ngModel)]="rememberMe">Remember me</mat-slide-toggle>
+      </div>
+
+      <button mat-raised-button color="accent" (click)="login()">Login</button>
+
+      <mat-list *ngIf="!!serverError">
+        <mat-list-item class="error-item">
+          <div matLine class="value">
+            <mat-icon>chevron_right</mat-icon>
+            <span>{{serverError}}</span>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>

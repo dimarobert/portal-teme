@@ -1,33 +1,46 @@
-<div class='main-nav'>
-    <div class='navbar navbar-inverse'>
-        <div class='navbar-header'>
-            <button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse' [attr.aria-expanded]='isExpanded' (click)='toggle()'>
-                <span class='sr-only'>Toggle navigation</span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-            </button>
-            <a class='navbar-brand' [routerLink]='["/"]'>portal_teme</a>
-        </div>
-        <div class='clearfix'></div>
-        <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
-            <ul class='nav navbar-nav'>
-                <li [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
-                    <a [routerLink]='["/"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-home'></span> Home
-                    </a>
-                </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/counter"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-education'></span> Counter
-                    </a>
-                </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/fetch-data"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-th-list'></span> Fetch data
-                    </a>
-                </li>
-            </ul>
-        </div>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav class="sidenav" fixedInViewport="true" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
+    <mat-toolbar>
+      <span *ngIf="isHandset$ | async">Portal Teme</span>
+      <span *ngIf="!(isHandset$ | async)">Meniu</span>
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['/']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact: true}"
+        (click)="toggleSidenav()">Home</a>
+      <a mat-list-item [routerLink]="['/counter']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Counter</a>
+
+      <a mat-list-item [routerLink]="['/fetch-data']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Fetch
+        data</a>
+    </mat-nav-list>
+    <mat-nav-list>
+
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isHandset$ | async">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1>Portal Teme</h1>
+      <span class="filler"></span>
+      <span class="auth-controls">
+
+      </span>
+
+      <mat-menu #userProfile="matMenu">
+        <button mat-menu-item [routerLink]="['/login']">Login</button>
+        <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button>
+        <!--<button mat-menu-item>Help</button>-->
+      </mat-menu>
+      <button mat-icon-button [matMenuTriggerFor]="userProfile" matTooltip="Anonymous" matTooltipPosition="left"
+        [matTooltipDisabled]="isHandset$ | async">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <div class="site-content">
+      <ng-content></ng-content>
     </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -12,6 +12,8 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { MaterialComponentsModule } from './material-components.module';
 import { LayoutModule } from '@angular/cdk/layout';
+import { LoginPageComponent } from './authentication/login-page/login-page.component';
+import { RegisterPageComponent } from './authentication/register-page/register-page.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { LayoutModule } from '@angular/cdk/layout';
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    LoginPageComponent,
+    RegisterPageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -27,11 +31,14 @@ import { LayoutModule } from '@angular/cdk/layout';
     MaterialComponentsModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     LayoutModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'login', component: LoginPageComponent },
+      { path: 'register', component: RegisterPageComponent }
     ])
   ],
   providers: [],

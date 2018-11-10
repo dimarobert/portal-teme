@@ -7,17 +7,36 @@ import {
   MatSidenavModule,
   MatListModule,
   MatTableModule,
-  MatSortModule
+  MatSortModule,
+  MatMenuModule,
+  MatTooltipModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatCardModule,
+  MatSlideToggleModule
 } from '@angular/material';
 
 const importedMaterialComponents = [
-  MatToolbarModule,
+  MatTooltipModule,
   MatButtonModule,
   MatIconModule,
-  MatSidenavModule,
+
+  MatMenuModule,
   MatListModule,
+
+  MatToolbarModule,
+  MatSidenavModule,
+
+  MatCardModule,
+
+  MatInputModule,
+  MatFormFieldModule,
+  MatSlideToggleModule,
+
   MatSortModule,
   MatTableModule
+
+
 ];
 
 @NgModule({
