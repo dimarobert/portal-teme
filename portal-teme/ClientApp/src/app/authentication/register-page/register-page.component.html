@@ -8,6 +8,7 @@
 
         <mat-form-field class="full-width">
           <input matInput formControlName="email" placeholder="Email" required />
+          <mat-error *ngIf="email.hasError('email')">Value must be a valid email address.</mat-error>
         </mat-form-field>
 
         <div formGroupName="passwordGroup">
@@ -15,20 +16,18 @@
             <input matInput type="password" formControlName="password" placeholder="Password" required />
           </mat-form-field>
 
-          <div>
-            <mat-form-field class="full-width">
-              <input matInput type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password"
-                required />
-            </mat-form-field>
-            <span class="text-danger" *ngIf="confirmPassword.errors?.compareWith">Passwords no not match.</span>
-          </div>
-
-
-          <button mat-raised-button color="accent" [disabled]="registerForm.invalid">Register</button>
+          <mat-form-field class="full-width">
+            <input matInput type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password"
+              required />
+            <mat-error *ngIf="confirmPassword.hasError('compareWith')">Passwords no not match.</mat-error>
+          </mat-form-field>
         </div>
 
+
+        <button mat-raised-button color="accent" [disabled]="registerForm.invalid">Register</button>
+
         <mat-list>
-          <mat-list-item class="error-item" *ngFor="let error of validationErrors">
+          <mat-list-item class="error-item" *ngFor="let error of serverErrors | keys">
             <div matLine class="key">{{error.key}}:</div>
             <div matLine class="value" *ngFor="let valLine of error.value">
               <mat-icon>chevron_right</mat-icon>

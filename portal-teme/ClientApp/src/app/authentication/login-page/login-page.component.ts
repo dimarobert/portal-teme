@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthorizationStatus, LoginResponse } from './login.model';
-import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ModelErrors } from '../../http.models';
 
 @Component({
   selector: 'app-login-page',
@@ -16,9 +16,9 @@ export class LoginPageComponent implements OnInit {
   public password: string;
   public rememberMe: boolean;
 
-  public serverError: string;
+  public serverError: ModelErrors;
 
-  constructor(private route: ActivatedRoute, private authSvc: AuthService, private location: Location) { }
+  constructor(private route: ActivatedRoute, private authSvc: AuthService, private router: Router) { }
 
   ngOnInit() { }
 
@@ -30,8 +30,8 @@ export class LoginPageComponent implements OnInit {
     }).subscribe(response => {
       switch (response.status) {
         case AuthorizationStatus.Success:
-          let returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-          this.location.go(returnUrl);
+          let returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
+          this.router.navigateByUrl(returnUrl);
           break;
 
         case AuthorizationStatus.TwoFactorRequired:
@@ -44,11 +44,11 @@ export class LoginPageComponent implements OnInit {
       switch (authError.status) {
 
         case AuthorizationStatus.LockedOut:
-          this.serverError = "Your account has been locked out.";
+          this.serverError = { 'Error': ["Your account has been locked out."] };
           break;
 
         case AuthorizationStatus.InvalidCredentials:
-          this.serverError = authError.message;
+          this.serverError = authError.errors;
           break;
       }
     });

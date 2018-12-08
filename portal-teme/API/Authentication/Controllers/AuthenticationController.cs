@@ -21,7 +21,15 @@ namespace portal_teme.API.Authentication.Controllers {
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login([FromBody] LoginModel loginModel) {
+        public async Task<IActionResult> Login(LoginModel loginModel) {
+
+
+            if (!ModelState.IsValid) {
+                return BadRequest(new LoginResponseModel {
+                    Status = AuthorizationStatus.InvalidCredentials,
+                    Errors = ModelState.ToDictionary(err => err.Key, err => err.Value.Errors.Select(e => e.ErrorMessage))
+                });
+            }
 
             var result = await _signInManager.PasswordSignInAsync(loginModel.Email, loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
             if (result.Succeeded) {
@@ -37,20 +45,29 @@ namespace portal_teme.API.Authentication.Controllers {
             }
 
             if (result.IsLockedOut) {
-                return this.Unauthorized(new LoginResponseModel {
+                return Unauthorized(new LoginResponseModel {
                     Status = AuthorizationStatus.LockedOut
                 });
             }
 
-            return this.Unauthorized(new LoginResponseModel {
+            return Unauthorized(new LoginResponseModel {
                 Status = AuthorizationStatus.InvalidCredentials,
-                Message = "Invalid login attempt"
+                Errors = new Dictionary<string, IEnumerable<string>> {
+                    ["Error"] = new[] { "Invalid login attempt" }
+                }
             });
 
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel registerModel) {
+        public async Task<IActionResult> Register(RegisterModel registerModel) {
+
+            if (!ModelState.IsValid) {
+                return BadRequest(new RegisterResponseModel {
+                    Status = RegisterStatus.Error,
+                    Errors = ModelState.ToDictionary(err => err.Key, err => err.Value.Errors.Select(e => e.ErrorMessage))
+                });
+            }
 
             var user = new User {
                 UserName = registerModel.Email,
@@ -66,7 +83,9 @@ namespace portal_teme.API.Authentication.Controllers {
 
             return BadRequest(new RegisterResponseModel {
                 Status = RegisterStatus.Error,
-                Errors = result.Errors.Select(err => err.Description).ToList()
+                Errors = new Dictionary<string, IEnumerable<string>> {
+                    ["Error"] = result.Errors.Select(err => err.Description)
+                }
             });
         }
 

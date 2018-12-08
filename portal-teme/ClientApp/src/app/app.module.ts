@@ -14,6 +14,7 @@ import { MaterialComponentsModule } from './material-components.module';
 import { LayoutModule } from '@angular/cdk/layout';
 import { LoginPageComponent } from './authentication/login-page/login-page.component';
 import { RegisterPageComponent } from './authentication/register-page/register-page.component';
+import { KeysPipe } from './pipes/object-keys.pipe';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,9 @@ import { RegisterPageComponent } from './authentication/register-page/register-p
     CounterComponent,
     FetchDataComponent,
     LoginPageComponent,
-    RegisterPageComponent
+    RegisterPageComponent,
+    
+    KeysPipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

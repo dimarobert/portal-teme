@@ -17,11 +17,12 @@
 
       <button mat-raised-button color="accent" (click)="login()">Login</button>
 
-      <mat-list *ngIf="!!serverError">
-        <mat-list-item class="error-item">
-          <div matLine class="value">
+      <mat-list>
+        <mat-list-item class="error-item" *ngFor="let error of serverError | keys">
+          <div matLine class="key">{{error.key}}:</div>
+          <div matLine class="value" *ngFor="let valLine of error.value">
             <mat-icon>chevron_right</mat-icon>
-            <span>{{serverError}}</span>
+            <span>{{valLine}}</span>
           </div>
         </mat-list-item>
       </mat-list>

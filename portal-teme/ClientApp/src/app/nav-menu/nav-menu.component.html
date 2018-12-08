@@ -29,7 +29,7 @@
       </span>
 
       <mat-menu #userProfile="matMenu">
-        <button mat-menu-item [routerLink]="['/login']">Login</button>
+        <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
         <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button>
         <!--<button mat-menu-item>Help</button>-->
       </mat-menu>

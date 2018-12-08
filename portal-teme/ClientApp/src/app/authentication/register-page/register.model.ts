@@ -1,3 +1,5 @@
+import { ModelErrors } from "../../http.models";
+
 export interface RegisterModel {
     email: string;
     password: string;
@@ -6,11 +8,7 @@ export interface RegisterModel {
 
 export interface RegisterResponse {
     status: RegisterStatus;
-    errors: string[];
-}
-
-export interface RegisterError {
-    [key: string]: string[];
+    errors: ModelErrors;
 }
 
 export enum RegisterStatus {

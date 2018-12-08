@@ -1,8 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, Type } from '@angular/core';
 import { BreakpointObserver, BreakpointState, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoginPageComponent } from '../authentication/login-page/login-page.component';
+import { RegisterPageComponent } from '../authentication/register-page/register-page.component';
 
 @Component({
   selector: 'app-nav-menu',
@@ -22,10 +24,18 @@ export class NavMenuComponent {
   @ViewChild('sidenav') sidenav;
 
   get returnUrl(): string {
+    var firstChild = this.route.children[0];
+    if (firstChild && this.isLoginOrRegisterPage(firstChild.component)) {
+      return this.route.snapshot.queryParams['returnUrl'] || '/';
+    }
     return this.router.url;
   };
-  
-  constructor(private router: Router, private breakpointObserver: BreakpointObserver) { }
+
+  isLoginOrRegisterPage(component: string | Type<any>) {
+    return component == LoginPageComponent || component == RegisterPageComponent;
+  }
+
+  constructor(private route: ActivatedRoute, private router: Router, private breakpointObserver: BreakpointObserver) { }
 
 
   toggleSidenav() {

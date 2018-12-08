@@ -1,3 +1,5 @@
+import { ModelErrors } from "../../http.models";
+
 export interface LoginModel {
     email: string;
     password: string;
@@ -6,7 +8,7 @@ export interface LoginModel {
 
 export interface LoginResponse {
     status: AuthorizationStatus;
-    message: string;
+    errors: ModelErrors;
 }
 
 export enum AuthorizationStatus {

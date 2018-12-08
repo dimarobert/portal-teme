@@ -3,8 +3,9 @@ import { AuthService } from '../auth.service';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegisterError } from './register.model';
-import { NgForm, Validator, AbstractControl, ValidationErrors, FormGroup, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import { ModelErrors } from '../../http.models';
+import { RegisterResponse, RegisterStatus } from './register.model';
 
 @Component({
   selector: 'app-register-page',
@@ -13,7 +14,7 @@ import { NgForm, Validator, AbstractControl, ValidationErrors, FormGroup, FormCo
 })
 export class RegisterPageComponent implements OnInit {
 
-  public validationErrors: { key: string, value: string[] }[];
+  public serverErrors: ModelErrors;
 
   registerForm: FormGroup;
 
@@ -22,7 +23,7 @@ export class RegisterPageComponent implements OnInit {
   ngOnInit() {
 
     this.registerForm = new FormGroup({
-      email: new FormControl(''),
+      email: new FormControl('', Validators.email),
       passwordGroup: new FormGroup({
         password: new FormControl(''),
         confirmPassword: new FormControl('')
@@ -57,8 +58,12 @@ export class RegisterPageComponent implements OnInit {
       let returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
       this.location.go(returnUrl);
     }, (error: HttpErrorResponse) => {
-      let regError: RegisterError = error.error;
-      this.validationErrors = Object.entries(regError).map(e => { return { key: e[0], value: e[1] }; });
+      let regError: RegisterResponse = error.error;
+      switch (regError.status) {
+        case RegisterStatus.Error:
+          this.serverErrors = regError.errors;
+          break;
+      }
     });
   }
 }
