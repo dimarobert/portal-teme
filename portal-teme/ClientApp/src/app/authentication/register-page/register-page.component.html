@@ -19,7 +19,7 @@
           <mat-form-field class="full-width">
             <input matInput type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password"
               required />
-            <mat-error *ngIf="confirmPassword.hasError('compareWith')">Passwords no not match.</mat-error>
+            <mat-error *ngIf="confirmPassword.hasError('compareWith')">Passwords do not match.</mat-error>
           </mat-form-field>
         </div>
 
