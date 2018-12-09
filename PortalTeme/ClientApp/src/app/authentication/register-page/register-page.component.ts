@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, FormControl, ValidatorFn, Validators } from '@angular/forms';
 import { ModelErrors } from '../../http.models';
 import { RegisterResponse, RegisterStatus } from './register.model';
+import { SettingsProvider } from '../../services/settings.provider';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register-page',
@@ -18,9 +19,16 @@ export class RegisterPageComponent implements OnInit {
 
   registerForm: FormGroup;
 
-  constructor(private route: ActivatedRoute, private authSvc: AuthService, private location: Location) { }
+  constructor(private route: ActivatedRoute, private authSvc: AuthService, private settings: SettingsProvider, private router: Router) { }
 
   ngOnInit() {
+    this.settings.isUserAuthenticated$
+      .pipe(take(1))
+      .toPromise()
+      .then(async isAuth => {
+        if (isAuth)
+          await this.navigateToRedirectUrl();
+      });
 
     this.registerForm = new FormGroup({
       email: new FormControl('', Validators.email),
@@ -54,9 +62,8 @@ export class RegisterPageComponent implements OnInit {
       email: this.email.value,
       password: this.password.value,
       confirmPassword: this.confirmPassword.value
-    }).subscribe(response => {
-      let returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-      this.location.go(returnUrl);
+    }).subscribe(async response => {
+      await this.navigateToRedirectUrl();
     }, (error: HttpErrorResponse) => {
       let regError: RegisterResponse = error.error;
       switch (regError.status) {
@@ -65,6 +72,11 @@ export class RegisterPageComponent implements OnInit {
           break;
       }
     });
+  }
+
+  async navigateToRedirectUrl() {
+    const returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
+    await this.router.navigateByUrl(returnUrl);
   }
 }
 

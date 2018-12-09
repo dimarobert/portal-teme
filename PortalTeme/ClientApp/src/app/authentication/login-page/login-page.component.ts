@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthorizationStatus, LoginResponse } from './login.model';
+import { AuthorizationStatus, LoginResponse, LoginModel } from './login.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModelErrors } from '../../http.models';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { SettingsProvider } from '../../services/settings.provider';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-page',
@@ -17,9 +19,17 @@ export class LoginPageComponent implements OnInit {
 
   loginForm: FormGroup;
 
-  constructor(private route: ActivatedRoute, private authSvc: AuthService, private router: Router) { }
+  constructor(private route: ActivatedRoute, private authSvc: AuthService, private settings: SettingsProvider, private router: Router) { }
 
   ngOnInit() {
+    this.settings.isUserAuthenticated$
+      .pipe(take(1))
+      .toPromise()
+      .then(async isAuth => {
+        if (isAuth)
+          return await this.navigateToRedirectUrl();
+      });
+
     this.loginForm = new FormGroup({
       email: new FormControl('', Validators.email),
       password: new FormControl(''),
@@ -31,44 +41,52 @@ export class LoginPageComponent implements OnInit {
     return this.loginForm.get('email');
   }
 
-  get password(){
+  get password() {
     return this.loginForm.get('password');
   }
 
-  get rememberMe(){
+  get rememberMe() {
     return this.loginForm.get('rememberMe');
   }
 
   login() {
-    this.authSvc.login({
+    var user: LoginModel = {
       email: this.email.value,
       password: this.password.value,
       rememberMe: this.rememberMe.value
-    }).subscribe(response => {
-      switch (response.status) {
-        case AuthorizationStatus.Success:
-          let returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
-          this.router.navigateByUrl(returnUrl);
-          break;
+    };
 
-        case AuthorizationStatus.TwoFactorRequired:
-          //TODO: Two Factor auth
-          break;
+    this.authSvc.login(user)
+      .toPromise()
+      .then(async response => {
+        switch (response.status) {
+          case AuthorizationStatus.Success:
+            await this.settings.load();
+            await this.navigateToRedirectUrl();
+            break;
 
-      }
-    }, (error: HttpErrorResponse) => {
-      const authError: LoginResponse = error.error;
-      switch (authError.status) {
+          case AuthorizationStatus.TwoFactorRequired:
+            //TODO: Two Factor auth
+            break;
+        }
+      })
+      .catch((error: HttpErrorResponse) => {
+        const authError: LoginResponse = error.error;
+        switch (authError.status) {
+          case AuthorizationStatus.LockedOut:
+            this.serverError = { 'Error': ["Your account has been locked out."] };
+            break;
 
-        case AuthorizationStatus.LockedOut:
-          this.serverError = { 'Error': ["Your account has been locked out."] };
-          break;
+          case AuthorizationStatus.InvalidCredentials:
+            this.serverError = authError.errors;
+            break;
+        }
+      });
+  }
 
-        case AuthorizationStatus.InvalidCredentials:
-          this.serverError = authError.errors;
-          break;
-      }
-    });
+  async navigateToRedirectUrl() {
+    const returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
+    await this.router.navigateByUrl(returnUrl);
   }
 
 }

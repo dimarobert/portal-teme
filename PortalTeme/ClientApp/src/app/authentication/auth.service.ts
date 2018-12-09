@@ -17,4 +17,8 @@ export class AuthService {
   public login(model: LoginModel){
     return this.http.post<LoginResponse>('/api/authentication/login', model);
   }
+
+  public logout(){
+    return this.http.get('/api/authentication/logout');
+  }
 }

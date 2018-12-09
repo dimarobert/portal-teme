@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -14,7 +14,11 @@ import { MaterialComponentsModule } from './material-components.module';
 import { LayoutModule } from '@angular/cdk/layout';
 import { LoginPageComponent } from './authentication/login-page/login-page.component';
 import { RegisterPageComponent } from './authentication/register-page/register-page.component';
+import { LogoutComponent } from './authentication/logout/logout.component';
 import { KeysPipe } from './pipes/object-keys.pipe';
+
+import { SettingsProvider, settingsProviderFactory } from './services/settings.provider';
+
 
 @NgModule({
   declarations: [
@@ -25,7 +29,8 @@ import { KeysPipe } from './pipes/object-keys.pipe';
     FetchDataComponent,
     LoginPageComponent,
     RegisterPageComponent,
-    
+    LogoutComponent,
+
     KeysPipe
   ],
   imports: [
@@ -41,10 +46,14 @@ import { KeysPipe } from './pipes/object-keys.pipe';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'login', component: LoginPageComponent },
-      { path: 'register', component: RegisterPageComponent }
+      { path: 'register', component: RegisterPageComponent },
+      { path: 'logout', component: LogoutComponent }
     ])
   ],
-  providers: [],
+  providers: [
+    SettingsProvider,
+    { provide: APP_INITIALIZER, useFactory: settingsProviderFactory, deps: [SettingsProvider], multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

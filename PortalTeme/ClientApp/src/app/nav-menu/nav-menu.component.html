@@ -29,12 +29,19 @@
       </span>
 
       <mat-menu #userProfile="matMenu">
-        <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
-        <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button>
+
+        <div *ngIf="!(isAuthenticated$ | async)">
+          <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
+          <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button>
+        </div>
+        <div *ngIf="isAuthenticated$ | async">
+          <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
+          <button mat-menu-item [routerLink]="['/logout']">Logout</button>
+        </div>
         <!--<button mat-menu-item>Help</button>-->
       </mat-menu>
-      <button mat-icon-button [matMenuTriggerFor]="userProfile" matTooltip="Anonymous" matTooltipPosition="left"
-        [matTooltipDisabled]="isHandset$ | async">
+      <button mat-icon-button [matMenuTriggerFor]="userProfile" [matTooltip]="userDisplayName$ | async"
+        matTooltipPosition="left" [matTooltipDisabled]="isHandset$ | async">
         <mat-icon>account_circle</mat-icon>
       </button>
     </mat-toolbar>
