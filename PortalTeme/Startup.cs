@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.Areas.Identity.Data;
 using PortalTeme.Models;
+using PortalTeme.Routing;
 
 namespace PortalTeme {
     public class Startup {
@@ -80,6 +81,12 @@ namespace PortalTeme {
                 routes.MapRoute(
                     name: "areasDefault",
                     template: "{area:exists}/{controller}/{action=Index}/{id?}");
+
+                var angularIndexAction = env.IsDevelopment() ? "DevAngularIndex" : "AngularIndex";
+                routes.MapSpaWithWdsRoute(
+                    name: "AngularSpa",
+                    isDev: env.IsDevelopment(),
+                    defaults: new { controller = "Home", action = angularIndexAction });
             });
 
             app.UseSpa(spa => {

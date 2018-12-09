@@ -19,6 +19,6 @@ export class AuthService {
   }
 
   public logout(){
-    return this.http.get('/api/authentication/logout');
+    return this.http.post('/api/authentication/logout', {});
   }
 }

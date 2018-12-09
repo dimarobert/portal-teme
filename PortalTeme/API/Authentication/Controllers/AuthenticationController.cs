@@ -90,7 +90,7 @@ namespace PortalTeme.API.Authentication.Controllers {
             });
         }
 
-        [HttpGet("[action]")]
+        [HttpPost("[action]")]
         public async Task Logout() {
             await _signInManager.SignOutAsync();
         }

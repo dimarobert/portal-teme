@@ -328,6 +328,8 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
 /PortalTeme/Areas/Identity/**
-/PortalTeme/Pages/**
 /PortalTeme/wwwroot/**
+/PortalTeme/TempPages/**
+/PortalTeme/tempkey.rsa

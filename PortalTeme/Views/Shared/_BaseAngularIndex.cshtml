@@ -1,0 +1,14 @@
+﻿@model PortalTeme.ViewModels.Home.AngularIndexViewModel
+
+@{
+    ViewData["Title"] = "Portal Teme";
+}
+
+<app-root>Loading...</app-root>
+
+@* Pass server side variables to frontend *@
+<script type="text/javascript">
+    window.settings = {
+        accessToken: "@Model.AccessToken"
+    };
+</script>
