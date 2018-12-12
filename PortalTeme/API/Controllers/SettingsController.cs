@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PortalTeme.Areas.Identity.Data;
+using PortalTeme.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
