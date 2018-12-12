@@ -5,9 +5,13 @@ VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test-client", "test-client\test-client.csproj", "{6B3FE504-0C22-4455-8E65-FCC91D6D47BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.DevAuthSystem", "PortalTeme.DevAuthSystem\PortalTeme.DevAuthSystem.csproj", "{496BCBD1-9534-4B3D-B654-DC66FCDCB34A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme", "PortalTeme\PortalTeme.csproj", "{72688A47-0B9C-43D3-8B4E-B36623E986E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.Common", "PortalTeme.Common\PortalTeme.Common.csproj", "{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalTeme.Data", "PortalTeme.Data\PortalTeme.Data.csproj", "{675BD423-F885-4096-B94C-4BB766495F3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.Auth", "PortalTeme.Auth\PortalTeme.Auth.csproj", "{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +23,22 @@ Global
 		{6B3FE504-0C22-4455-8E65-FCC91D6D47BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B3FE504-0C22-4455-8E65-FCC91D6D47BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B3FE504-0C22-4455-8E65-FCC91D6D47BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{496BCBD1-9534-4B3D-B654-DC66FCDCB34A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{496BCBD1-9534-4B3D-B654-DC66FCDCB34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{496BCBD1-9534-4B3D-B654-DC66FCDCB34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{496BCBD1-9534-4B3D-B654-DC66FCDCB34A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72688A47-0B9C-43D3-8B4E-B36623E986E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72688A47-0B9C-43D3-8B4E-B36623E986E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72688A47-0B9C-43D3-8B4E-B36623E986E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72688A47-0B9C-43D3-8B4E-B36623E986E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675BD423-F885-4096-B94C-4BB766495F3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675BD423-F885-4096-B94C-4BB766495F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675BD423-F885-4096-B94C-4BB766495F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675BD423-F885-4096-B94C-4BB766495F3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
