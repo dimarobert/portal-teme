@@ -5,9 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PortalTeme.Auth.Areas.Identity;
+using PortalTeme.Auth.Areas.Identity.Managers;
+using PortalTeme.Auth.Areas.Identity.Stores;
 using PortalTeme.Data;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +28,10 @@ namespace PortalTeme.Auth {
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services) {
 
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddTransient<IIdentityLocalizer, IdentityLocalizer>();
+
+
             services.AddDbContext<IdentityContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("IdentityContextConnection"),
@@ -33,10 +41,12 @@ namespace PortalTeme.Auth {
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>()
+                .AddUserStore<ApplicationUserStore>()
+                .AddUserManager<ApplicationUserManager>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddIdentityServer(options =>
                 {
@@ -48,7 +58,8 @@ namespace PortalTeme.Auth {
                 .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
                 .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
                 .AddInMemoryClients(IdentityServerConfig.GetClients())
-                .AddAspNetIdentity<User>();
+                .AddAspNetIdentity<User>()
+                .AddProfileService<ProfileService>();
 
             services.AddAuthentication(IdentityConstants.ApplicationScheme);
         }
@@ -66,6 +77,17 @@ namespace PortalTeme.Auth {
             }
 
             app.UseHttpsRedirection();
+
+            app.UseRequestLocalization(options => {
+
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+
+                options.SupportedCultures = options.SupportedUICultures = new[] {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ro-RO")
+                };
+
+            });
 
             app.UseStaticFiles();
 

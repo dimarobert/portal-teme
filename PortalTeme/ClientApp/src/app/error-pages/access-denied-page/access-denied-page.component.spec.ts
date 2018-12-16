@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LogoutComponent } from './logout.component';
+import { AccessDeniedPageComponent } from './access-denied-page.component';
 
-describe('LogoutComponent', () => {
-  let component: LogoutComponent;
-  let fixture: ComponentFixture<LogoutComponent>;
+describe('AccessDeniedPageComponent', () => {
+  let component: AccessDeniedPageComponent;
+  let fixture: ComponentFixture<AccessDeniedPageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LogoutComponent ]
+      declarations: [ AccessDeniedPageComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LogoutComponent);
+    fixture = TestBed.createComponent(AccessDeniedPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

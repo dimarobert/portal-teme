@@ -49,40 +49,40 @@ export class LoginPageComponent implements OnInit {
     return this.loginForm.get('rememberMe');
   }
 
-  login() {
-    var user: LoginModel = {
-      email: this.email.value,
-      password: this.password.value,
-      rememberMe: this.rememberMe.value
-    };
+  // login() {
+  //   var user: LoginModel = {
+  //     email: this.email.value,
+  //     password: this.password.value,
+  //     rememberMe: this.rememberMe.value
+  //   };
 
-    this.authSvc.login(user)
-      .toPromise()
-      .then(async response => {
-        switch (response.status) {
-          case AuthorizationStatus.Success:
-            await this.settings.load();
-            await this.navigateToRedirectUrl();
-            break;
+  //   this.authSvc.login(user)
+  //     .toPromise()
+  //     .then(async response => {
+  //       switch (response.status) {
+  //         case AuthorizationStatus.Success:
+  //           await this.settings.load();
+  //           await this.navigateToRedirectUrl();
+  //           break;
 
-          case AuthorizationStatus.TwoFactorRequired:
-            //TODO: Two Factor auth
-            break;
-        }
-      })
-      .catch((error: HttpErrorResponse) => {
-        const authError: LoginResponse = error.error;
-        switch (authError.status) {
-          case AuthorizationStatus.LockedOut:
-            this.serverError = { 'Error': ["Your account has been locked out."] };
-            break;
+  //         case AuthorizationStatus.TwoFactorRequired:
+  //           //TODO: Two Factor auth
+  //           break;
+  //       }
+  //     })
+  //     .catch((error: HttpErrorResponse) => {
+  //       const authError: LoginResponse = error.error;
+  //       switch (authError.status) {
+  //         case AuthorizationStatus.LockedOut:
+  //           this.serverError = { 'Error': ["Your account has been locked out."] };
+  //           break;
 
-          case AuthorizationStatus.InvalidCredentials:
-            this.serverError = authError.errors;
-            break;
-        }
-      });
-  }
+  //         case AuthorizationStatus.InvalidCredentials:
+  //           this.serverError = authError.errors;
+  //           break;
+  //       }
+  //     });
+  // }
 
   async navigateToRedirectUrl() {
     const returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';

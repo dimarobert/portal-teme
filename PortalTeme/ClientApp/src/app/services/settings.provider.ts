@@ -11,11 +11,9 @@ export class SettingsProvider {
 
   private _settingsSubject: BehaviorSubject<ApplicationSettings> = new BehaviorSubject(<ApplicationSettings>{});
 
-  async load() {
-    const response = await this.http.get<ApplicationSettings>("/api/settings/get")
-      .toPromise();
-    this._settingsSubject.next(response);
-    return response;
+  load() {
+    const settings: ApplicationSettings = window["portalTeme"].settings;
+    this._settingsSubject.next(settings);
   }
 
   get user() {

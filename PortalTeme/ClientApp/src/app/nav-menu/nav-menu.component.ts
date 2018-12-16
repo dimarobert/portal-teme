@@ -56,6 +56,10 @@ export class NavMenuComponent {
     return component == LoginPageComponent || component == RegisterPageComponent;
   }
 
+  logout() {
+    location.href = '/authentication/logout';
+  }
+
   toggleSidenav() {
     if (this.breakpointObserver.isMatched(Breakpoints.Handset)) {
       this.sidenav.toggle();

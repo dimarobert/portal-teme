@@ -32,11 +32,11 @@
 
         <div *ngIf="!(isAuthenticated$ | async)">
           <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
-          <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button>
+          <!-- <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button> -->
         </div>
         <div *ngIf="isAuthenticated$ | async">
           <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
-          <button mat-menu-item [routerLink]="['/logout']">Logout</button>
+          <a mat-menu-item (click)="logout()">Logout</a>
         </div>
         <!--<button mat-menu-item>Help</button>-->
       </mat-menu>

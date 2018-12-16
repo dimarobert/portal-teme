@@ -57,22 +57,22 @@ export class RegisterPageComponent implements OnInit {
     return this.passwordGroup.get('confirmPassword');
   }
 
-  register() {
-    this.authSvc.register({
-      email: this.email.value,
-      password: this.password.value,
-      confirmPassword: this.confirmPassword.value
-    }).subscribe(async response => {
-      await this.navigateToRedirectUrl();
-    }, (error: HttpErrorResponse) => {
-      let regError: RegisterResponse = error.error;
-      switch (regError.status) {
-        case RegisterStatus.Error:
-          this.serverErrors = regError.errors;
-          break;
-      }
-    });
-  }
+  // register() {
+  //   this.authSvc.register({
+  //     email: this.email.value,
+  //     password: this.password.value,
+  //     confirmPassword: this.confirmPassword.value
+  //   }).subscribe(async response => {
+  //     await this.navigateToRedirectUrl();
+  //   }, (error: HttpErrorResponse) => {
+  //     let regError: RegisterResponse = error.error;
+  //     switch (regError.status) {
+  //       case RegisterStatus.Error:
+  //         this.serverErrors = regError.errors;
+  //         break;
+  //     }
+  //   });
+  // }
 
   async navigateToRedirectUrl() {
     const returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';

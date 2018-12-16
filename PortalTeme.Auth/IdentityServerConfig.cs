@@ -1,6 +1,6 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
-using PortalTeme.Common.Authorization;
+using PortalTeme.Common.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,15 +21,15 @@ namespace PortalTeme.Auth {
         public static IEnumerable<ApiResource> GetApiResources() {
             return new List<ApiResource> {
                 new ApiResource{
-                    Name = AuthorizationConstants.ApplicationMainApi_Name,
+                    Name = AuthenticationConstants.ApplicationMainApi_Name,
                     DisplayName = "Portal Teme Main API",
                     Scopes = {
                         new Scope {
-                            Name = AuthorizationConstants.ApplicationMainApi_FullAccessScope,
+                            Name = AuthenticationConstants.ApplicationMainApi_FullAccessScope,
                             DisplayName = "Full Access to Portal Teme Main API"
                         },
                         new Scope {
-                            Name = AuthorizationConstants.ApplicationMainApi_ReadOnlyScope,
+                            Name = AuthenticationConstants.ApplicationMainApi_ReadOnlyScope,
                             DisplayName = "Read Only access to Portal Teme Main API"
                         }
                     }
@@ -40,29 +40,31 @@ namespace PortalTeme.Auth {
         public static IEnumerable<Client> GetClients() {
             return new List<Client> {
                 new Client {
-                    ClientId = AuthorizationConstants.AngularAppClientId,
+                    ClientId = AuthenticationConstants.AngularAppClientId,
                     ClientName = "Portal Teme WebApp",
-                    ClientUri = AuthorizationConstants.AngularAppRootUrl,
+                    ClientUri = AuthenticationConstants.AngularAppRootUrl,
 
-                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     AllowOfflineAccess = true,
 
                     //TODO: enable when the UI is done
-                    RequireConsent = false,
+                    RequireConsent = true,
 
                     ClientSecrets = {
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { AuthorizationConstants.AngularAppLoginCallback },
-                    PostLogoutRedirectUris = { AuthorizationConstants.AngularAppLogoutCallback },
-                    
+                    RedirectUris = { AuthenticationConstants.AngularAppLoginCallback },
+                    PostLogoutRedirectUris = { AuthenticationConstants.AngularAppLogoutCallback },
+
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        AuthorizationConstants.ApplicationMainApi_FullAccessScope,
-                        AuthorizationConstants.ApplicationMainApi_ReadOnlyScope
-                    }
+                        IdentityServerConstants.StandardScopes.Email,
+                        AuthenticationConstants.ApplicationMainApi_FullAccessScope,
+                        AuthenticationConstants.ApplicationMainApi_ReadOnlyScope
+                    },
+                    AlwaysIncludeUserClaimsInIdToken = true
                 }
             };
         }

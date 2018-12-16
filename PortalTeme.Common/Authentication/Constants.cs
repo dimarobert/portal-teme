@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PortalTeme.Common.Authorization {
-    public static class AuthorizationConstants {
+namespace PortalTeme.Common.Authentication {
+    public static class AuthenticationConstants {
 
         public const string AngularAppClientId = "PortalTemeAngularWebApp";
 
