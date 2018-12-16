@@ -1,0 +1,37 @@
+<!-- <div class="login-form">
+  <mat-card class="login-card">
+    <mat-card-title>Login</mat-card-title>
+
+    <mat-card-content>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+        <mat-form-field class="full-width">
+          <input matInput formControlName="email" placeholder="Email" required />
+          <mat-error *ngIf="email.hasError('email')">Value must be a valid email address.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <input matInput type="password" formControlName="password" placeholder="Password" required />
+        </mat-form-field>
+
+        <div class="mat-form-field-wrapper full-width">
+          <mat-slide-toggle formControlName="rememberMe">Remember me</mat-slide-toggle>
+        </div>
+
+        <button mat-raised-button color="accent" [disabled]="loginForm.invalid">Login</button>
+
+      </form>
+
+      <mat-list>
+        <mat-list-item class="error-item" *ngFor="let error of serverError | keys">
+          <div matLine class="key">{{error.key}}:</div>
+          <div matLine class="value" *ngFor="let valLine of error.value">
+            <mat-icon>chevron_right</mat-icon>
+            <span>{{valLine}}</span>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div> -->

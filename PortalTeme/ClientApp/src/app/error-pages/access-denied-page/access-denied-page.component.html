@@ -1,0 +1,10 @@
+<h1>Access Denied</h1>
+
+<div *ngIf="scheme == 'oidc'; else genericMessage">
+  <p>You have canceled the consent form on the authentication provider site.</p>
+  <p>You can go back to the <a href="/">Home Page</a> to start over.</p>
+</div>
+
+<ng-template #genericMessage>
+  <p>You do not have access to view this section.</p>
+</ng-template>
