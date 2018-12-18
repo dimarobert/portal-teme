@@ -6,13 +6,12 @@
 
 <app-root>Loading...</app-root>
 
+@Html.AntiForgeryToken()
+
 @* Pass server side variables to frontend *@
 <script type="text/javascript">
-    window.portalTeme = window.portalTeme || {};
-
-    window.portalTeme.settings = window.portalTeme.settings || {
-        accessToken: "@Model.AccessToken"
-    };
+    window.portalTeme = {};
+    window.portalTeme.settings = {};
 
     @if(Model.User != null) {
     <text>
@@ -25,7 +24,3 @@
     }
 
 </script>
-@foreach (var claim in User.Claims) {
-    @($"{claim.Type}: {claim.Value}")
-    <br />
-}

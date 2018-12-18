@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AuthorizationStatus, LoginResponse, LoginModel } from './login.model';
+import { AuthService } from '../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModelErrors } from '../../http.models';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -10,8 +8,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss']
+  template: ''
 })
 export class LoginPageComponent implements OnInit {
 
@@ -28,13 +25,17 @@ export class LoginPageComponent implements OnInit {
       .then(async isAuth => {
         if (isAuth)
           return await this.navigateToRedirectUrl();
+
+        const returnUrl: string = this.route.snapshot.queryParams['returnUrl'];
+        this.authSvc.login(returnUrl);
       });
 
-    this.loginForm = new FormGroup({
-      email: new FormControl('', Validators.email),
-      password: new FormControl(''),
-      rememberMe: new FormControl(false)
-    });
+
+    // this.loginForm = new FormGroup({
+    //   email: new FormControl('', Validators.email),
+    //   password: new FormControl(''),
+    //   rememberMe: new FormControl(false)
+    // });
   }
 
   get email() {
