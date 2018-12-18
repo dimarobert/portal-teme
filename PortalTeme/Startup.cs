@@ -1,4 +1,6 @@
+using IdentityModel.Client;
 using IdentityServer4;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,7 @@ using Newtonsoft.Json.Serialization;
 using PortalTeme.Authorization;
 using PortalTeme.Routing;
 using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -30,6 +33,8 @@ namespace PortalTeme {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
 
+            services.AddAntiforgery();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options => {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -41,46 +46,8 @@ namespace PortalTeme {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
-                options.Authority = AuthorizationConstants.AuthorityUri;
-                options.RequireHttpsMetadata = false;
-
-                options.ClientId = Common.Authentication.AuthenticationConstants.AngularAppClientId;
-                options.ClientSecret = AuthorizationConstants.ClientSecret;
-                options.ResponseType = "code id_token";
-
-                options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
-
-                options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
-                options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
-                options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
-                options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_FullAccessScope);
-                options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_ReadOnlyScope);
-
-                options.Events = new OpenIdConnectEvents {
-                    OnRemoteFailure = (ctx) => {
-                        ctx.Response.Redirect("/AccessDenied?schema=oidc");
-                        ctx.HandleResponse();
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToIdentityProvider = ctx => {
-                        var returnUrlValues = ctx.HttpContext.Request.Query["returnUrl"];
-                        if (returnUrlValues.Any()) {
-                            var returnUri = new Uri(returnUrlValues.First(), UriKind.RelativeOrAbsolute);
-                            if (!returnUri.IsAbsoluteUri) {
-                                var request = ctx.HttpContext.Request;
-                                returnUri = new UriBuilder(request.Scheme, request.Host.Host, request.Host.Port ?? -1, returnUri.OriginalString).Uri;
-                            }
-                            ctx.Properties.RedirectUri = returnUri.ToString();
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, SetupCookieSettings)
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, SetupOpenIdSettings);
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
@@ -91,6 +58,7 @@ namespace PortalTeme {
                 configuration.RootPath = Path.Combine(Env.ContentRootPath, @"ClientApp\dist");
             });
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app) {
@@ -111,33 +79,12 @@ namespace PortalTeme {
 
             app.UseMvc(routes => {
 
-                //routes.MapRoute(
-                //    name: "identityServer",
-                //    template: "signout-oidc",
-                //    defaults: new { controller = "AuthProvider", action = "SignOut" });
-
-                routes.MapRoute(
-                    name: "error",
-                    template: "/Error",
-                    defaults: new { controller = "Errors", action = "Error" });
-
-                routes.MapRoute(
-                    name: "access-denied",
-                    template: "/AccessDenied",
-                    defaults: new { controller = "Errors", action = "AccessDenied" });
-
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-
-                routes.MapRoute(
-                    name: "areasDefault",
-                    template: "{area:exists}/{controller}/{action=Index}/{id?}");
+                MapErrorsController(routes);
+                MapDefaults(routes);
 
                 var angularIndexAction = Env.IsDevelopment() ? "DevAngularIndex" : "AngularIndex";
                 routes.MapSpaWithWdsRoute(
                     name: "AngularSpa",
-                    isDev: Env.IsDevelopment(),
                     defaults: new { controller = "Home", action = angularIndexAction });
             });
 
@@ -152,5 +99,116 @@ namespace PortalTeme {
                 }
             });
         }
+
+
+        // ConfigureServices
+
+        private async Task RunRefreshTokenLogic(CookieValidatePrincipalContext context) {
+            if (!context.Principal.Identity.IsAuthenticated)
+                return;
+
+            var refreshToken = context.Properties.GetTokenValue("refresh_token");
+            if (refreshToken is null)
+                return;
+
+            var exp = context.Properties.GetTokenValue("expires_at");
+            var expires = DateTime.Parse(exp);
+            if (expires > DateTime.Now.AddMinutes(-1))
+                return;
+
+            var disco = await DiscoveryClient.GetAsync(AuthorizationConstants.AuthorityUri);
+            if (disco.IsError)
+                return;
+
+            var tokenClient = new TokenClient(disco.TokenEndpoint);
+            var clientResponse = await tokenClient.RequestRefreshTokenAsync(refreshToken);
+
+            if (clientResponse.IsError) {
+                context.RejectPrincipal();
+                return;
+            }
+
+            var newExpires = DateTime.UtcNow + TimeSpan.FromSeconds(clientResponse.ExpiresIn);
+
+            context.Properties.UpdateTokenValue("refresh_token", clientResponse.RefreshToken);
+            context.Properties.UpdateTokenValue("access_token", clientResponse.AccessToken);
+            context.Properties.UpdateTokenValue("expires_at", newExpires.ToString("o", CultureInfo.InvariantCulture));
+
+            //trigger context to renew cookie with new token values
+            context.ShouldRenew = true;
+        }
+
+        private void SetupOpenIdSettings(OpenIdConnectOptions options) {
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            options.Authority = AuthorizationConstants.AuthorityUri;
+            options.RequireHttpsMetadata = false;
+
+            options.ClientId = Common.Authentication.AuthenticationConstants.AngularAppClientId;
+            options.ClientSecret = AuthorizationConstants.ClientSecret;
+            options.ResponseType = "code id_token";
+
+            options.SaveTokens = true;
+            options.GetClaimsFromUserInfoEndpoint = true;
+
+            options.Scope.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+            options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
+            options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
+            options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
+            options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_FullAccessScope);
+            options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_ReadOnlyScope);
+
+            options.Events = new OpenIdConnectEvents {
+                OnRemoteFailure = (ctx) => {
+                    ctx.Response.Redirect("/AccessDenied?schema=oidc");
+                    ctx.HandleResponse();
+                    return Task.CompletedTask;
+                },
+                OnRedirectToIdentityProvider = ctx => {
+                    var returnUrlValues = ctx.HttpContext.Request.Query["returnUrl"];
+                    if (returnUrlValues.Any()) {
+                        var returnUri = new Uri(returnUrlValues.First(), UriKind.RelativeOrAbsolute);
+                        if (!returnUri.IsAbsoluteUri) {
+                            var request = ctx.HttpContext.Request;
+                            returnUri = new UriBuilder(request.Scheme, request.Host.Host, request.Host.Port ?? -1, returnUri.OriginalString).Uri;
+                        }
+                        ctx.Properties.RedirectUri = returnUri.ToString();
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        }
+
+        private void SetupCookieSettings(CookieAuthenticationOptions options) {
+            options.Events = new CookieAuthenticationEvents {
+                OnValidatePrincipal = RunRefreshTokenLogic
+            };
+        }
+
+
+        // Configure
+
+        private void MapErrorsController(Microsoft.AspNetCore.Routing.IRouteBuilder routes) {
+            routes.MapRoute(
+                name: "error",
+                template: "/Error",
+                defaults: new { controller = "Errors", action = "Error" });
+
+            routes.MapRoute(
+                name: "access-denied",
+                template: "/AccessDenied",
+                defaults: new { controller = "Errors", action = "AccessDenied" });
+        }
+
+        private void MapDefaults(Microsoft.AspNetCore.Routing.IRouteBuilder routes) {
+            routes.MapRoute(
+                name: "default",
+                template: "{controller}/{action=Index}/{id?}");
+
+            routes.MapRoute(
+                name: "areasDefault",
+                template: "{area:exists}/{controller}/{action=Index}/{id?}");
+        }
+
     }
 }

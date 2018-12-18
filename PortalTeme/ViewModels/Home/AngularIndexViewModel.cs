@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace PortalTeme.ViewModels.Home {
     public class AngularIndexViewModel {
-        public string AccessToken { get; set; }
 
         public UserSettings User { get; set; }
     }
