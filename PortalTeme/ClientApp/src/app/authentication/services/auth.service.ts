@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { AntiforgeryService } from './antiforgery.service';
+import { HttpClient } from '@angular/common/http';
+import { TokenService } from './token.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private antiforgery: AntiforgeryService) { }
+  constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   public login(returnUrl: string) {
     let loginUrl = "/authentication/login";
@@ -20,23 +22,10 @@ export class AuthService {
     return this.http.post('/authentication/logout', {});
   }
 
-  private cachedAccessToken: string = null;
-
-  public async getAccessToken(refresh: boolean = false) {
-    if (!refresh && this.cachedAccessToken)
-      return this.cachedAccessToken;
-
-    const antiforgeryToken = this.antiforgery.getAntiforgeryToken();
-
-    let headers = {};
-    headers[this.antiforgery.getHeaderName()] = antiforgeryToken;
-
-    const response: HttpResponse<any> = await this.http.get('/authentication/token', {
-      observe: 'response',
-      headers: new HttpHeaders(headers)
-    }).toPromise();
-
-    this.cachedAccessToken = response.headers.get('AccessToken') || null;
-    return this.cachedAccessToken;
+  public isAuthenticated(): Observable<boolean> {
+    return this.tokenService.getAccessToken()
+      .pipe(
+        map(result => result != null)
+      );
   }
 }

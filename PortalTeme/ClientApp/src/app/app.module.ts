@@ -27,6 +27,7 @@ import { KeysPipe } from './pipes/object-keys.pipe';
 import { SettingsProvider, settingsProviderFactory } from './services/settings.provider';
 import { externalUrlProvider, externalUrlRedirect } from './external-urls/external-url.provider';
 
+import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,7 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
     ExternalUrlDirective,
 
     KeysPipe,
-    
+
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -54,16 +55,23 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
+    // JwtModule.forRoot({
+    //   jwtOptionsProvider: {
+    //     provide: JWT_OPTIONS,
+    //     useFactory: jwtOptionsFactory,
+    //     deps: [TokenService]
+    //   }
+    // }),
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'counter', component: CounterComponent, canActivate: [AuthGuard] },
+      { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard] },
       { path: 'login', component: LoginPageComponent },
       // { path: 'register', component: RegisterPageComponent },
 
       // TODO: these will not work because the authorization is made at application level in the MVC view. 
-      {path: 'error', component: ErrorPageComponent },
-      {path: 'access-denied', component: AccessDeniedPageComponent },
+      { path: 'error', component: ErrorPageComponent },
+      { path: 'access-denied', component: AccessDeniedPageComponent },
 
       { path: 'externalRedirect', resolve: { url: externalUrlProvider }, component: NotFoundPageComponent }
     ])

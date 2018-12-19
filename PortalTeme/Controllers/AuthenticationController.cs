@@ -15,12 +15,12 @@ namespace PortalTeme.Controllers {
         public AuthenticationController() { }
 
         [HttpGet("[action]")]
-        public IActionResult Login(string redirectUri = null) {
+        public IActionResult Login(string returnUri = null) {
             if (User.Identity.IsAuthenticated)
-                return Redirect(redirectUri ?? "/");
+                return Redirect(returnUri ?? "/");
 
             return Challenge(new AuthenticationProperties {
-                RedirectUri = redirectUri
+                RedirectUri = returnUri
             });
         }
 

@@ -48,7 +48,7 @@ namespace PortalTeme.Auth {
                     AllowOfflineAccess = true,
 
                     //TODO: enable when the UI is done
-                    RequireConsent = true,
+                    RequireConsent = false,
 
                     ClientSecrets = {
                         new Secret("secret".Sha256())
