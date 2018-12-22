@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AntiforgeryService } from './antiforgery.service';
 import { ReplaySubject, Observable, of } from 'rxjs';
-import { map, take, flatMap } from 'rxjs/operators';
+import { flatMap } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
@@ -51,12 +51,3 @@ export class TokenService {
     });
   }
 }
-
-// export function jwtOptionsFactory(tokenService: TokenService) {
-//   return {
-//     tokenGetter: () => {
-//       return tokenService.getAccessToken().toPromise();
-//     },
-//     whitelistedDomains: ['localhost']
-//   };
-// }

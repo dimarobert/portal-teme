@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { TokenService } from './token.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,17 +8,13 @@ import { map } from 'rxjs/operators';
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private tokenService: TokenService) { }
+  constructor(private tokenService: TokenService) { }
 
   public login(returnUrl: string) {
     let loginUrl = "/authentication/login";
     if (returnUrl)
       loginUrl = `${loginUrl}?returnUri=${encodeURIComponent(returnUrl)}`;
     location.href = loginUrl;
-  }
-
-  public logout() {
-    return this.http.post('/authentication/logout', {});
   }
 
   public isAuthenticated(): Observable<boolean> {
