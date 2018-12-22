@@ -1,9 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, Provider } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, ActivatedRouteSnapshot } from '@angular/router';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
 
@@ -28,6 +28,11 @@ import { SettingsProvider, settingsProviderFactory } from './services/settings.p
 import { externalUrlProvider, externalUrlRedirect } from './external-urls/external-url.provider';
 
 import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
+import { AuthenticationInterceptor } from './authentication/services/authentication.interceptor';
+
+const httpInterceptorProviders: Provider[] = [
+  { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
+];
 
 @NgModule({
   declarations: [
@@ -55,13 +60,7 @@ import { AuthGuardService as AuthGuard } from './authentication/services/auth-gu
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
-    // JwtModule.forRoot({
-    //   jwtOptionsProvider: {
-    //     provide: JWT_OPTIONS,
-    //     useFactory: jwtOptionsFactory,
-    //     deps: [TokenService]
-    //   }
-    // }),
+
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent, canActivate: [AuthGuard] },
@@ -79,6 +78,7 @@ import { AuthGuardService as AuthGuard } from './authentication/services/auth-gu
   providers: [
     SettingsProvider,
     { provide: APP_INITIALIZER, useFactory: settingsProviderFactory, deps: [SettingsProvider], multi: true },
+    ...httpInterceptorProviders,
     { provide: externalUrlProvider, useValue: externalUrlRedirect }
   ],
   bootstrap: [AppComponent]

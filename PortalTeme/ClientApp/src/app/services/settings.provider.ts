@@ -9,7 +9,7 @@ export class SettingsProvider {
 
   constructor(private http: HttpClient) { }
 
-  private _settingsSubject: BehaviorSubject<ApplicationSettings> = new BehaviorSubject(<ApplicationSettings>{});
+  private _settingsSubject: BehaviorSubject<ApplicationSettings> = new BehaviorSubject<ApplicationSettings>({});
 
   load() {
     const settings: ApplicationSettings = window["portalTeme"].settings;
