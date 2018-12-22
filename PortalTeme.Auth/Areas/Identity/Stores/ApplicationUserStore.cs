@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

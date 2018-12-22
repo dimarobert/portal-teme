@@ -4,7 +4,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using PortalTeme.Auth.Areas.Identity.Managers;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

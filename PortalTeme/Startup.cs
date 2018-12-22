@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.Authorization;
+using PortalTeme.Data;
 using PortalTeme.Routing;
 using System;
 using System.Globalization;
@@ -34,6 +36,13 @@ namespace PortalTeme {
         public void ConfigureServices(IServiceCollection services) {
 
             services.AddAntiforgery();
+
+            services.AddDbContext<PortalTemeContext>(options => 
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("PortalTemeContextConnection"),
+                    sqlOpts => sqlOpts.MigrationsAssembly("PortalTeme")
+                )
+            );
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options => {

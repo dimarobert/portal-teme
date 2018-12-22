@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 
 namespace PortalTeme.Auth.Areas.Identity.Pages.Account
 {

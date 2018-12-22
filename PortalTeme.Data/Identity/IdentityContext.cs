@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace PortalTeme.Data {
+namespace PortalTeme.Data.Identity {
     public class IdentityContext : IdentityDbContext<User> {
         public IdentityContext(DbContextOptions<IdentityContext> options)
             : base(options) {
