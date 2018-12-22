@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

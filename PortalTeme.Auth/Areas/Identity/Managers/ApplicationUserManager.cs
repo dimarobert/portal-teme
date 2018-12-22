@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PortalTeme.Auth.Areas.Identity.Stores;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PortalTeme.Auth.Areas.Identity;
 using PortalTeme.Auth.Areas.Identity.Managers;
 using PortalTeme.Auth.Areas.Identity.Stores;
-using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
