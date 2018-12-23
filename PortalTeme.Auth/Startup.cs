@@ -33,10 +33,7 @@ namespace PortalTeme.Auth {
 
 
             services.AddDbContext<IdentityContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("IdentityContextConnection"),
-                    sqlOpts => sqlOpts.MigrationsAssembly("PortalTeme.Auth")
-                )
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityContextConnection"))
             );
 
             services.AddIdentity<User, IdentityRole>()

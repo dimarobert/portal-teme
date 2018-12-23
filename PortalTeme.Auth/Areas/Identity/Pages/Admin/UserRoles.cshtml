@@ -1,0 +1,44 @@
+﻿@page
+@model PortalTeme.Auth.Areas.Identity.Pages.Admin.UserRolesModel
+@{
+    ViewData["Title"] = "User Roles";
+    ViewData["ActivePage"] = AdminNavPages.UserRoles;
+}
+
+<form method="post">
+    <table class="table table-dark table-hover table-with-buttons">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Role Name</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i <= Model.Roles.Count; i++) {
+                var role = Model.Roles[i - 1];
+                <tr>
+                    <th scope="row">@i</th>
+                    <td>@role.Name</td>
+                    <td class="float-right">
+                        <a id="role-assign" asp-page="AssignRole" asp-route-roleId="@role.Id" class="btn btn-success">Assign</a>
+                        <button id="role-delete" type="submit" asp-page-handler="DeleteRole" asp-route-roleId="@role.Id" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Roles.Any()) {
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No roles</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <a id="role-add" class="btn btn-primary" asp-page="AddRole">Add Role</a>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

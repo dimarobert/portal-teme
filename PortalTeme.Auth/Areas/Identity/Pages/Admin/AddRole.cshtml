@@ -1,0 +1,17 @@
+﻿@page
+@model PortalTeme.Auth.Areas.Identity.Pages.Admin.AddRoleModel
+@{
+}
+
+<h5>Create Role</h5>
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Input.Name"></label>
+        <input asp-for="Input.Name" class="form-control" />
+        <span asp-validation-for="Input.Name" class="text-danger"></span>
+    </div>
+    <a class="btn btn-secondary" asp-page="UserRoles">Cancel</a>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

@@ -10,5 +10,10 @@ namespace PortalTeme.Authorization {
         public const string AuthorityUri = "https://localhost:44308";
 
         public const string ClientSecret = "secret";
+
+        public const string MainApiSecret = "apisecret";
+
+
+        public const string AdministratorPolicy = "AdministratorRights";
     }
 }

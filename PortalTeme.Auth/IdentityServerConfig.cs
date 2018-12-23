@@ -20,17 +20,20 @@ namespace PortalTeme.Auth {
 
         public static IEnumerable<ApiResource> GetApiResources() {
             return new List<ApiResource> {
-                new ApiResource{
+                new ApiResource {
                     Name = AuthenticationConstants.ApplicationMainApi_Name,
+                    ApiSecrets = {
+                        new Secret("apisecret".Sha256())
+                    },
                     DisplayName = "Portal Teme Main API",
                     Scopes = {
                         new Scope {
                             Name = AuthenticationConstants.ApplicationMainApi_FullAccessScope,
-                            DisplayName = "Full Access to Portal Teme Main API"
+                            DisplayName = "Read/Write access to your data in the Portal Teme App"
                         },
                         new Scope {
                             Name = AuthenticationConstants.ApplicationMainApi_ReadOnlyScope,
-                            DisplayName = "Read Only access to Portal Teme Main API"
+                            DisplayName = "Read Only access to your data in the Portal Teme App"
                         }
                     }
                 }

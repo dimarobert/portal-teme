@@ -1,8 +1,10 @@
 using IdentityModel.Client;
 using IdentityServer4;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +14,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.Authorization;
+using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
 using PortalTeme.Routing;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -37,14 +41,12 @@ namespace PortalTeme {
 
             services.AddAntiforgery();
 
-            services.AddDbContext<PortalTemeContext>(options => 
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("PortalTemeContextConnection"),
-                    sqlOpts => sqlOpts.MigrationsAssembly("PortalTeme")
-                )
+            services.AddDbContext<PortalTemeContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options => {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
@@ -56,7 +58,10 @@ namespace PortalTeme {
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, SetupCookieSettings)
-            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, SetupOpenIdSettings);
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, SetupOpenIdSettings)
+            .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, SetupIdServerAuth);
+
+            services.AddAuthorization(SetupAuthorization);
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
@@ -68,6 +73,7 @@ namespace PortalTeme {
             });
         }
 
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app) {
@@ -147,13 +153,19 @@ namespace PortalTeme {
             context.ShouldRenew = true;
         }
 
+        private void SetupCookieSettings(CookieAuthenticationOptions options) {
+            options.Events = new CookieAuthenticationEvents {
+                OnValidatePrincipal = RunRefreshTokenLogic
+            };
+        }
+
         private void SetupOpenIdSettings(OpenIdConnectOptions options) {
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
             options.Authority = AuthorizationConstants.AuthorityUri;
             options.RequireHttpsMetadata = false;
 
-            options.ClientId = Common.Authentication.AuthenticationConstants.AngularAppClientId;
+            options.ClientId = AuthenticationConstants.AngularAppClientId;
             options.ClientSecret = AuthorizationConstants.ClientSecret;
             options.ResponseType = "code id_token";
 
@@ -164,8 +176,8 @@ namespace PortalTeme {
             options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
             options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
             options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
-            options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_FullAccessScope);
-            options.Scope.Add(Common.Authentication.AuthenticationConstants.ApplicationMainApi_ReadOnlyScope);
+            options.Scope.Add(AuthenticationConstants.ApplicationMainApi_FullAccessScope);
+            options.Scope.Add(AuthenticationConstants.ApplicationMainApi_ReadOnlyScope);
 
             options.Events = new OpenIdConnectEvents {
                 OnRemoteFailure = (ctx) => {
@@ -188,12 +200,27 @@ namespace PortalTeme {
             };
         }
 
-        private void SetupCookieSettings(CookieAuthenticationOptions options) {
-            options.Events = new CookieAuthenticationEvents {
-                OnValidatePrincipal = RunRefreshTokenLogic
-            };
+        private void SetupIdServerAuth(IdentityServerAuthenticationOptions options) {
+            options.Authority = AuthorizationConstants.AuthorityUri;
+
+            options.ApiName = AuthenticationConstants.ApplicationMainApi_Name;
+            options.ApiSecret = AuthorizationConstants.MainApiSecret;
+
+            options.EnableCaching = true;
+            options.CacheDuration = TimeSpan.FromMinutes(10);
+
+            options.RequireHttpsMetadata = false;
         }
 
+        private void SetupAuthorization(AuthorizationOptions options) {
+            options.DefaultPolicy = new AuthorizationPolicyBuilder(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build();
+
+            options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policyOpts => {
+                policyOpts.RequireRole("admin");
+            });
+        }
 
         // Configure
 
