@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme", "PortalTeme\Po
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.Common", "PortalTeme.Common\PortalTeme.Common.csproj", "{FC5E8AB5-D9FA-40FB-8B1B-A23CCCCA5E57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalTeme.Data", "PortalTeme.Data\PortalTeme.Data.csproj", "{675BD423-F885-4096-B94C-4BB766495F3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.Data", "PortalTeme.Data\PortalTeme.Data.csproj", "{675BD423-F885-4096-B94C-4BB766495F3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalTeme.Auth", "PortalTeme.Auth\PortalTeme.Auth.csproj", "{2F3EFBD4-4F3F-4BCF-A232-9EEC7F028C59}"
 EndProject

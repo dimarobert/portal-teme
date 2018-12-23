@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PortalTeme.Data.Identity;
+using PortalTeme.Data.Migrations;
 
 namespace PortalTeme.Auth.Migrations
 {
-    [DbContext(typeof(IdentityContext))]
-    [Migration("20181212210344_CreateIdentityTables")]
-    partial class CreateIdentityTables
+    [DbContext(typeof(MigrationsContext))]
+    partial class MigrationsContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,7 +129,7 @@ namespace PortalTeme.Auth.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.User", b =>
+            modelBuilder.Entity("PortalTeme.Data.Identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -186,6 +184,140 @@ namespace PortalTeme.Auth.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PortalTeme.Data.Models.AcademicYear", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AcademicYear");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.Assignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CourseId");
+
+                    b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("Description")
+                        .IsRequired();
+
+                    b.Property<DateTime>("EndDate");
+
+                    b.Property<DateTime>("LastUpdated");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<DateTime>("StartDate");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Assignments");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AssignmentId");
+
+                    b.Property<int?>("Grading");
+
+                    b.Property<int>("State");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("AssignmentEntries");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentExtensionRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Approved");
+
+                    b.Property<Guid>("AssignmentEntryId");
+
+                    b.Property<string>("Reason")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentEntryId");
+
+                    b.ToTable("AssignmentExtensionRequests");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.Course", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CourseInfoId");
+
+                    b.Property<string>("ProfessorId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseInfoId");
+
+                    b.HasIndex("ProfessorId");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.CourseAssistant", b =>
+                {
+                    b.Property<Guid>("CourseId");
+
+                    b.Property<string>("AssistantId");
+
+                    b.HasKey("CourseId", "AssistantId");
+
+                    b.HasIndex("AssistantId");
+
+                    b.ToTable("CourseAssistant");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.CourseDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("Semester");
+
+                    b.Property<Guid>("YearId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("YearId");
+
+                    b.ToTable("CourseDefinition");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -196,7 +328,7 @@ namespace PortalTeme.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PortalTeme.Data.User")
+                    b.HasOne("PortalTeme.Data.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -204,7 +336,7 @@ namespace PortalTeme.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PortalTeme.Data.User")
+                    b.HasOne("PortalTeme.Data.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -217,7 +349,7 @@ namespace PortalTeme.Auth.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PortalTeme.Data.User")
+                    b.HasOne("PortalTeme.Data.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -225,9 +357,72 @@ namespace PortalTeme.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PortalTeme.Data.User")
+                    b.HasOne("PortalTeme.Data.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.Assignment", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.Course", "Course")
+                        .WithMany("Assignments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntry", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.Assignment", "Assignment")
+                        .WithMany()
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PortalTeme.Data.Identity.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentExtensionRequest", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.AssignmentEntry", "AssignmentEntry")
+                        .WithMany()
+                        .HasForeignKey("AssignmentEntryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.Course", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.CourseDefinition", "CourseInfo")
+                        .WithMany()
+                        .HasForeignKey("CourseInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PortalTeme.Data.Identity.User", "Professor")
+                        .WithMany()
+                        .HasForeignKey("ProfessorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.CourseAssistant", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Identity.User", "Assistant")
+                        .WithMany()
+                        .HasForeignKey("AssistantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PortalTeme.Data.Models.Course", "Course")
+                        .WithMany("Assistants")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.CourseDefinition", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.AcademicYear", "Year")
+                        .WithMany()
+                        .HasForeignKey("YearId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
