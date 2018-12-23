@@ -38,10 +38,7 @@ namespace PortalTeme {
             services.AddAntiforgery();
 
             services.AddDbContext<PortalTemeContext>(options => 
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("PortalTemeContextConnection"),
-                    sqlOpts => sqlOpts.MigrationsAssembly("PortalTeme")
-                )
+                options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
