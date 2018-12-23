@@ -11,12 +11,13 @@ using System.Text;
 namespace PortalTeme.Data {
     public class PortalTemeContext : DbContext {
 
+        public PortalTemeContext(DbContextOptions options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
 
         public DbSet<Course> Courses { get; set; }
 
-        public DbSet<CourseAssignment> CourseAssignments { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
 
         public DbSet<AssignmentEntry> AssignmentEntries { get; set; }
 
@@ -36,10 +37,10 @@ namespace PortalTeme.Data {
     }
 
     public class DateTimeValueConverter : ValueConverter<DateTime, DateTime> {
-        public DateTimeValueConverter(ConverterMappingHints mappingHints = null) 
+        public DateTimeValueConverter(ConverterMappingHints mappingHints = null)
             : base(normalizeDate, normalizeDate, mappingHints) {
         }
 
-        static Expression<Func<DateTime, DateTime>> normalizeDate = date => date.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(date, DateTimeKind.Utc) : date.ToUniversalTime();
+        private static Expression<Func<DateTime, DateTime>> normalizeDate = date => date.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(date, DateTimeKind.Utc) : date.ToUniversalTime();
     }
 }

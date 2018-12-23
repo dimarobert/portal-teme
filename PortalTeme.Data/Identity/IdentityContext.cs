@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PortalTeme.Data.Identity {
     public class IdentityContext : IdentityDbContext<User> {
-        public IdentityContext(DbContextOptions<IdentityContext> options)
+        public IdentityContext(DbContextOptions options)
             : base(options) {
         }
 

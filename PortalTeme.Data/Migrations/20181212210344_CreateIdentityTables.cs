@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace PortalTeme.Auth.Migrations
+namespace PortalTeme.Data.Migrations
 {
     public partial class CreateIdentityTables : Migration
     {
