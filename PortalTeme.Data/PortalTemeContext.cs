@@ -15,6 +15,10 @@ namespace PortalTeme.Data {
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<AcademicYear> AcademicYears { get; set; }
+
+        public DbSet<CourseDefinition> CourseDefinitions { get; set; }
+
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<Assignment> Assignments { get; set; }
@@ -32,6 +36,11 @@ namespace PortalTeme.Data {
             modelBuilder.Entity<Assignment>().Property(a => a.EndDate).HasConversion(new DateTimeValueConverter());
 
             modelBuilder.Entity<AssignmentEntryVersion>().Property(a => a.DateAdded).HasConversion(new DateTimeValueConverter());
+
+            modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateCreated).HasConversion(new DateTimeValueConverter());
+            modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateApproved).HasConversion(new DateTimeValueConverter());
+
+            modelBuilder.Entity<CourseAssistant>().HasKey(ca => new { ca.CourseId, ca.AssistantId });
         }
 
     }

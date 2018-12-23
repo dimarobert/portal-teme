@@ -11,8 +11,13 @@ namespace PortalTeme.Data.Models {
         public AssignmentEntry AssignmentEntry { get; set; }
 
         [Required]
+        public DateTime DateCreated { get; set; }
+
+        [Required]
         public string Reason { get; set; }
 
         public bool Approved { get; set; }
+
+        public DateTime DateApproved { get; set; }
     }
 }
