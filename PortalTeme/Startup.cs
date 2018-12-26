@@ -217,8 +217,8 @@ namespace PortalTeme {
                 .RequireAuthenticatedUser()
                 .Build();
 
-            options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policyOpts => {
-                policyOpts.RequireRole("admin");
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policyOpts => {
+                policyOpts.RequireRole("Admin");
             });
         }
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PortalTeme.Authorization;
+using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Models;
 using System;

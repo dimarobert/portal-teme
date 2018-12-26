@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PortalTeme.Auth.Areas.Identity;
 using PortalTeme.Auth.Areas.Identity.Managers;
 using PortalTeme.Auth.Areas.Identity.Stores;
+using PortalTeme.Common.Authorization;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -43,13 +44,19 @@ namespace PortalTeme.Auth {
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddAuthorization(options => {
+                options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policy => policy.RequireRole("Admin"));
+            });
 
-            services.AddIdentityServer(options =>
-                {
-                    options.UserInteraction.LoginUrl = "/Identity/Account/Login";
-                    options.UserInteraction.LogoutUrl = "/Identity/Account/Logout";
-                })
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddRazorPagesOptions(options => {
+                    options.Conventions.AuthorizeAreaFolder("Identity", "/Admin/", AuthorizationConstants.AdministratorPolicy);
+                });
+
+            services.AddIdentityServer(options => {
+                options.UserInteraction.LoginUrl = "/Identity/Account/Login";
+                options.UserInteraction.LogoutUrl = "/Identity/Account/Logout";
+            })
                 .AddDeveloperSigningCredential() // TODO: Replace with .AddSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())

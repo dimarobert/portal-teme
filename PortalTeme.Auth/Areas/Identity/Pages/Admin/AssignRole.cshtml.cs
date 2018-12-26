@@ -27,7 +27,7 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
         public IActionResult OnGet(string roleId) {
 
             if (string.IsNullOrWhiteSpace(roleId))
-                return RedirectToPage("UserRoles");
+                return RedirectToPage("ViewUsersInRole");
 
             RoleId = roleId;
             Users = userManager.Users.Select(u => new UserDTO {
@@ -68,7 +68,7 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
                 }
             }
 
-            return RedirectToPage("UserRoles");
+            return RedirectToPage("ViewUsersInRole", new { roleId });
         }
     }
 
@@ -80,7 +80,7 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
 
     public class AssignRoleDTO {
 
-        [Required]
+        [Required, Display(Name = "User Email")]
         public string UserId { get; set; }
     }
 }
