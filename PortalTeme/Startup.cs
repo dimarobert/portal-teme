@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
@@ -23,6 +24,7 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PortalTeme {
@@ -44,6 +46,9 @@ namespace PortalTeme {
             services.AddDbContext<PortalTemeContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
+
+            // TODO: Update to use Redis (at least in prod)
+            services.AddDistributedMemoryCache();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
@@ -73,7 +78,7 @@ namespace PortalTeme {
             });
         }
 
-        
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app) {
@@ -145,8 +150,8 @@ namespace PortalTeme {
 
             var newExpires = DateTime.UtcNow + TimeSpan.FromSeconds(clientResponse.ExpiresIn);
 
-            context.Properties.UpdateTokenValue("refresh_token", clientResponse.RefreshToken);
-            context.Properties.UpdateTokenValue("access_token", clientResponse.AccessToken);
+            context.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, clientResponse.RefreshToken);
+            context.Properties.UpdateTokenValue(OpenIdConnectParameterNames.AccessToken, clientResponse.AccessToken);
             context.Properties.UpdateTokenValue("expires_at", newExpires.ToString("o", CultureInfo.InvariantCulture));
 
             //trigger context to renew cookie with new token values
@@ -171,6 +176,7 @@ namespace PortalTeme {
 
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
+            options.ClaimActions.MapJsonKey("role", "role", "role");
 
             options.Scope.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
             options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
@@ -178,6 +184,7 @@ namespace PortalTeme {
             options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
             options.Scope.Add(AuthenticationConstants.ApplicationMainApi_FullAccessScope);
             options.Scope.Add(AuthenticationConstants.ApplicationMainApi_ReadOnlyScope);
+            options.Scope.Add(AuthenticationConstants.RolesScope);
 
             options.Events = new OpenIdConnectEvents {
                 OnRemoteFailure = (ctx) => {
@@ -210,6 +217,31 @@ namespace PortalTeme {
             options.CacheDuration = TimeSpan.FromMinutes(10);
 
             options.RequireHttpsMetadata = false;
+
+            options.JwtBearerEvents = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents {
+                OnTokenValidated = async context => {
+
+                    if (!context.Principal.Identity.IsAuthenticated)
+                        return;
+
+                    var identity = context.Principal.Identity as ClaimsIdentity;
+                    if (identity is null)
+                        return;
+
+                    var discoveryClient = new DiscoveryClient(context.Options.Authority);
+                    var doc = await discoveryClient.GetAsync();
+                    var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint);
+                    var accessToken = context.SecurityToken as JwtSecurityToken;
+                    var response = await userInfoClient.GetAsync(accessToken.RawData);
+
+                    if (response.IsError)
+                        return;
+
+                    var newClaims = response.Claims.Where(claim => !identity.HasClaim(claim.Type, claim.Value));
+                    identity.AddClaims(newClaims);
+
+                }
+            };
         }
 
         private void SetupAuthorization(AuthorizationOptions options) {
@@ -217,8 +249,10 @@ namespace PortalTeme {
                 .RequireAuthenticatedUser()
                 .Build();
 
-            options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policyOpts => {
-                policyOpts.RequireRole("admin");
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policyOpts => {
+                policyOpts.AuthenticationSchemes = new List<string> { IdentityServerAuthenticationDefaults.AuthenticationScheme };
+
+                policyOpts.RequireClaim("role", "Admin");
             });
         }
 

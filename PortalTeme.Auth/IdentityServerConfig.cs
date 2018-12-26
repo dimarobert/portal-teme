@@ -1,4 +1,5 @@
-﻿using IdentityServer4;
+﻿using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using PortalTeme.Common.Authentication;
 using System;
@@ -15,6 +16,7 @@ namespace PortalTeme.Auth {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Email(),
                 new IdentityResources.Profile(),
+                new IdentityResource(AuthenticationConstants.RolesScope, new[] { JwtClaimTypes.Role }),
             };
         }
 
@@ -64,6 +66,7 @@ namespace PortalTeme.Auth {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
+                        AuthenticationConstants.RolesScope,
                         AuthenticationConstants.ApplicationMainApi_FullAccessScope,
                         AuthenticationConstants.ApplicationMainApi_ReadOnlyScope
                     },

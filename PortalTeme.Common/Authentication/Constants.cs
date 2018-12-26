@@ -12,7 +12,10 @@ namespace PortalTeme.Common.Authentication {
         public const string AngularAppLogoutCallback = AngularAppRootUrl + "/signout-callback-oidc";
 
         public const string ApplicationMainApi_Name = "PortalTemeApi";
+
         public const string ApplicationMainApi_FullAccessScope = "PortalTemeApi.FullAccess";
         public const string ApplicationMainApi_ReadOnlyScope = "PortalTemeApi.ReadOnly";
+
+        public const string RolesScope = "user_roles";
     }
 }

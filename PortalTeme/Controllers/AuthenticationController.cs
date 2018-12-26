@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace PortalTeme.Controllers {
         [HttpGet("[action]")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Token() {
-            var token = await HttpContext.GetTokenAsync("access_token");
+            var token = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
             HttpContext.Response.Headers.Add("AccessToken", token);
 
             return Ok();

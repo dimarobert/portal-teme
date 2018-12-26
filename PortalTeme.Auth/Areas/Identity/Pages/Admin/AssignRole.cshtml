@@ -1,6 +1,8 @@
 ﻿@page
 @model PortalTeme.Auth.Areas.Identity.Pages.Admin.AssignRoleModel
 @{
+    ViewData["Title"] = "Assign Role";
+    ViewData["ActivePage"] = AdminNavPages.AssignRole;
 }
 
 <h5>Assign Role to User</h5>
@@ -16,6 +18,6 @@
         </select>
         <span asp-validation-for="Input.UserId" class="text-danger"></span>
     </div>
-    <a class="btn btn-secondary" asp-page="UserRoles">Cancel</a>
+    <a class="btn btn-outline-secondary" asp-page="ViewUsersInRole" asp-route-roleId="@Model.RoleId">Cancel</a>
     <button type="submit" class="btn btn-primary" asp-route-roleId="@Model.RoleId">Assign</button>
 </form>

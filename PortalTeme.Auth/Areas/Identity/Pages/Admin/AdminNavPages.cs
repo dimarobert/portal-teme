@@ -9,8 +9,15 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
     public static class AdminNavPages {
 
         public const string UserRoles = "UserRoles";
+        public const string AddRole = "AddRole";
+        public const string ViewUsersInRole = "ViewUsersInRole";
+        public const string AssignRole = "AssignRole";
 
-        public static string UserRolesNavClass(ViewContext viewContext) => PageHelper.GetActivePageClass(viewContext, UserRoles);
+        public static string UserRolesNavClass(ViewContext viewContext)
+            => PageHelper.GetActivePageClass(viewContext, UserRoles) ??
+            PageHelper.GetActivePageClass(viewContext, ViewUsersInRole) ??
+            PageHelper.GetActivePageClass(viewContext, AddRole) ??
+            PageHelper.GetActivePageClass(viewContext, AssignRole);
 
     }
 }

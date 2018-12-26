@@ -1,6 +1,8 @@
 ﻿@page
 @model PortalTeme.Auth.Areas.Identity.Pages.Admin.AddRoleModel
 @{
+    ViewData["Title"] = "Create Role";
+    ViewData["ActivePage"] = AdminNavPages.AddRole;
 }
 
 <h5>Create Role</h5>
@@ -12,6 +14,6 @@
         <input asp-for="Input.Name" class="form-control" />
         <span asp-validation-for="Input.Name" class="text-danger"></span>
     </div>
-    <a class="btn btn-secondary" asp-page="UserRoles">Cancel</a>
+    <a class="btn btn-outline-secondary" asp-page="UserRoles">Cancel</a>
     <button type="submit" class="btn btn-primary">Create</button>
 </form>

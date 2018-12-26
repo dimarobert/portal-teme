@@ -13,7 +13,5 @@ namespace PortalTeme.Authorization {
 
         public const string MainApiSecret = "apisecret";
 
-
-        public const string AdministratorPolicy = "AdministratorRights";
     }
 }
