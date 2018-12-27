@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System;
@@ -23,7 +24,7 @@ namespace PortalTeme.Data.Migrations {
         public MigrationsContext() : base(new DbContextOptionsBuilder<MigrationsContext>().Options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            optionsBuilder.UseSqlServer(@"Server=.;Database=portal_teme;Trusted_Connection=True;MultipleActiveResultSets=true;",
+            optionsBuilder.UseSqlServer(@"Data Source=epa.dnnsharp.com;Initial Catalog=portal_teme;user id=portal_teme;password=ptPass!",
                 options => {
                     options.MigrationsAssembly("PortalTeme.Data");
                 }
@@ -34,6 +35,12 @@ namespace PortalTeme.Data.Migrations {
 
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
+
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Name = "Admin", NormalizedName = "Admin".ToUpper() },
+                new IdentityRole { Name = "Professor", NormalizedName = "Professor".ToUpper() },
+                new IdentityRole { Name = "Assistant", NormalizedName = "Assistant".ToUpper() },
+                new IdentityRole { Name = "Student", NormalizedName = "Student".ToUpper() });
 
             builder.Entity<CourseAssistant>()
                 .HasKey(ca => new { ca.CourseId, ca.AssistantId });
