@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -24,16 +25,16 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
         [BindProperty]
         public AssignRoleDTO Input { get; set; }
 
-        public IActionResult OnGet(string roleId) {
+        public async Task<IActionResult> OnGetAsync(string roleId) {
 
             if (string.IsNullOrWhiteSpace(roleId))
                 return RedirectToPage("ViewUsersInRole");
 
             RoleId = roleId;
-            Users = userManager.Users.Select(u => new UserDTO {
+            Users = await userManager.Users.OrderBy(u => u.Email).Select(u => new UserDTO {
                 Id = u.Id,
                 Email = u.Email
-            }).ToList();
+            }).ToListAsync();
 
             return Page();
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using PortalTeme.Auth.Areas.Identity;
 using PortalTeme.Auth.Areas.Identity.Managers;
 using PortalTeme.Auth.Areas.Identity.Stores;
@@ -51,7 +53,7 @@ namespace PortalTeme.Auth {
             services.AddAuthorization(options => {
                 options.AddPolicy("isInSetupMode", policy => policy.AddRequirements(new SetupModeRequirement()));
 
-                options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policy => policy.RequireRole("Admin"));
+                options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policy => policy.RequireRole(AuthorizationConstants.AdministratorRoleName));
             });
 
             services.AddSingleton<IAuthorizationHandler, SetupModeRequirementHandler>();
@@ -74,6 +76,9 @@ namespace PortalTeme.Auth {
                 .AddInMemoryClients(IdentityServerConfig.GetClients())
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
+
+
+            services.AddSingleton<IPostConfigureOptions<CookieAuthenticationOptions>, ConfigureCookieOptions>();
 
             services.AddAuthentication(IdentityConstants.ApplicationScheme);
         }
@@ -114,7 +119,7 @@ namespace PortalTeme.Auth {
                     return;
                 }
 
-                if (!context.Request.Path.StartsWithSegments("/setup/")) {
+                if (!context.Request.Path.StartsWithSegments("/setup")) {
                     var uri = new UriBuilder(context.Request.GetDisplayUrl()) {
                         Path = "/setup"
                     };
@@ -136,6 +141,12 @@ namespace PortalTeme.Auth {
                     template: "{area:exists}/{controller}/{action=Index}/{id?}"
                 );
             });
+        }
+    }
+
+    public class ConfigureCookieOptions : IPostConfigureOptions<CookieAuthenticationOptions> {
+        public void PostConfigure(string name, CookieAuthenticationOptions options) {
+            options.AccessDeniedPath = "/AccessDenied";
         }
     }
 }
