@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PortalTeme.Common.Application;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace PortalTeme.Auth.Services {
         private async Task GetFromDatabase() {
             using (var scope = services.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-                isInitialized = await context.Users.AnyAsync();
+                isInitialized = !(await context.ApplicationSettings.FirstOrDefaultAsync(setting => setting.Name == ApplicationConstants.InitializedSettingName) is null);
             }
         }
 

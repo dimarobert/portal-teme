@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PortalTeme.Data.Application;
 
 namespace PortalTeme.Data.Identity {
     public class IdentityContext : IdentityDbContext<User> {
         public IdentityContext(DbContextOptions options)
             : base(options) {
         }
+
+        public DbSet<ApplicationSetting> ApplicationSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);

@@ -11,7 +11,7 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin
     {
         public IActionResult OnGet()
         {
-            return RedirectToPage("UserRoles");
+            return RedirectToPage("UserRoles/Index");
         }
     }
 }

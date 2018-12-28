@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,36 +19,36 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
 
         public List<RoleDTO> Roles { get; set; } = new List<RoleDTO>();
 
-        public void OnGet() {
+        public async Task OnGetAsync() {
 
-            Roles = roleManager.Roles.Select(role => new RoleDTO {
+            Roles = await roleManager.Roles.Select(role => new RoleDTO {
                 Id = role.Id,
                 Name = role.Name
-            }).ToList();
+            }).ToListAsync();
 
         }
 
         public async Task<IActionResult> OnPostDeleteRoleAsync(string roleId) {
 
             if (roleId is null)
-                return ReturnError(new[] { "No Role Id provided." });
+                return await ReturnError(new[] { "No Role Id provided." });
 
             var role = await roleManager.FindByIdAsync(roleId);
             if (role is null)
-                return ReturnError(new[] { "Could not find the role with the provided Id." });
+                return await ReturnError(new[] { "Could not find the role with the provided Id." });
 
             var result = await roleManager.DeleteAsync(role);
             if (!result.Succeeded)
-                return ReturnError(result.Errors.Select(e => e.Description));
+                return await ReturnError(result.Errors.Select(e => e.Description));
 
             return RedirectToPage();
         }
 
-        private IActionResult ReturnError(IEnumerable<string> errors) {
+        private async Task<IActionResult> ReturnError(IEnumerable<string> errors) {
             foreach (var error in errors) {
                 ModelState.AddModelError(string.Empty, error);
             }
-            OnGet();
+            await OnGetAsync();
             return Page();
         }
     }

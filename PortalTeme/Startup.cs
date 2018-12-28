@@ -252,7 +252,7 @@ namespace PortalTeme {
             options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policyOpts => {
                 policyOpts.AuthenticationSchemes = new List<string> { IdentityServerAuthenticationDefaults.AuthenticationScheme };
 
-                policyOpts.RequireClaim("role", "Admin");
+                policyOpts.RequireClaim("role", Common.Authorization.AuthorizationConstants.AdministratorRoleName);
             });
         }
 
