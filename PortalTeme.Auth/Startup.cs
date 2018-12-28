@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using PortalTeme.Auth.Areas.Identity;
 using PortalTeme.Auth.Areas.Identity.Managers;
 using PortalTeme.Auth.Areas.Identity.Stores;
+using PortalTeme.Auth.Authorization;
+using PortalTeme.Auth.Services;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PortalTeme.Auth {
     public class Startup {
@@ -36,6 +39,7 @@ namespace PortalTeme.Auth {
             services.AddDbContext<IdentityContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityContextConnection"))
             );
+            services.AddSingleton<AppInitialization>();
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>()
@@ -45,11 +49,17 @@ namespace PortalTeme.Auth {
                 .AddDefaultUI();
 
             services.AddAuthorization(options => {
+                options.AddPolicy("isInSetupMode", policy => policy.AddRequirements(new SetupModeRequirement()));
+
                 options.AddPolicy(AuthorizationConstants.AdministratorPolicy, policy => policy.RequireRole("Admin"));
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddSingleton<IAuthorizationHandler, SetupModeRequirementHandler>();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddRazorPagesOptions(options => {
+                    options.Conventions.AuthorizeAreaFolder("Setup", "/", "isInSetupMode");
+
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Admin/", AuthorizationConstants.AdministratorPolicy);
                 });
 
@@ -97,7 +107,25 @@ namespace PortalTeme.Auth {
 
             app.UseIdentityServer();
 
+            app.Use(async (context, next) => {
+                var init = context.RequestServices.GetRequiredService<AppInitialization>();
+                if (await init.IsInitialized()) {
+                    await next();
+                    return;
+                }
+
+                if (!context.Request.Path.StartsWithSegments("/setup/")) {
+                    var uri = new UriBuilder(context.Request.GetDisplayUrl()) {
+                        Path = "/setup"
+                    };
+                    context.Response.Redirect(uri.Uri.ToString(), false);
+                }
+
+                await next();
+            });
+
             app.UseMvc(routes => {
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}"

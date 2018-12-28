@@ -68,3 +68,10 @@ body {
 .table-with-buttons tr td, .table-with-buttons tr th {
     vertical-align: middle;
 }
+
+.navbar .divider-vertical {
+    height: 40px;
+    margin: 0 9px;
+    border-left: 1px solid #f2f2f2;
+    border-right: 1px solid #ffffff;
+}

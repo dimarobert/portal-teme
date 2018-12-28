@@ -1,0 +1,16 @@
+﻿@page
+@using PortalTeme.Common.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using PortalTeme.Common.Authorization
+@inject IAuthorizationService AuthorizationService
+
+@model PortalTeme.Auth.Pages.IndexModel
+@{
+}
+
+<p>This is the authentication service for PortalTeme.</p>
+@if ((await AuthorizationService.AuthorizeAsync(User, AuthorizationConstants.AdministratorPolicy)).Succeeded) {
+    <h6 class="text-success">You are an administrator of the platform. You can manage the authentication and authorization settings in the <a asp-area="Identity" asp-page="/Admin/Index">Admin</a> page.</h6>
+}
+
+<a class="btn btn-outline-info" href="@AuthenticationConstants.AngularAppRootUrl">Back to the app</a>
