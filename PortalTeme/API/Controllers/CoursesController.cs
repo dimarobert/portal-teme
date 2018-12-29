@@ -54,7 +54,6 @@ namespace PortalTeme.API.Controllers {
 
         // PUT: api/Courses/5
         [HttpPut("{id}")]
-        [Authorize(Policy = AuthorizationConstants.CanUpdateCoursePolicy)]
         public async Task<IActionResult> PutCourse(Guid id, Course course) {
             if (id != course.Id)
                 return BadRequest();
@@ -79,7 +78,6 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/Courses
         [HttpPost]
-        [Authorize(Policy = AuthorizationConstants.CanUpdateCoursePolicy)]
         public async Task<ActionResult<Course>> PostCourse(Course course) {
 
             var authorization = await authorizationService.AuthorizeAsync(User, AuthorizationConstants.CanCreateCoursePolicy);
@@ -94,7 +92,6 @@ namespace PortalTeme.API.Controllers {
 
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = AuthorizationConstants.CanDeleteCoursePolicy)]
         public async Task<ActionResult<Course>> DeleteCourse(Guid id) {
             var course = await _context.Courses.FindAsync(id);
             if (course is null)
