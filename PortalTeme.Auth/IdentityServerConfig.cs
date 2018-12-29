@@ -51,6 +51,7 @@ namespace PortalTeme.Auth {
 
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     AllowOfflineAccess = true,
+                    UpdateAccessTokenClaimsOnRefresh = true,
 
                     //TODO: enable when the UI is done
                     RequireConsent = false,

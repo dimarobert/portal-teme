@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PortalTeme.Data.Models {
     public class AssignmentEntryFile {
+        
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
@@ -14,6 +15,8 @@ namespace PortalTeme.Data.Models {
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public AssignmentEntryVersion AssignmentVersion { get; set; }
     }
 
     // This may be temporary
