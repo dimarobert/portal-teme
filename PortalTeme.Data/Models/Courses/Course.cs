@@ -20,6 +20,17 @@ namespace PortalTeme.Data.Models {
 
         public List<CourseAssistant> Assistants { get; set; }
 
+        /// <summary>
+        /// This defines the Study Groups that have access to the Course
+        /// </summary>
+        public List<CourseGroup> Groups { get; set; }
+
+        /// <summary>
+        /// This defines the individual students that have access to the Course. (e.g. that have the course as an optional course)
+        /// </summary>
+        public List<CourseStudent> Students { get; set; }
+
+
         public List<Assignment> Assignments { get; set; }
 
     }

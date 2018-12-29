@@ -7,7 +7,6 @@ namespace PortalTeme.Common.Authorization {
 
         public const string AdministratorPolicy = "AdministratorRights";
         public const string AdministratorRoleName = "Admin";
-
-        //public const string 
+        
     }
 }
