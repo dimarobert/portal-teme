@@ -19,5 +19,11 @@ namespace PortalTeme.Data.Models {
         public bool Approved { get; set; }
 
         public DateTime DateApproved { get; set; }
+
+        /// <summary>
+        /// The new due date for the assignment.
+        /// This will be set by the teacher upon approval.
+        /// </summary>
+        public DateTime DateExtended { get; set; }
     }
 }

@@ -13,7 +13,9 @@ namespace PortalTeme.Data {
 
         public PortalTemeContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
+
+        public DbSet<StudentInfo> Students { get; internal set; }
 
         public DbSet<AcademicYear> AcademicYears { get; set; }
 
@@ -26,6 +28,7 @@ namespace PortalTeme.Data {
         public DbSet<AssignmentEntry> AssignmentEntries { get; set; }
 
         public DbSet<AssignmentExtensionRequest> AssignmentExtensionRequests { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);

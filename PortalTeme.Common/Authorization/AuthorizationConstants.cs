@@ -8,6 +8,14 @@ namespace PortalTeme.Common.Authorization {
         public const string AdministratorPolicy = "AdministratorRights";
         public const string AdministratorRoleName = "Admin";
 
-        //public const string 
+        public const string CanViewCoursesPolicy = "CanViewCourses";
+        public const string CanCreateCoursePolicy = "CanCreateCourse";
+        public const string CanUpdateCoursePolicy = "CanUpdateCourse";
+        public const string CanDeleteCoursePolicy = "CanDeleteCourse";
+
+
+        public const string ProfessorRoleName = "Professor";
+        public const string AssistantRoleName = "Assistant";
+        public const string StudentRoleName = "Student";
     }
 }

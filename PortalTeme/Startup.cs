@@ -17,6 +17,7 @@ using Newtonsoft.Json.Serialization;
 using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
+using PortalTeme.Data.Authorization.Policies;
 using PortalTeme.Routing;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,8 @@ namespace PortalTeme {
             .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, SetupIdServerAuth);
 
             services.AddAuthorization(SetupAuthorization);
+
+            services.AddSingleton<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
@@ -249,10 +252,34 @@ namespace PortalTeme {
                 .RequireAuthenticatedUser()
                 .Build();
 
-            options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policyOpts => {
-                policyOpts.AuthenticationSchemes = new List<string> { IdentityServerAuthenticationDefaults.AuthenticationScheme };
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
-                policyOpts.RequireClaim("role", Common.Authorization.AuthorizationConstants.AdministratorRoleName);
+                policy.RequireClaim("role", Common.Authorization.AuthorizationConstants.AdministratorRoleName);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewCoursesPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.Read);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanCreateCoursePolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.Create);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanUpdateCoursePolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.Update);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanDeleteCoursePolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.Delete);
             });
         }
 
