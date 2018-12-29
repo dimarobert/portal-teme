@@ -13,7 +13,7 @@ namespace PortalTeme.Data {
 
         public PortalTemeContext(DbContextOptions options) : base(options) { }
 
-        //public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DbSet<StudentInfo> Students { get; internal set; }
 
@@ -44,6 +44,8 @@ namespace PortalTeme.Data {
             modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateApproved).HasConversion(new DateTimeValueConverter());
 
             modelBuilder.Entity<CourseAssistant>().HasKey(ca => new { ca.CourseId, ca.AssistantId });
+            modelBuilder.Entity<CourseGroup>().HasKey(ca => new { ca.CourseId, ca.GroupId });
+            modelBuilder.Entity<CourseStudent>().HasKey(ca => new { ca.CourseId, ca.StudentId });
         }
 
     }

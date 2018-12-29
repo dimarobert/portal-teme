@@ -3,16 +3,17 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data.Identity;
+using PortalTeme.Data.Managers;
 using PortalTeme.Data.Models;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PortalTeme.Data.Authorization.Policies {
     public class CourseAuthorizatonCrudHandler : AuthorizationHandler<OperationAuthorizationRequirement, Course> {
-        private readonly UserManager<User> userManager;
+        private readonly IUserManager userManager;
         private readonly PortalTemeContext temeContext;
 
-        public CourseAuthorizatonCrudHandler(UserManager<User> userManager, PortalTemeContext temeContext) {
+        public CourseAuthorizatonCrudHandler(IUserManager userManager, PortalTemeContext temeContext) {
             this.userManager = userManager;
             this.temeContext = temeContext;
         }

@@ -18,6 +18,7 @@ using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
+using PortalTeme.Data.Managers;
 using PortalTeme.Routing;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,8 @@ namespace PortalTeme {
                 options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
 
+            services.AddScoped<IUserManager, AppUserManager>();
+
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();
 
@@ -69,7 +72,7 @@ namespace PortalTeme {
 
             services.AddAuthorization(SetupAuthorization);
 
-            services.AddSingleton<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
