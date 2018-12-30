@@ -17,6 +17,9 @@ namespace PortalTeme.API.Mappers {
 
     public class CourseMapper : ICourseMapper {
         public CourseDefinitionDTO MapDefinition(CourseDefinition model) {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
             return new CourseDefinitionDTO {
                 Id = model.Id,
                 Year = model.Year.Id,
@@ -26,8 +29,11 @@ namespace PortalTeme.API.Mappers {
         }
 
         public CourseDefinition MapDefinitionDTO(CourseDefinitionDTO dto, AcademicYear year) {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
             return new CourseDefinition {
-                Id = dto.Id,
+                Id = dto.Id ?? Guid.Empty,
                 Year = year,
                 Semester = dto.Semester,
                 Name = dto.Name
@@ -35,6 +41,9 @@ namespace PortalTeme.API.Mappers {
         }
 
         public AcademicYearDTO MapYear(AcademicYear model) {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
             return new AcademicYearDTO {
                 Id = model.Id,
                 Name = model.Name
@@ -42,6 +51,9 @@ namespace PortalTeme.API.Mappers {
         }
 
         public AcademicYear MapYearDTO(AcademicYearDTO dto) {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
             return new AcademicYear {
                 Id = dto.Id ?? Guid.Empty,
                 Name = dto.Name

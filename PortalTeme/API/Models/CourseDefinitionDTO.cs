@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PortalTeme.API.Models {
     public class CourseDefinitionDTO {
 
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
 
         [Required]
         public Guid Year { get; set; }

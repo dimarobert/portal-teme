@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
-using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +73,10 @@ namespace PortalTeme.API.Controllers {
             _context.AcademicYears.Add(year);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAcademicYear", new { id = year.Id }, year);
+            return CreatedAtAction("GetAcademicYear",
+                new { id = year.Id },
+                courseMapper.MapYear(year)
+            );
         }
 
         // DELETE: api/AcademicYears/5

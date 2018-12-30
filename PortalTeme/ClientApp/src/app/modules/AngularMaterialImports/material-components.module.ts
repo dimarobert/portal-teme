@@ -12,8 +12,10 @@ import {
   MatTooltipModule,
   MatFormFieldModule,
   MatInputModule,
-  MatCardModule,
-  MatSlideToggleModule
+  MatCardModule,
+
+  MatSlideToggleModule,
+  MatSelectModule
 } from '@angular/material';
 
 const importedMaterialComponents = [
@@ -30,6 +32,7 @@ const importedMaterialComponents = [
   MatCardModule,
 
   MatInputModule,
+  MatSelectModule,
   MatFormFieldModule,
   MatSlideToggleModule,
 
