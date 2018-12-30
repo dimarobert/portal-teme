@@ -18,7 +18,7 @@ namespace PortalTeme.Data.Models {
     }
 
     public enum Semester {
-        First,
-        Second,
+        First = 0,
+        Second = 1,
     }
 }

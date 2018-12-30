@@ -13,6 +13,10 @@ namespace PortalTeme.Data.Migrations {
 
         public DbSet<StudentInfo> Students { get; set; }
 
+        public DbSet<AcademicYear> AcademicYears { get; set; }
+
+        public DbSet<CourseDefinition> CourseDefinitions { get; set; }
+
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<Assignment> Assignments { get; set; }

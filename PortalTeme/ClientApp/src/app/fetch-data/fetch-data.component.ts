@@ -1,7 +1,7 @@
 import { Component, Inject, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSort, MatTableDataSource } from '@angular/material';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { ObservableDataSource } from '../datasources/observable.datasource';
 
 
 export interface WeatherForecast {
@@ -9,29 +9,6 @@ export interface WeatherForecast {
   temperatureC: number;
   temperatureF: number;
   summary: string;
-}
-
-export class WeatherForecastDataSource extends MatTableDataSource<WeatherForecast> {
-  dataSubscription: Subscription;
-
-  constructor(private dataObservable: Observable<WeatherForecast[]>) {
-    super();
-  }
-
-  connect(): BehaviorSubject<WeatherForecast[]> {
-    this.dataSubscription = this.dataObservable.subscribe({
-      next: (v) => {
-        this.data = v;
-      }
-    });
-
-    return super.connect();
-  }
-
-  disconnect(): void {
-    this.dataSubscription.unsubscribe();
-  }
-
 }
 
 @Component({
@@ -50,7 +27,7 @@ export class FetchDataComponent implements OnInit {
   }
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    this.dataSource = new WeatherForecastDataSource(http.get<WeatherForecast[]>(baseUrl + 'api/SampleData/WeatherForecasts'));
+    this.dataSource = new ObservableDataSource(http.get<WeatherForecast[]>(baseUrl + 'api/SampleData/WeatherForecasts'));
   }
 
 }
