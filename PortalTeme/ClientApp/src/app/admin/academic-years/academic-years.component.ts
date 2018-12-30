@@ -18,14 +18,18 @@ export class AcademicYearsComponent implements OnInit {
   dataSource: MatTableDataSource<Year>;
 
   data: BehaviorSubject<Year[]>;
+  hasData: boolean;
 
   @ViewChild(MatSort) sort: MatSort;
 
   ngOnInit() {
     this.data = new BehaviorSubject([]);
+    this.hasData = true;
 
     var apiSub = this.courseService.getYears().subscribe(response => {
       this.data.next(response);
+      this.hasData = response.length > 0;
+
       apiSub.unsubscribe();
     });
 

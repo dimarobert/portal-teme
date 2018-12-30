@@ -10,9 +10,15 @@
     <mat-cell *matCellDef="let element">
       <span *ngIf="element.id">{{element.name}}</span>
       <span *ngIf="!element.id">
-        <input matInput type="text" [(ngModel)]="element.name" />
+        <mat-form-field>
+          <input matInput type="text" [(ngModel)]="element.name" />
+        </mat-form-field>
       </span>
     </mat-cell>
+
+    <mat-footer-cell *matFooterCellDef class="center-footer">
+      <div>No years available</div>
+    </mat-footer-cell>
   </ng-container>
 
   <ng-container matColumnDef="actions">
@@ -27,6 +33,8 @@
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+  <mat-footer-row *matFooterRowDef="['name']" [ngClass]="{ 'hide': hasData }"></mat-footer-row>
 </mat-table>
 
 <button mat-raised-button color="primary" (click)="addYear()">Add</button>

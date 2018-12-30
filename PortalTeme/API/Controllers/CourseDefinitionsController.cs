@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
-using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +26,11 @@ namespace PortalTeme.API.Controllers {
         // GET: api/CourseDefinitions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseDefinitionDTO>>> GetCourseDefinitions() {
-            return (await _context.CourseDefinitions.ToListAsync()).Select(cDef => courseMapper.MapDefinition(cDef)).ToList();
+            return (await _context.CourseDefinitions
+                .Include(c => c.Year)
+                .ToListAsync())
+                .Select(cDef => courseMapper.MapDefinition(cDef))
+                .ToList();
         }
 
         // GET: api/CourseDefinitions/5
@@ -83,7 +85,10 @@ namespace PortalTeme.API.Controllers {
             _context.CourseDefinitions.Add(courseDef);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCourseDefinition", new { id = courseDef.Id }, courseDef);
+            return CreatedAtAction("GetCourseDefinition",
+                new { id = courseDef.Id },
+                courseMapper.MapDefinition(courseDef)
+            );
         }
 
         // DELETE: api/CourseDefinitions/5
