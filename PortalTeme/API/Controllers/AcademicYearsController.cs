@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortalTeme.API.Mappers;
+using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Models;
@@ -17,35 +19,41 @@ namespace PortalTeme.API.Controllers {
     [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
     public class AcademicYearsController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly ICourseMapper courseMapper;
 
-        public AcademicYearsController(PortalTemeContext context) {
+        public AcademicYearsController(PortalTemeContext context, ICourseMapper courseMapper) {
             _context = context;
+            this.courseMapper = courseMapper;
         }
 
         // GET: api/AcademicYears
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AcademicYear>>> GetAcademicYears() {
-            return await _context.AcademicYears.ToListAsync();
+        public async Task<ActionResult<IEnumerable<AcademicYearDTO>>> GetAcademicYears() {
+            return (await _context.AcademicYears.ToListAsync())
+                .Select(y => courseMapper.MapYear(y))
+                .ToList();
         }
 
         // GET: api/AcademicYears/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AcademicYear>> GetAcademicYear(Guid id) {
+        public async Task<ActionResult<AcademicYearDTO>> GetAcademicYear(Guid id) {
             var academicYear = await _context.AcademicYears.FindAsync(id);
 
             if (academicYear is null)
                 return NotFound();
 
-            return academicYear;
+            return courseMapper.MapYear(academicYear);
         }
 
         // PUT: api/AcademicYears/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAcademicYear(Guid id, AcademicYear academicYear) {
+        public async Task<IActionResult> PutAcademicYear(Guid id, AcademicYearDTO academicYear) {
             if (id != academicYear.Id)
                 return BadRequest();
 
-            _context.Entry(academicYear).State = EntityState.Modified;
+            var year = courseMapper.MapYearDTO(academicYear);
+
+            _context.Entry(year).State = EntityState.Modified;
 
             try {
                 await _context.SaveChangesAsync();
@@ -61,16 +69,18 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/AcademicYears
         [HttpPost]
-        public async Task<ActionResult<AcademicYear>> PostAcademicYear(AcademicYear academicYear) {
-            _context.AcademicYears.Add(academicYear);
+        public async Task<ActionResult<AcademicYearDTO>> PostAcademicYear(AcademicYearDTO academicYear) {
+            var year = courseMapper.MapYearDTO(academicYear);
+
+            _context.AcademicYears.Add(year);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAcademicYear", new { id = academicYear.Id }, academicYear);
+            return CreatedAtAction("GetAcademicYear", new { id = year.Id }, year);
         }
 
         // DELETE: api/AcademicYears/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AcademicYear>> DeleteAcademicYear(Guid id) {
+        public async Task<ActionResult<AcademicYearDTO>> DeleteAcademicYear(Guid id) {
             var academicYear = await _context.AcademicYears.FindAsync(id);
             if (academicYear is null)
                 return NotFound();
@@ -78,7 +88,7 @@ namespace PortalTeme.API.Controllers {
             _context.AcademicYears.Remove(academicYear);
             await _context.SaveChangesAsync();
 
-            return academicYear;
+            return courseMapper.MapYear(academicYear);
         }
 
         private bool AcademicYearExists(Guid id) {

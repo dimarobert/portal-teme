@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortalTeme.API.Mappers;
+using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Models;
@@ -16,35 +18,45 @@ namespace PortalTeme.API.Controllers {
     [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
     public class CourseDefinitionsController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly ICourseMapper courseMapper;
 
-        public CourseDefinitionsController(PortalTemeContext context) {
+        public CourseDefinitionsController(PortalTemeContext context, ICourseMapper courseMapper) {
             _context = context;
+            this.courseMapper = courseMapper;
         }
 
         // GET: api/CourseDefinitions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseDefinition>>> GetCourseDefinitions() {
-            return await _context.CourseDefinitions.ToListAsync();
+        public async Task<ActionResult<IEnumerable<CourseDefinitionDTO>>> GetCourseDefinitions() {
+            return (await _context.CourseDefinitions.ToListAsync()).Select(cDef => courseMapper.MapDefinition(cDef)).ToList();
         }
 
         // GET: api/CourseDefinitions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CourseDefinition>> GetCourseDefinition(Guid id) {
+        public async Task<ActionResult<CourseDefinitionDTO>> GetCourseDefinition(Guid id) {
             var courseDefinition = await _context.CourseDefinitions.FindAsync(id);
 
             if (courseDefinition is null)
                 return NotFound();
 
-            return courseDefinition;
+            return courseMapper.MapDefinition(courseDefinition);
         }
 
         // PUT: api/CourseDefinitions/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCourseDefinition(Guid id, CourseDefinition courseDefinition) {
+        public async Task<IActionResult> PutCourseDefinition(Guid id, CourseDefinitionDTO courseDefinition) {
             if (id != courseDefinition.Id)
                 return BadRequest();
 
-            _context.Entry(courseDefinition).State = EntityState.Modified;
+            var year = await _context.AcademicYears.FirstAsync(y => y.Id == courseDefinition.Year);
+            if (year is null) {
+                ModelState.AddModelError("year", "Invalid course year provided.");
+                return BadRequest(ModelState);
+            }
+
+            var courseDef = courseMapper.MapDefinitionDTO(courseDefinition, year);
+
+            _context.Entry(courseDef).State = EntityState.Modified;
 
             try {
                 await _context.SaveChangesAsync();
@@ -60,16 +72,23 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/CourseDefinitions
         [HttpPost]
-        public async Task<ActionResult<CourseDefinition>> PostCourseDefinition(CourseDefinition courseDefinition) {
-            _context.CourseDefinitions.Add(courseDefinition);
+        public async Task<ActionResult<CourseDefinitionDTO>> PostCourseDefinition(CourseDefinitionDTO courseDefinition) {
+            var year = await _context.AcademicYears.FirstAsync(y => y.Id == courseDefinition.Year);
+            if (year is null) {
+                ModelState.AddModelError("year", "Invalid course year provided.");
+                return BadRequest(ModelState);
+            }
+            var courseDef = courseMapper.MapDefinitionDTO(courseDefinition, year);
+
+            _context.CourseDefinitions.Add(courseDef);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCourseDefinition", new { id = courseDefinition.Id }, courseDefinition);
+            return CreatedAtAction("GetCourseDefinition", new { id = courseDef.Id }, courseDef);
         }
 
         // DELETE: api/CourseDefinitions/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CourseDefinition>> DeleteCourseDefinition(Guid id) {
+        public async Task<ActionResult<CourseDefinitionDTO>> DeleteCourseDefinition(Guid id) {
             var courseDefinition = await _context.CourseDefinitions.FindAsync(id);
             if (courseDefinition is null)
                 return NotFound();
@@ -77,7 +96,7 @@ namespace PortalTeme.API.Controllers {
             _context.CourseDefinitions.Remove(courseDefinition);
             await _context.SaveChangesAsync();
 
-            return courseDefinition;
+            return courseMapper.MapDefinition(courseDefinition);
         }
 
         private bool CourseDefinitionExists(Guid id) {

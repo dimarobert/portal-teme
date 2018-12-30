@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Serialization;
+using PortalTeme.API.Mappers;
 using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
@@ -50,6 +51,8 @@ namespace PortalTeme {
             );
 
             services.AddScoped<IUserManager, AppUserManager>();
+
+            services.AddScoped<ICourseMapper, CourseMapper>();
 
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();

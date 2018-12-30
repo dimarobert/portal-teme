@@ -29,6 +29,10 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
 
 import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
 import { AuthenticationInterceptor } from './authentication/services/authentication.interceptor';
+import { CourseDefinitionsComponent } from './admin/course-definitions/course-definitions.component';
+import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
+import { AdminPageComponent } from './admin/admin-page/admin-page.component';
+import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -51,6 +55,14 @@ const httpInterceptorProviders: Provider[] = [
 
     KeysPipe,
 
+    CourseDefinitionsComponent,
+
+    AcademicYearsComponent,
+
+    AdminPageComponent,
+
+    AdminNavMenuComponent,
+
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -65,6 +77,14 @@ const httpInterceptorProviders: Provider[] = [
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent, canActivate: [AuthGuard] },
       { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard] },
+      {
+        path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
+        children: [
+          { path: 'years', component: AcademicYearsComponent },
+          { path: 'courses', component: CourseDefinitionsComponent }
+        ]
+      },
+
       { path: 'login', component: LoginPageComponent },
       // { path: 'register', component: RegisterPageComponent },
 
