@@ -18,7 +18,8 @@
     window.portalTeme.settings.user = {
         email: "@Model.User.Email",
         firstName: "@Model.User.FirstName",
-        lastName: "@Model.User.LastName"
+        lastName: "@Model.User.LastName",
+        roles: @Html.Raw(Model.User.Roles)
     };
     </text>
     }

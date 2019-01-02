@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { CourseDefinition, Semester } from '../../models/course-definition.model';
-import { CoursesService } from '../../services/courses.service';
+import { ModelServiceFactory } from '../../services/model.service';
 import { Year } from '../../models/year.model';
 
 @Component({
@@ -14,7 +14,7 @@ import { Year } from '../../models/year.model';
 })
 export class CourseDefinitionsComponent implements OnInit {
 
-  constructor(private courseService: CoursesService) { }
+  constructor(private modelSvcFactory: ModelServiceFactory) { }
 
   displayedColumns: string[] = ['name', 'year', 'semester', 'actions'];
   dataSource: MatTableDataSource<CourseDefinition>;
@@ -33,14 +33,14 @@ export class CourseDefinitionsComponent implements OnInit {
     this.years = new BehaviorSubject([]);
     this.hasData = true;
 
-    var apiSub = this.courseService.getCourseDefinitions().subscribe(response => {
+    var apiSub = this.modelSvcFactory.courses.getAll().subscribe(response => {
       this.data.next(response);
       this.hasData = response.length > 0;
 
       apiSub.unsubscribe();
     });
 
-    var apiSub2 = this.courseService.getYears().subscribe(yearsRes => {
+    var apiSub2 = this.modelSvcFactory.years.getAll().subscribe(yearsRes => {
       this.years.next(yearsRes);
 
       apiSub2.unsubscribe();
@@ -72,7 +72,7 @@ export class CourseDefinitionsComponent implements OnInit {
   }
 
   saveCourse(element: CourseDefinition) {
-    this.courseService.saveCourseDefinition(element)
+    this.modelSvcFactory.courses.save(element)
       .then(courseDef => {
         var newData = this.data.value.slice();
         var index = newData.indexOf(element);
@@ -82,7 +82,7 @@ export class CourseDefinitionsComponent implements OnInit {
   }
 
   deleteCourse(element: CourseDefinition) {
-    this.courseService.deleteCourseDefinition(element)
+    this.modelSvcFactory.courses.delete(element)
       .then(courseDef => {
         this.removeCourse(element);
       });

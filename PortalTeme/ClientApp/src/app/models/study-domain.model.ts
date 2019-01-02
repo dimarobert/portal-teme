@@ -1,5 +1,5 @@
 import { BaseModel } from './base.model';
 
-export interface Year extends BaseModel {
+export interface StudyDomain extends BaseModel {
     name: string;
 }

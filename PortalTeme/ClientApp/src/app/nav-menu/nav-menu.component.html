@@ -8,11 +8,17 @@
     <mat-nav-list>
       <a mat-list-item [routerLink]="['/']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact: true}"
         (click)="toggleSidenav()">Home</a>
-      <a mat-list-item [routerLink]="['/counter']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Counter</a>
 
-      <a mat-list-item [routerLink]="['/fetch-data']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Fetch data</a>
-      
-      <a mat-list-item [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
+      <ng-container *ngIf="(isAuthenticated$ | async)">
+        <mat-divider></mat-divider>
+        <a mat-list-item [routerLink]="['/my-courses']" [routerLinkActive]="['active']" (click)="toggleSidenav()">My Courses</a>
+      </ng-container>
+
+      <ng-container *ngIf="isAdmin$ | async">
+        <mat-divider></mat-divider>
+        <a mat-list-item [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
+        <mat-divider></mat-divider>
+      </ng-container>
     </mat-nav-list>
     <mat-nav-list>
 
@@ -31,14 +37,14 @@
 
       <mat-menu #userProfile="matMenu">
 
-        <div *ngIf="!(isAuthenticated$ | async)">
+        <ng-container *ngIf="!(isAuthenticated$ | async)">
           <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
           <!-- <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button> -->
-        </div>
-        <div *ngIf="isAuthenticated$ | async">
+        </ng-container>
+        <ng-container *ngIf="isAuthenticated$ | async">
           <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
           <a mat-menu-item (click)="logout()">Logout</a>
-        </div>
+        </ng-container>
         <!--<button mat-menu-item>Help</button>-->
       </mat-menu>
       <button mat-icon-button [matMenuTriggerFor]="userProfile" [matTooltip]="userDisplayName$ | async"

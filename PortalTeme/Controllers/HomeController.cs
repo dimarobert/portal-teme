@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortalTeme.Common.UserProfile;
+using Newtonsoft.Json;
 using PortalTeme.ViewModels.Home;
 using System;
 using System.Collections.Generic;
@@ -27,11 +27,13 @@ namespace PortalTeme.Controllers {
             if (!User.Identity.IsAuthenticated)
                 return new AngularIndexViewModel();
 
+            var userRoles = User.FindAll(IdentityModel.JwtClaimTypes.Role).Select(claim => claim.Value).Distinct().ToList();
             return new AngularIndexViewModel {
                 User = new UserSettings {
-                    Email = User.FindFirst(UserProfileConstants.EmailClaim)?.Value,
-                    FirstName = User.FindFirst(UserProfileConstants.GivenNameClaim)?.Value,
-                    LastName = User.FindFirst(UserProfileConstants.FamilyNameClaim)?.Value,
+                    Email = User.FindFirst(IdentityModel.JwtClaimTypes.Email)?.Value,
+                    FirstName = User.FindFirst(IdentityModel.JwtClaimTypes.GivenName)?.Value,
+                    LastName = User.FindFirst(IdentityModel.JwtClaimTypes.FamilyName)?.Value,
+                    Roles = JsonConvert.SerializeObject(userRoles)
                 }
             };
         }

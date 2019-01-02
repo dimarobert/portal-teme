@@ -5,6 +5,7 @@ using System.Text;
 namespace PortalTeme.Common.Authorization {
     public static class AuthorizationConstants {
 
+        //public const string AuthenticatedUserPolicy = "AuthenticatedUser";
         public const string AdministratorPolicy = "AdministratorRights";
         public const string AdministratorRoleName = "Admin";
 
@@ -13,6 +14,11 @@ namespace PortalTeme.Common.Authorization {
         public const string CanUpdateCoursePolicy = "CanUpdateCourse";
         public const string CanDeleteCoursePolicy = "CanDeleteCourse";
 
+        public const string CanViewGroupsPolicy = "CanViewGroups";
+        public const string CanEditGroupsPolicy = "CanEditGroups";
+
+        public const string CanViewStudyDomainsPolicy = "CanViewStudyDomains";
+        public const string CanEditStudyDomainsPolicy = "CanEditStudyDomains";
 
         public const string ProfessorRoleName = "Professor";
         public const string AssistantRoleName = "Assistant";
