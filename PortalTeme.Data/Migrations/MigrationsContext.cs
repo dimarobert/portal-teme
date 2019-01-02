@@ -17,6 +17,10 @@ namespace PortalTeme.Data.Migrations {
 
         public DbSet<CourseDefinition> CourseDefinitions { get; set; }
 
+        public DbSet<StudyDomain> StudyDomains { get; set; }
+
+        public DbSet<Group> Groups { get; set; }
+
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<Assignment> Assignments { get; set; }

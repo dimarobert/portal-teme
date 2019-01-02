@@ -33,6 +33,9 @@ import { CourseDefinitionsComponent } from './admin/course-definitions/course-de
 import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
+import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component';
+import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
+import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -63,6 +66,11 @@ const httpInterceptorProviders: Provider[] = [
 
     AdminNavMenuComponent,
 
+    MyCoursesComponent,
+
+    StudyDomainsComponent,
+    StudyGroupsComponent,
+
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -75,18 +83,19 @@ const httpInterceptorProviders: Provider[] = [
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent, canActivate: [AuthGuard] },
-      { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard] },
+      { path: 'my-courses', component: MyCoursesComponent, canActivate: [AuthGuard] },
       {
         path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
+        data: { roles: ['Admin'] },
         children: [
           { path: 'years', component: AcademicYearsComponent },
+          { path: 'study-domains', component: StudyDomainsComponent },
+          { path: 'study-groups', component: StudyGroupsComponent },
           { path: 'courses', component: CourseDefinitionsComponent }
         ]
       },
 
       { path: 'login', component: LoginPageComponent },
-      // { path: 'register', component: RegisterPageComponent },
 
       // TODO: these will not work because the authorization is made at application level in the MVC view. 
       { path: 'error', component: ErrorPageComponent },

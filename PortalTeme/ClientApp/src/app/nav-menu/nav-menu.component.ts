@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginPageComponent } from '../authentication/login-page/login-page.component';
 import { RegisterPageComponent } from '../authentication/register-page/register-page.component';
 import { SettingsProvider } from '../services/settings.provider';
+import { AuthService } from '../authentication/services/auth.service';
+import { AuthConstants } from '../authentication/constants';
 
 @Component({
   selector: 'app-nav-menu',
@@ -14,12 +16,16 @@ import { SettingsProvider } from '../services/settings.provider';
 })
 export class NavMenuComponent {
 
-  constructor(private route: ActivatedRoute, private router: Router, private breakpointObserver: BreakpointObserver, private settings: SettingsProvider) { }
+  constructor(private route: ActivatedRoute, private router: Router, private breakpointObserver: BreakpointObserver, private settings: SettingsProvider, private auth: AuthService) { }
 
   @ViewChild('sidenav') sidenav;
 
   get isAuthenticated$() {
     return this.settings.isUserAuthenticated$;
+  }
+
+  get isAdmin$(): Observable<boolean> {
+    return this.auth.isInRole$(AuthConstants.adminRoleName);
   }
 
   get userDisplayName$() {

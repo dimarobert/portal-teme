@@ -1,5 +1,6 @@
-export interface CourseDefinition {
-    id: string;
+import { BaseModel } from './base.model';
+
+export interface CourseDefinition extends BaseModel {
     year: string;
     semester: Semester,
     name: string;

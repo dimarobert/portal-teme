@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -9,17 +9,29 @@ import { map } from 'rxjs/operators';
 })
 export class AuthGuardService implements CanActivate {
 
-  constructor(public auth: AuthService, public router: Router) { }
+  constructor(private auth: AuthService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.auth.isAuthenticated()
-      .pipe(
-        map(isAuth => {
-          if (!isAuth)
-            this.router.navigate(['login'], { queryParams: { returnUrl: state.url } });
+    if (route.data.roles)
+      return of(this.checkIfInRole(route.data.roles));
+    else
+      return this.checkIfAuthenticated(state);
+  }
 
-          return isAuth;
-        })
-      );
+  checkIfInRole(roles: string[]): boolean {
+    for (let role of roles) {
+      if (this.auth.isInRole(role))
+        return true;
+    }
+    return false;
+  }
+
+  private checkIfAuthenticated(state: RouterStateSnapshot): Observable<boolean> {
+    return this.auth.isAuthenticated()
+      .pipe(map(isAuth => {
+        if (!isAuth)
+          this.router.navigate(['login'], { queryParams: { returnUrl: state.url } });
+        return isAuth;
+      }));
   }
 }

@@ -76,6 +76,8 @@ namespace PortalTeme {
             services.AddAuthorization(SetupAuthorization);
 
             services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
+            services.AddScoped<IAuthorizationHandler, GroupsAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, StudyDomainsAuthorizationHandler>();
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
@@ -258,12 +260,23 @@ namespace PortalTeme {
                 .RequireAuthenticatedUser()
                 .Build();
 
+            //options.AddPolicy(Common.Authorization.AuthorizationConstants.AuthenticatedUserPolicy, policy => {
+            //    policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+            //    policy.RequireAuthenticatedUser();
+            //});
+
             options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
                 policy.RequireClaim("role", Common.Authorization.AuthorizationConstants.AdministratorRoleName);
             });
 
+            AddCoursePolicies(options);
+            AddGroupsPolicies(options);
+            AddStudyDomainsPolicies(options);
+        }
+
+        private void AddCoursePolicies(AuthorizationOptions options) {
             options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewCoursesPolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
@@ -286,6 +299,34 @@ namespace PortalTeme {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
                 policy.AddRequirements(Common.Authorization.Operations.Delete);
+            });
+        }
+
+        private void AddGroupsPolicies(AuthorizationOptions options) {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewGroupsPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.ViewGroups);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditGroupsPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.EditGroups);
+            });
+        }
+
+        private void AddStudyDomainsPolicies(AuthorizationOptions options) {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewStudyDomainsPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.ViewDomains);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditStudyDomainsPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.EditDomains);
             });
         }
 

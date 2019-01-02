@@ -13,5 +13,15 @@ namespace PortalTeme.Common.Authorization {
             new OperationAuthorizationRequirement { Name = nameof(Update) };
         public static OperationAuthorizationRequirement Delete =
             new OperationAuthorizationRequirement { Name = nameof(Delete) };
+
+        public static OperationAuthorizationRequirement ViewGroups =
+            new OperationAuthorizationRequirement { Name = nameof(ViewGroups) };
+        public static OperationAuthorizationRequirement EditGroups =
+            new OperationAuthorizationRequirement { Name = nameof(EditGroups) };
+
+        public static OperationAuthorizationRequirement ViewDomains =
+            new OperationAuthorizationRequirement { Name = nameof(ViewDomains) };
+        public static OperationAuthorizationRequirement EditDomains =
+            new OperationAuthorizationRequirement { Name = nameof(EditDomains) };
     }
 }
