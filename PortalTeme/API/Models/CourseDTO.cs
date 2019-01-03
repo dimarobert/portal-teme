@@ -10,7 +10,7 @@ namespace PortalTeme.API.Models {
         [Required]
         public Guid CourseDef { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Professor { get; set; }
 
         public List<AssistantDTO> Assistants { get; set; }
@@ -33,7 +33,7 @@ namespace PortalTeme.API.Models {
         [Required]
         public Guid CourseId { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string AssistantId { get; set; }
 
         public string FirstName { get; set; }
@@ -41,11 +41,13 @@ namespace PortalTeme.API.Models {
         public string LastName { get; set; }
     }
 
+    /// <summary>
+    /// This is a read-only reference to a Course-Group relation.
+    /// </summary>
     public class GroupRefDTO {
-        [Required]
+
         public Guid CourseId { get; set; }
 
-        [Required]
         public Guid GroupId { get; set; }
 
         public string Name { get; set; }
@@ -55,7 +57,7 @@ namespace PortalTeme.API.Models {
         [Required]
         public Guid CourseId { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string StudentId { get; set; }
 
         public string FirstName { get; set; }

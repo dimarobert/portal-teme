@@ -1,5 +1,3 @@
-import { BaseModel } from './base.model';
+import { NamedModel } from './base.model';
 
-export interface Year extends BaseModel {
-    name: string;
-}
+export interface Year extends NamedModel { }

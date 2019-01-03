@@ -15,7 +15,7 @@ namespace PortalTeme.API.Models {
         [Required]
         public Semester Semester { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
     }
