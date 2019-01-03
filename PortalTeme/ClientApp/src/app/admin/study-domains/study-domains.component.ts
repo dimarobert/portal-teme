@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 import { StudyDomain } from '../../models/study-domain.model';
 import { ModelServiceFactory } from '../../services/model.service';
-import { ObservableDataSource } from '../../datasources/observable.datasource';
+import { ColumnDefinition, ColumnType, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-study-domains',
@@ -15,61 +15,39 @@ export class StudyDomainsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  displayedColumns: string[] = ['name', 'actions'];
-  dataSource: MatTableDataSource<StudyDomain>;
-
+  columnDefs: ColumnDefinition[] = [];
   data: BehaviorSubject<StudyDomain[]>;
-  hasData: boolean;
-
-  @ViewChild(MatSort) sort: MatSort;
+  itemAccessor: NamedModelItemAccessor<StudyDomain>;
 
   ngOnInit() {
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
+
     this.data = new BehaviorSubject([]);
-    this.hasData = true;
+    this.itemAccessor = new NamedModelItemAccessor<StudyDomain>();
 
-    var apiSub = this.modelSvcFactory.studyDomains.getAll().subscribe(response => {
-      this.data.next(response);
-      this.hasData = response.length > 0;
+    this.columnDefs = [
+      {
+        id: 'name',
+        title: 'Name',
+        type: ColumnType.Textbox
+      }
+    ];
 
-      apiSub.unsubscribe();
-    });
-
-    this.dataSource = new ObservableDataSource<StudyDomain>(this.data);
-    this.dataSource.sort = this.sort;
-    this.sort.sort({ id: 'name', disableClear: false, start: 'asc' });
-  }
-
-  add() {
-    var newData = this.data.value.slice();
-    newData.push({ id: '', name: '' });
-    this.data.next(newData);
-    this.hasData = true;
-  }
-
-  remove(element: StudyDomain) {
-    var newData = this.data.value.slice();
-    var index = newData.indexOf(element);
-    newData.splice(index, 1);
-    this.data.next(newData);
-    this.hasData = newData.length > 0;
-  }
-
-  save(element: StudyDomain) {
-    this.modelSvcFactory.studyDomains.save(element)
-      .then(sDomain => {
-        var newData = this.data.value.slice();
-        var index = newData.indexOf(element);
-        newData[index] = sDomain;
-        this.data.next(newData);
-        this.hasData = newData.length > 0;
+    this.modelSvcFactory.studyDomains.getAll()
+      .pipe(take(1))
+      .subscribe(response => {
+        this.data.next(response);
       });
+
   }
 
-  delete(element: StudyDomain) {
-    this.modelSvcFactory.studyDomains.delete(element)
-      .then(sdomain => {
-        this.remove(element);
-      });
+  save(element: StudyDomain): Promise<StudyDomain> {
+    return this.modelSvcFactory.studyDomains.save(element);
+  }
+
+  delete(element: StudyDomain): Promise<StudyDomain> {
+    return this.modelSvcFactory.studyDomains.delete(element);
   }
 
 }

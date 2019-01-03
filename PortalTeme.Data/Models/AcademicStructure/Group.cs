@@ -14,9 +14,11 @@ namespace PortalTeme.Data.Models {
 
         [Required]
         public StudyDomain Domain { get; set; }
+        public Guid DomainId { get; set; }
 
         [Required]
         public AcademicYear Year { get; set; }
+        public Guid YearId { get; set; }
 
     }
 }

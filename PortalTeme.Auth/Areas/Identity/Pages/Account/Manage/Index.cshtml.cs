@@ -103,8 +103,8 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Account.Manage {
                     throw new InvalidOperationException($"Unexpected error occurred setting first name for user with ID '{userId}'.");
                 }
             }
-            if (Input.FirstName != User.FindFirst(Common.UserProfile.UserProfileConstants.GivenNameClaim)?.Value) {
-                claimsToUpdate.Add(new Claim(Common.UserProfile.UserProfileConstants.GivenNameClaim, Input.FirstName));
+            if (Input.FirstName != User.FindFirst(IdentityModel.JwtClaimTypes.GivenName)?.Value) {
+                claimsToUpdate.Add(new Claim(IdentityModel.JwtClaimTypes.GivenName, Input.FirstName));
             }
 
             var lastName = await _userManager.GetLastNameAsync(user);
@@ -115,8 +115,8 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Account.Manage {
                     throw new InvalidOperationException($"Unexpected error occurred setting lst name for user with ID '{userId}'.");
                 }
             }
-            if (Input.LastName != User.FindFirst(Common.UserProfile.UserProfileConstants.FamilyNameClaim)?.Value) {
-                claimsToUpdate.Add(new Claim(Common.UserProfile.UserProfileConstants.FamilyNameClaim, Input.LastName));
+            if (Input.LastName != User.FindFirst(IdentityModel.JwtClaimTypes.FamilyName)?.Value) {
+                claimsToUpdate.Add(new Claim(IdentityModel.JwtClaimTypes.FamilyName, Input.LastName));
             }
 
             var email = await _userManager.GetEmailAsync(user);

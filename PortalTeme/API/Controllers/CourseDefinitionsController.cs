@@ -94,7 +94,9 @@ namespace PortalTeme.API.Controllers {
         // DELETE: api/CourseDefinitions/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<CourseDefinitionDTO>> DeleteCourseDefinition(Guid id) {
-            var courseDefinition = await _context.CourseDefinitions.FindAsync(id);
+            var courseDefinition = await _context.CourseDefinitions
+                .Include(c => c.Year)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (courseDefinition is null)
                 return NotFound();
 

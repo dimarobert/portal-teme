@@ -36,6 +36,7 @@ import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.com
 import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component';
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
+import { DataTableComponent } from './components/datatable/datatable.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -71,6 +72,7 @@ const httpInterceptorProviders: Provider[] = [
     StudyDomainsComponent,
     StudyGroupsComponent,
 
+    DataTableComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
