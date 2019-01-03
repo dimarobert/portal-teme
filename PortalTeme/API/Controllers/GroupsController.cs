@@ -53,6 +53,9 @@ namespace PortalTeme.API.Controllers {
         [HttpPut("{id}")]
         [Authorize(Policy = AuthorizationConstants.CanEditGroupsPolicy)]
         public async Task<IActionResult> PutGroup(Guid id, GroupDTO group) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (id != group.Id) {
                 return BadRequest();
             }
@@ -90,6 +93,8 @@ namespace PortalTeme.API.Controllers {
         [HttpPost]
         [Authorize(Policy = AuthorizationConstants.CanEditGroupsPolicy)]
         public async Task<ActionResult<GroupDTO>> PostGroup(GroupDTO group) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var domain = await _context.StudyDomains.FirstOrDefaultAsync(sd => sd.Id == group.Domain);
             if (domain is null)

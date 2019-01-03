@@ -6,7 +6,7 @@ namespace PortalTeme.API.Models {
 
         public Guid? Id { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
     }
 }

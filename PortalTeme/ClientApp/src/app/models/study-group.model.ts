@@ -1,8 +1,6 @@
-import { BaseModel } from './base.model';
+import { NamedModel } from './base.model';
 
-export interface StudyGroup extends BaseModel {
-
-    name: string;
+export interface StudyGroup extends NamedModel {
     domain: string;
     year: string;
 }

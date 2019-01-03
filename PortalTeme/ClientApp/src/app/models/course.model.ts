@@ -1,7 +1,7 @@
-import { BaseModel } from './base.model';
+import { NamedModel } from './base.model';
 
-export interface Course extends BaseModel {
+export interface Course extends NamedModel {
 
-    
+
 
 }
