@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatSort, MatTableDataSource } from '@angular/material';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
-import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { CourseDefinition, Semester } from '../../models/course-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { Year } from '../../models/year.model';
+import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course-definitions',
@@ -16,76 +17,56 @@ export class CourseDefinitionsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  displayedColumns: string[] = ['name', 'year', 'semester', 'actions'];
-  dataSource: MatTableDataSource<CourseDefinition>;
-
+  columnDefs: ColumnDefinition[];
   data: BehaviorSubject<CourseDefinition[]>;
-  hasData: boolean;
+  itemAccessor: NamedModelItemAccessor<Year>;
 
   years: BehaviorSubject<Year[]>;
 
   Semester = Semester;
 
-  @ViewChild(MatSort) sort: MatSort;
-
   ngOnInit() {
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
+
     this.data = new BehaviorSubject([]);
     this.years = new BehaviorSubject([]);
-    this.hasData = true;
 
-    var apiSub = this.modelSvcFactory.courses.getAll().subscribe(response => {
-      this.data.next(response);
-      this.hasData = response.length > 0;
+    this.itemAccessor = new NamedModelItemAccessor<Year>();
 
-      apiSub.unsubscribe();
+    this.columnDefs = [{
+      id: 'name',
+      title: 'Name',
+      type: ColumnType.Textbox
+    }, <DatasourceColumnDefinition<Year>>{
+      id: 'year',
+      title: 'Year',
+      type: ColumnType.Select,
+      datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
+    }];
+
+    this.getData();
+  }
+
+  private getData() {
+    let years$ = this.modelSvcFactory.years.getAll();
+    let courses$ = this.modelSvcFactory.courses.getAll();
+
+    forkJoin(
+      years$.pipe(take(1)),
+      courses$.pipe(take(1))
+    ).subscribe(results => {
+      this.years.next(results[0]);
+      this.data.next(results[1]);
     });
-
-    var apiSub2 = this.modelSvcFactory.years.getAll().subscribe(yearsRes => {
-      this.years.next(yearsRes);
-
-      apiSub2.unsubscribe();
-    });
-
-    this.dataSource = new ObservableDataSource<CourseDefinition>(this.data);
-    this.dataSource.sort = this.sort;
-    this.sort.sort({ id: 'name', disableClear: false, start: 'asc' });
   }
 
-  getYearName(yearId: string): string {
-    const year = this.years.value.find(y => y.id == yearId);
-    if (year == null)
-      return '<invalid year>';
-    return year.name;
+  save(element: CourseDefinition): Promise<CourseDefinition> {
+    return this.modelSvcFactory.courses.save(element);
   }
 
-  addCourse() {
-    var newData = this.data.value.slice();
-    newData.push({ id: '', name: '', semester: Semester.First, year: '' });
-    this.data.next(newData);
-  }
-
-  removeCourse(element: CourseDefinition) {
-    var newData = this.data.value.slice();
-    var index = newData.indexOf(element);
-    newData.splice(index, 1);
-    this.data.next(newData);
-  }
-
-  saveCourse(element: CourseDefinition) {
-    this.modelSvcFactory.courses.save(element)
-      .then(courseDef => {
-        var newData = this.data.value.slice();
-        var index = newData.indexOf(element);
-        newData[index] = courseDef;
-        this.data.next(newData);
-      });
-  }
-
-  deleteCourse(element: CourseDefinition) {
-    this.modelSvcFactory.courses.delete(element)
-      .then(courseDef => {
-        this.removeCourse(element);
-      });
+  delete(element: CourseDefinition): Promise<CourseDefinition> {
+    return this.modelSvcFactory.courses.delete(element);
   }
 
 }

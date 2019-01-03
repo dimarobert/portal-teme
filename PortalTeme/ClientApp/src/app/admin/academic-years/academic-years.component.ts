@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModelServiceFactory } from '../../services/model.service';
-import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { Year } from '../../models/year.model';
-import { MatSort, MatTableDataSource } from '@angular/material';
 import { BehaviorSubject } from 'rxjs';
+import { ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-academic-years',
@@ -14,58 +14,40 @@ export class AcademicYearsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  displayedColumns: string[] = ['name', 'actions'];
-  dataSource: MatTableDataSource<Year>;
-
+  columnDefs: ColumnDefinition[];
+  itemAccessor: NamedModelItemAccessor<Year>;
   data: BehaviorSubject<Year[]>;
-  hasData: boolean;
 
-  @ViewChild(MatSort) sort: MatSort;
 
   ngOnInit() {
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
+
     this.data = new BehaviorSubject([]);
-    this.hasData = true;
 
-    var apiSub = this.modelSvcFactory.years.getAll().subscribe(response => {
-      this.data.next(response);
-      this.hasData = response.length > 0;
+    this.itemAccessor = new NamedModelItemAccessor<Year>();
 
-      apiSub.unsubscribe();
-    });
+    this.columnDefs = [
+      {
+        id: 'name',
+        title: 'Name',
+        type: ColumnType.Textbox
+      }
+    ];
 
-    this.dataSource = new ObservableDataSource<Year>(this.data);
-    this.dataSource.sort = this.sort;
-    this.sort.sort({ id: 'name', disableClear: false, start: 'asc' });
-  }
-
-  addYear() {
-    var newData = this.data.value.slice();
-    newData.push({ id: '', name: '' });
-    this.data.next(newData);
-  }
-
-  removeYear(element: Year) {
-    var newData = this.data.value.slice();
-    var index = newData.indexOf(element);
-    newData.splice(index, 1);
-    this.data.next(newData);
-  }
-
-  saveYear(element: Year) {
-    this.modelSvcFactory.years.save(element)
-      .then(year => {
-        var newData = this.data.value.slice();
-        var index = newData.indexOf(element);
-        newData[index] = year;
-        this.data.next(newData);
+    this.modelSvcFactory.years.getAll()
+      .pipe(take(1))
+      .subscribe(response => {
+        this.data.next(response);
       });
   }
 
-  deleteYear(element: Year) {
-    this.modelSvcFactory.years.delete(element)
-      .then(year => {
-        this.removeYear(element);
-      });
+  save(element: Year): Promise<Year> {
+    return this.modelSvcFactory.years.save(element);
+  }
+
+  delete(element: Year): Promise<Year> {
+    return this.modelSvcFactory.years.delete(element);
   }
 
 }

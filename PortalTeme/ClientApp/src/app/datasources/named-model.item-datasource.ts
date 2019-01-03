@@ -22,7 +22,6 @@ export class NamedModelItemDatasource<T extends NamedModel> implements ItemDatas
         const item = this.data.value.find(item => item.id == value);
         if (!item)
             return `<invalid ${this.modelName}>`;
-        throw new Error(`Element with id '${value}' was not found in the current items.`);
 
         return this.getTitle(item);
     }

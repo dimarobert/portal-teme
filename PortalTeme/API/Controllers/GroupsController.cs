@@ -122,7 +122,10 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{id}")]
         [Authorize(Policy = AuthorizationConstants.CanEditGroupsPolicy)]
         public async Task<ActionResult<GroupDTO>> DeleteGroup(Guid id) {
-            var group = await _context.Groups.FindAsync(id);
+            var group = await _context.Groups
+                .Include(g => g.Domain)
+                .Include(g => g.Year)
+                .FirstOrDefaultAsync(g => g.Id == id);
             if (group == null) {
                 return NotFound();
             }
