@@ -1,3 +1,4 @@
+using IdentityModel;
 using IdentityModel.Client;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
@@ -10,8 +11,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.API.Mappers;
@@ -20,6 +23,7 @@ using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
 using PortalTeme.Data.Managers;
+using PortalTeme.Extensions.CacheExtensions;
 using PortalTeme.Routing;
 using System;
 using System.Collections.Generic;
@@ -239,16 +243,34 @@ namespace PortalTeme {
                     if (identity is null)
                         return;
 
-                    var discoveryClient = new DiscoveryClient(context.Options.Authority);
-                    var doc = await discoveryClient.GetAsync();
-                    var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint);
                     var accessToken = context.SecurityToken as JwtSecurityToken;
-                    var response = await userInfoClient.GetAsync(accessToken.RawData);
 
-                    if (response.IsError)
-                        return;
+                    var cache = context.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
+                    var cachedClaims = await cache.GetClaimsAsync(accessToken.RawData);
 
-                    var newClaims = response.Claims.Where(claim => !identity.HasClaim(claim.Type, claim.Value));
+                    if (cachedClaims is null) {
+
+                        var discoveryClient = new DiscoveryClient(context.Options.Authority);
+                        var doc = await discoveryClient.GetAsync();
+                        var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint);
+                        var response = await userInfoClient.GetAsync(accessToken.RawData);
+
+                        if (response.IsError)
+                            return;
+
+                        var loggerFact = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                        var logger = loggerFact.CreateLogger("Startup.OnTokenValidated");
+
+                        var resultClaims = response.Claims;
+                        var exp = identity.FindFirst(JwtClaimTypes.Expiration);
+                        if (!(exp is null))
+                            resultClaims = resultClaims.Append(exp);
+
+                        await cache.SetClaimsAsync(accessToken.RawData, resultClaims, options.CacheDuration, logger);
+                        cachedClaims = response.Claims;
+                    }
+
+                    var newClaims = cachedClaims.Where(claim => !identity.HasClaim(claim.Type, claim.Value));
                     identity.AddClaims(newClaims);
 
                 }
@@ -259,11 +281,6 @@ namespace PortalTeme {
             options.DefaultPolicy = new AuthorizationPolicyBuilder(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
-
-            //options.AddPolicy(Common.Authorization.AuthorizationConstants.AuthenticatedUserPolicy, policy => {
-            //    policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
-            //    policy.RequireAuthenticatedUser();
-            //});
 
             options.AddPolicy(Common.Authorization.AuthorizationConstants.AdministratorPolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
