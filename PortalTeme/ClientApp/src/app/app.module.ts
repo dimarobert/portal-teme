@@ -39,8 +39,6 @@ import { StudyDomainsComponent } from './admin/study-domains/study-domains.compo
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
 
-import {MatTabsModule} from '@angular/material/tabs';
-
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
 ];
@@ -86,7 +84,6 @@ const httpInterceptorProviders: Provider[] = [
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
-    MatTabsModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
