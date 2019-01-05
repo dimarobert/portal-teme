@@ -1,14 +1,14 @@
 <mat-table #table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-  <ng-container *ngFor="let column of columnDefs; first as isFirst" [matColumnDef]="column.id">
+  <ng-container *ngFor="let column of columnDefs.columns; first as isFirst" [matColumnDef]="column.id">
 
     <mat-header-cell *matHeaderCellDef mat-sort-header>{{column.title}}</mat-header-cell>
     <mat-cell *matCellDef="let element">
-      <span *ngIf="!itemAccessor.isNew(element)">{{itemAccessor.getPropertyText(element, column)}}</span>
-      <span *ngIf="itemAccessor.isNew(element)">
+      <span *ngIf="!isInEditMode(element)">{{column.itemAccessor.getPropertyText(element, column)}}</span>
+      <span *ngIf="isInEditMode(element)">
 
         <!-- ColumnType switch -->
-        <ng-container [ngSwitch]="column.type">
+        <ng-container [ngSwitch]="getEditableColumn(column).type">
           <ng-container *ngSwitchCase="ColumnType.Textbox">
             <mat-form-field>
               <input matInput type="text" [formControl]="getFormControl(element, column.id)" required />

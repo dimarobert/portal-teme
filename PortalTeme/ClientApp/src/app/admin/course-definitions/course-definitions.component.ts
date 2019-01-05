@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 
+import { nameof } from '../../type-guards/nameof.guard';
+
+import { Year } from '../../models/year.model';
 import { CourseDefinition, Semester } from '../../models/course-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
-import { Year } from '../../models/year.model';
-import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { DatasourceColumnDefinition, ColumnType, EditableColumnDefinition, DataTableColumns } from '../../models/column-definition.model';
 import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
-import { take } from 'rxjs/operators';
+import { BaseModelAccessor, ModelAccessor } from '../../models/model.accessor';
 
 @Component({
   selector: 'app-course-definitions',
@@ -17,9 +20,9 @@ export class CourseDefinitionsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  columnDefs: ColumnDefinition[];
+  columnDefs: DataTableColumns;
   data: BehaviorSubject<CourseDefinition[]>;
-  itemAccessor: NamedModelItemAccessor<Year>;
+  modelAccessor: ModelAccessor;
 
   years: BehaviorSubject<Year[]>;
 
@@ -32,18 +35,19 @@ export class CourseDefinitionsComponent implements OnInit {
     this.data = new BehaviorSubject([]);
     this.years = new BehaviorSubject([]);
 
-    this.itemAccessor = new NamedModelItemAccessor<Year>();
+    this.modelAccessor = new BaseModelAccessor();
 
-    this.columnDefs = [{
-      id: 'name',
-      title: 'Name',
-      type: ColumnType.Textbox
-    }, <DatasourceColumnDefinition<Year>>{
-      id: 'year',
-      title: 'Year',
-      type: ColumnType.Select,
-      datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
-    }];
+    this.columnDefs = new DataTableColumns([
+      <EditableColumnDefinition>{
+        id: nameof<CourseDefinition>('name'),
+        title: 'Name',
+        type: ColumnType.Textbox
+      }, <DatasourceColumnDefinition<Year>>{
+        id: nameof<CourseDefinition>('year'),
+        title: 'Year',
+        type: ColumnType.Select,
+        datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
+      }]);
 
     this.getData();
   }
