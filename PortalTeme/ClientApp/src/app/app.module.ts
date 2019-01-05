@@ -30,6 +30,7 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
 import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
 import { AuthenticationInterceptor } from './authentication/services/authentication.interceptor';
 import { CourseDefinitionsComponent } from './admin/course-definitions/course-definitions.component';
+import { CourseOwnersDefinitionsComponent } from './admin/course-owners/course-owners.component';
 import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
@@ -37,6 +38,8 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
+
+import {MatTabsModule} from '@angular/material/tabs';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -60,6 +63,7 @@ const httpInterceptorProviders: Provider[] = [
     KeysPipe,
 
     CourseDefinitionsComponent,
+    CourseOwnersDefinitionsComponent,
 
     AcademicYearsComponent,
 
@@ -82,6 +86,7 @@ const httpInterceptorProviders: Provider[] = [
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
+    MatTabsModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -93,7 +98,8 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'years', component: AcademicYearsComponent },
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
-          { path: 'courses', component: CourseDefinitionsComponent }
+          { path: 'courses', component: CourseDefinitionsComponent },
+          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent }
         ]
       },
 

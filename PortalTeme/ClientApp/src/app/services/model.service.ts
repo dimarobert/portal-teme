@@ -4,6 +4,7 @@ import { Year } from '../models/year.model';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { CourseDefinition } from '../models/course-definition.model';
+import { CourseOwnerDefinition } from '../models/course-owner.model';
 import { BaseModel } from '../models/base.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
@@ -33,6 +34,14 @@ export class ModelServiceFactory {
   private _studyGroupsService: ModelService<StudyGroup> = null;
   public get studyGroups(): ModelService<StudyGroup> {
     return this._studyGroupsService || (this._studyGroupsService = new ModelService<StudyGroup>('Groups', this.http));
+  }
+
+  public get coursesOwners(): ModelService<CourseOwnerDefinition> {
+    return <any>{
+      getAll: () => of([
+        <CourseOwnerDefinition>{ year: 'Anul 1', name: 'Course 0', owner: 'Radu', numOfAssistants: 3 }
+      ])
+    };
   }
 }
 
