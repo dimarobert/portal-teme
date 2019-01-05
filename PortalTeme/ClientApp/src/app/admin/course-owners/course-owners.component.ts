@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { DataTableColumns } from '../../models/column-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
-import { Year } from '../../models/year.model';
-import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
-import { Course } from '../../models/course.model';
+import { Course, Professor } from '../../models/course.model';
+import { nameof } from '../../type-guards/nameof.guard';
+import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
+import { RelatedItemAccessor, NamedModelItemAccessor } from '../../models/item.accesor';
 
 @Component({
   selector: 'app-course-owners-definitions',
@@ -17,57 +18,41 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  columnDefs: ColumnDefinition[];
-  data: BehaviorSubject<Course[]>;
-  itemAccessor: NamedModelItemAccessor<Year>;
+  columnDefs: DataTableColumns;
 
-  years: BehaviorSubject<Year[]>;
+  modelAccessor: ModelAccessor;
+  data: BehaviorSubject<Course[]>;
 
   ngOnInit() {
     this.save = this.save.bind(this);
     this.delete = this.delete.bind(this);
 
+    this.modelAccessor = new BaseModelAccessor();
     this.data = new BehaviorSubject([]);
-    this.years = new BehaviorSubject([]);
 
-    this.itemAccessor = new NamedModelItemAccessor<Year>();
-
-    this.columnDefs = [{
-      id: 'name',
-      title: 'Course',
-      type: ColumnType.Textbox
-    },
-    {
-      id: 'owner',
-      title: 'Professor',
-      type: ColumnType.Textbox
-    },
-    {
-      id: 'numOfAssistants',
-      title: '# Assistants',
-      type: ColumnType.Textbox
-    }
-    , <DatasourceColumnDefinition<Year>>{
-      id: 'year',
-      title: 'Year',
-      type: ColumnType.Select,
-      datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
-    }];
+    this.columnDefs = new DataTableColumns([
+      {
+        id: nameof<Course>('name'),
+        title: 'Course',
+      },
+      {
+        id: nameof<Course>('professor'),
+        title: 'Professor',
+        itemAccessor: new RelatedItemAccessor<Professor>(p => `${p.firstName} ${p.lastName}`)
+      }],
+      {
+        itemAccesor: new NamedModelItemAccessor()
+      });
 
     this.getData();
   }
 
   private getData() {
-    const years$ = this.modelSvcFactory.years.getAll();
-    const courses$ = this.modelSvcFactory.coursesOwners.getAll();
-
-    forkJoin(
-      years$.pipe(take(1)),
-      courses$.pipe(take(1))
-    ).subscribe(results => {
-      this.years.next(results[0]);
-      this.data.next(results[1]);
-    });
+    this.modelSvcFactory.coursesOwners.getAll()
+      .pipe(take(1))
+      .subscribe(results => {
+        this.data.next(results);
+      });
   }
 
   save(element: Course): Promise<Course> {

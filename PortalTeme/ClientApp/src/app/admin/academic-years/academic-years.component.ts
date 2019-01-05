@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ModelServiceFactory } from '../../services/model.service';
-import { Year } from '../../models/year.model';
 import { BehaviorSubject } from 'rxjs';
-import { ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
 import { take } from 'rxjs/operators';
+
+import { nameof } from '../../type-guards/nameof.guard';
+
+import { Year } from '../../models/year.model';
+import { ModelServiceFactory } from '../../services/model.service';
+import { ColumnType, EditableColumnDefinition, DataTableColumns } from '../../models/column-definition.model';
+import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
 
 @Component({
   selector: 'app-academic-years',
@@ -14,8 +18,8 @@ export class AcademicYearsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  columnDefs: ColumnDefinition[];
-  itemAccessor: NamedModelItemAccessor<Year>;
+  columnDefs: DataTableColumns;
+  modelAccessor: ModelAccessor;
   data: BehaviorSubject<Year[]>;
 
 
@@ -25,15 +29,15 @@ export class AcademicYearsComponent implements OnInit {
 
     this.data = new BehaviorSubject([]);
 
-    this.itemAccessor = new NamedModelItemAccessor<Year>();
+    this.modelAccessor = new BaseModelAccessor();
 
-    this.columnDefs = [
-      {
-        id: 'name',
+    this.columnDefs = new DataTableColumns([
+      <EditableColumnDefinition>{
+        id: nameof<Year>('name'),
         title: 'Name',
         type: ColumnType.Textbox
       }
-    ];
+    ]);
 
     this.modelSvcFactory.years.getAll()
       .pipe(take(1))

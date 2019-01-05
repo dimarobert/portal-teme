@@ -5,9 +5,11 @@ import { BehaviorSubject } from 'rxjs';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { isHttpErrorResponse } from '../../type-guards/errors.type-guard';
-import { ColumnDefinition, ColumnType, ItemAccessor } from '../../models/column-definition.model';
+import { ColumnDefinition, ColumnType, DataTableColumns, EditableColumnDefinition } from '../../models/column-definition.model';
+import { ItemAccessor } from "../../models/item.accesor";
+import { ModelAccessor } from "../../models/model.accessor";
 import { ItemDatasource } from '../../datasources/item-datasource';
-import { isDatasourceColumnDefinition } from '../../type-guards/column-definitions.type-guards';
+import { isDatasourceColumnDefinition, isEditableColumnDefinition } from '../../type-guards/column-definitions.type-guards';
 
 @Component({
   selector: 'app-data-table',
@@ -20,8 +22,8 @@ export class DataTableComponent implements OnInit {
 
   constructor() { }
 
-  @Input() columnDefs: ColumnDefinition[] = [];
-  @Input() itemAccessor: ItemAccessor<any>;
+  @Input() modelAccessor: ModelAccessor;
+  @Input() columnDefs: DataTableColumns;
   @Input() data: BehaviorSubject<any[]>;
   @Input() emptyDataMessage: string;
 
@@ -33,7 +35,7 @@ export class DataTableComponent implements OnInit {
   @Input() delete: (element: any) => Promise<any>;
 
   get displayedColumns(): string[] {
-    var cols = this.columnDefs.map(c => c.id);
+    var cols = this.columnDefs.columns.map(c => c.id);
     if (this.hasActions)
       cols.push('actions');
     return cols;
@@ -50,6 +52,14 @@ export class DataTableComponent implements OnInit {
 
   get hasActions(): boolean {
     return this.canAdd || this.canEdit || this.canDelete;
+  }
+
+  get hasEditCapabilities(): boolean {
+    return this.canAdd || this.canEdit;
+  }
+
+  isInEditMode(element: any): boolean {
+    return this.hasEditCapabilities && this.modelAccessor.isNew(element);
   }
 
   ngOnInit() {
@@ -76,8 +86,6 @@ export class DataTableComponent implements OnInit {
       throw new Error('Invalid configuration. The data property is null.');
     if (this.columnDefs == null)
       throw new Error('Invalid configuration. The columnDefs property is null.');
-    if (this.itemAccessor == null)
-      throw new Error('Invalid configuration. The itemAccessor property is null.');
     if (this.canAdd && this.save == null)
       throw new Error('Invalid configuration. The canAdd property is true but the save callback is null.');
     if (this.canEdit && this.save == null)
@@ -91,6 +99,12 @@ export class DataTableComponent implements OnInit {
       return column.datasource;
     }
     throw new Error(`Column ${column.id} is not a DatasourceColumnDefinition`);
+  }
+
+  getEditableColumn(column: ColumnDefinition): EditableColumnDefinition {
+    if (isEditableColumnDefinition(column))
+      return column;
+    throw new Error(`Column ${column.id} is not an EditableColumnDefinition`);
   }
 
   hasAnyError(): boolean {
@@ -128,7 +142,7 @@ export class DataTableComponent implements OnInit {
     const newRow = {};
     const newAddForm = new FormGroup({});
 
-    this.columnDefs.forEach(column => {
+    this.columnDefs.columns.forEach(column => {
       newAddForm.addControl(column.id, new FormControl(''));
     });
 
@@ -155,7 +169,7 @@ export class DataTableComponent implements OnInit {
     let form = this.getForm(element);
     let value = {};
 
-    this.columnDefs.forEach(column => {
+    this.columnDefs.columns.forEach(column => {
       value[column.id] = form.get(column.id).value;
     });
 
@@ -178,7 +192,7 @@ export class DataTableComponent implements OnInit {
               continue;
 
             control.setErrors({
-              server: 'Server validation failed' //this.errors[err][0]
+              server: 'Server validation failed'
             });
             control.markAsTouched();
           }

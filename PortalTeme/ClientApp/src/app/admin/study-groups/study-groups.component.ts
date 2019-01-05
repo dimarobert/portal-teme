@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
+
+import { nameof } from '../../type-guards/nameof.guard';
 
 import { StudyGroup } from '../../models/study-group.model';
-import { ModelServiceFactory } from '../../services/model.service';
 import { StudyDomain } from '../../models/study-domain.model';
 import { Year } from '../../models/year.model';
-import { ColumnDefinition, ColumnType, DatasourceColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
+import { ModelServiceFactory } from '../../services/model.service';
+import { ColumnType, DatasourceColumnDefinition, DataTableColumns, EditableColumnDefinition } from '../../models/column-definition.model';
 import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
-import { flatMap, take, map } from 'rxjs/operators';
+import { BaseModelAccessor, ModelAccessor } from '../../models/model.accessor';
 
 @Component({
   selector: 'app-study-groups',
@@ -18,9 +21,9 @@ export class StudyGroupsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
-  columnDefs: ColumnDefinition[] = [];
+  columnDefs: DataTableColumns;
   data: BehaviorSubject<StudyGroup[]>;
-  itemAccessor: NamedModelItemAccessor<StudyGroup>;
+  modelAccessor: ModelAccessor;
 
   years: BehaviorSubject<Year[]>;
   domains: BehaviorSubject<StudyDomain[]>;
@@ -33,23 +36,24 @@ export class StudyGroupsComponent implements OnInit {
     this.years = new BehaviorSubject([]);
     this.domains = new BehaviorSubject([]);
 
-    this.itemAccessor = new NamedModelItemAccessor<StudyGroup>();
+    this.modelAccessor = new BaseModelAccessor();
 
-    this.columnDefs = [{
-      id: 'name',
-      title: 'Name',
-      type: ColumnType.Textbox
-    }, <DatasourceColumnDefinition<Year>>{
-      id: 'year',
-      title: 'Year',
-      type: ColumnType.Select,
-      datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
-    }, <DatasourceColumnDefinition<StudyDomain>>{
-      id: 'domain',
-      title: 'Domain',
-      type: ColumnType.Select,
-      datasource: new NamedModelItemDatasource<StudyDomain>(this.domains, 'domain')
-    }];
+    this.columnDefs = new DataTableColumns([
+      <EditableColumnDefinition>{
+        id: nameof<StudyGroup>('name'),
+        title: 'Name',
+        type: ColumnType.Textbox
+      }, <DatasourceColumnDefinition<Year>>{
+        id: nameof<StudyGroup>('year'),
+        title: 'Year',
+        type: ColumnType.Select,
+        datasource: new NamedModelItemDatasource<Year>(this.years, 'year')
+      }, <DatasourceColumnDefinition<StudyDomain>>{
+        id: nameof<StudyGroup>('domain'),
+        title: 'Domain',
+        type: ColumnType.Select,
+        datasource: new NamedModelItemDatasource<StudyDomain>(this.domains, 'domain')
+      }]);
 
     this.getData();
   }
