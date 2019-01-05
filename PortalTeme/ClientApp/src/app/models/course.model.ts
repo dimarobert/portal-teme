@@ -1,7 +1,8 @@
 import { NamedModel } from './base.model';
 
 export interface Course extends NamedModel {
-    professor: string;
+    
+    professor: Professor;
     assistants: Assistant[];
 
     groups: StudyGroupRef[];
