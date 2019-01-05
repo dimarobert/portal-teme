@@ -10,8 +10,8 @@ namespace PortalTeme.API.Models {
         [Required]
         public Guid CourseDef { get; set; }
 
-        [Required(AllowEmptyStrings = false)]
-        public string Professor { get; set; }
+        [Required]
+        public ProfessorDTO Professor { get; set; }
 
         public List<AssistantDTO> Assistants { get; set; }
 
@@ -27,6 +27,15 @@ namespace PortalTeme.API.Models {
 
 
         //public List<Assignment> Assignments { get; set; }
+    }
+
+    public class ProfessorDTO {
+        [Required(AllowEmptyStrings = false)]
+        public string ProfessorId { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
     }
 
     public class AssistantDTO {

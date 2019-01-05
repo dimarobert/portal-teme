@@ -28,6 +28,7 @@ const importedMaterialComponents = [
 
   MatToolbarModule,
   MatSidenavModule,
+  MatTabsModule,
 
   MatCardModule,
 

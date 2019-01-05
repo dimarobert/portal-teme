@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Year } from '../models/year.model';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { CourseDefinition } from '../models/course-definition.model';
+
 import { BaseModel } from '../models/base.model';
+import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
+import { CourseDefinition } from '../models/course-definition.model';
+import { Course } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,21 @@ export class ModelServiceFactory {
   private _studyGroupsService: ModelService<StudyGroup> = null;
   public get studyGroups(): ModelService<StudyGroup> {
     return this._studyGroupsService || (this._studyGroupsService = new ModelService<StudyGroup>('Groups', this.http));
+  }
+
+  public get coursesOwners(): ModelService<Course> {
+    return <any>{
+      getAll: () => of([
+        <Course>{
+          id: '1',
+          name: 'Course 0',
+          professor: { professorId: 'GUID string', firstName: 'Radu', lastName: 'Niculcea' },
+          assistants: [{ assistantId: 'GUID string', firstName: 'Robert', lastName: 'Dima' }],
+          groups: [{ groupId: 'GUID string', name: 'Gruap 143' }],
+          students: [{ studentId: 'GUID string', firstName: 'Cristian', lastName: 'Popescu' }]
+        }
+      ])
+    };
   }
 }
 
