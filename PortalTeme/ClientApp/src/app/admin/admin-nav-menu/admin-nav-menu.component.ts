@@ -7,7 +7,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminNavMenuComponent implements OnInit {
 
-  constructor() { }
+  links: any[];
+  constructor() {
+    this.links = [
+      {
+        label: 'Years',
+        link: '/admin/years',
+        index: 0
+      },
+      {
+        label: 'Study Domains',
+        link: '/admin/study-domains',
+        index: 0
+      },
+      {
+        label: 'Study Groups',
+        link: '/admin/study-groups',
+        index: 0
+      },
+      {
+        label: 'Course Definitions',
+        link: '/admin/courses',
+        index: 0
+      }
+    ];
+   }
 
   ngOnInit() {
   }

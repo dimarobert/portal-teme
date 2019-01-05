@@ -1,8 +1,15 @@
-<mat-toolbar color="basic">
-  <button mat-raised-button [routerLink]="['/admin/years']" [routerLinkActive]="['active']">Years</button>
-  <button mat-raised-button [routerLink]="['/admin/study-domains']" [routerLinkActive]="['active']">Study Domains</button>
-  <button mat-raised-button [routerLink]="['/admin/study-groups']" [routerLinkActive]="['active']">Study Groups</button>
-  <button mat-raised-button [routerLink]="['/admin/courses']" [routerLinkActive]="['active']">Courses</button>
-</mat-toolbar>
+<h2>Admin</h2>
+
+<nav mat-tab-nav-bar [backgroundColor]="['primary']">
+    <a mat-tab-link
+    *ngFor="let link of links"
+    [routerLink]="link.link"
+    routerLinkActive #rla="routerLinkActive"
+    [active]="rla.isActive">
+    {{link.label}}
+    </a>
+</nav>
+
+
 
 <ng-content></ng-content>
