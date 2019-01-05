@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 
-import { CourseOwnerDefinition } from '../../models/course-owner.model';
+import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { Year } from '../../models/year.model';
-import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
 import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
-import { take } from 'rxjs/operators';
+import { Course } from '../../models/course.model';
 
 @Component({
   selector: 'app-course-owners-definitions',
@@ -18,7 +18,7 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
   columnDefs: ColumnDefinition[];
-  data: BehaviorSubject<CourseOwnerDefinition[]>;
+  data: BehaviorSubject<Course[]>;
   itemAccessor: NamedModelItemAccessor<Year>;
 
   years: BehaviorSubject<Year[]>;
@@ -70,11 +70,11 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
     });
   }
 
-  save(element: CourseOwnerDefinition): Promise<CourseOwnerDefinition> {
+  save(element: Course): Promise<Course> {
     return this.modelSvcFactory.coursesOwners.save(element);
   }
 
-  delete(element: CourseOwnerDefinition): Promise<CourseOwnerDefinition> {
+  delete(element: Course): Promise<Course> {
     return this.modelSvcFactory.coursesOwners.delete(element);
   }
 
