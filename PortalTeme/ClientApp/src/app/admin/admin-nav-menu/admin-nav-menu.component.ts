@@ -29,6 +29,11 @@ export class AdminNavMenuComponent implements OnInit {
         label: 'Course Definitions',
         link: '/admin/courses',
         index: 0
+      },
+      {
+        label: 'Course Users (Profersors)',
+        link: '/admin/courses-owners',
+        index: 0
       }
     ];
    }

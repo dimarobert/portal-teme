@@ -30,6 +30,7 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
 import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
 import { AuthenticationInterceptor } from './authentication/services/authentication.interceptor';
 import { CourseDefinitionsComponent } from './admin/course-definitions/course-definitions.component';
+import { CourseOwnersDefinitionsComponent } from './admin/course-owners/course-owners.component';
 import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
@@ -62,6 +63,7 @@ const httpInterceptorProviders: Provider[] = [
     KeysPipe,
 
     CourseDefinitionsComponent,
+    CourseOwnersDefinitionsComponent,
 
     AcademicYearsComponent,
 
@@ -96,7 +98,8 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'years', component: AcademicYearsComponent },
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
-          { path: 'courses', component: CourseDefinitionsComponent }
+          { path: 'courses', component: CourseDefinitionsComponent },
+          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent }
         ]
       },
 
