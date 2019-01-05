@@ -1,4 +1,5 @@
 ﻿using PortalTeme.API.Models;
+using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -8,20 +9,103 @@ using System.Threading.Tasks;
 namespace PortalTeme.API.Mappers {
 
     public interface ICourseMapper {
-        CourseDefinition MapDefinitionDTO(CourseDefinitionDTO dto, AcademicYear year);
-        CourseDefinitionDTO MapDefinition(CourseDefinition model);
 
         AcademicYear MapYearDTO(AcademicYearDTO dto);
         AcademicYearDTO MapYear(AcademicYear model);
 
-        StudyDomainDTO MapStudyDomain(StudyDomain domain);
         StudyDomain MapStudyDomainDTO(StudyDomainDTO dto);
+        StudyDomainDTO MapStudyDomain(StudyDomain domain);
 
-        GroupDTO MapGroup(Group group);
         Group MapGroupDTO(GroupDTO dto, StudyDomain domain, AcademicYear year);
+        GroupDTO MapGroup(Group group);
+
+        CourseDefinition MapDefinitionDTO(CourseDefinitionDTO dto, AcademicYear year);
+        CourseDefinitionDTO MapDefinition(CourseDefinition model);
+
+        Course MapCourseEditDTO(CourseEditDTO dto);
+        CourseViewDTO MapCourseView(Course course);
+        CourseEditDTO MapCourseEdit(Course course);
     }
 
     public class CourseMapper : ICourseMapper {
+        public CourseViewDTO MapCourseView(Course course) {
+            return new CourseViewDTO {
+                Id = course.Id,
+                CourseDef = MapCourseDefinitionRef(course.CourseInfo),
+                Professor = MapProfessor(course.Professor),
+                Assistants = course.Assistants.Select(assistant => MapAssistant(assistant)).ToList(),
+                Groups = course.Groups.Select(group => MapGroupRef(group)).ToList(),
+                Students = course.Students.Select(student => MapStudent(student)).ToList()
+            };
+        }
+
+        public CourseEditDTO MapCourseEdit(Course course) {
+            return new CourseEditDTO {
+                Id = course.Id,
+                CourseDef = MapCourseDefinitionRef(course.CourseInfo),
+                Professor = MapProfessor(course.Professor)
+            };
+        }
+
+        /// <summary>
+        /// This will map one to one properties of the Course. The one to many lists must be updated separately.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public Course MapCourseEditDTO(CourseEditDTO dto) {
+            return new Course {
+                Id = dto.Id ?? Guid.Empty,
+                CourseInfo = new CourseDefinition {
+                    Id = dto.CourseDef.Id
+                },
+                Professor = new User {
+                    Id = dto.Professor.Id
+                }
+            };
+        }
+
+        private CourseDefinitionRefDTO MapCourseDefinitionRef(CourseDefinition courseDef) {
+            return new CourseDefinitionRefDTO {
+                Id = courseDef.Id,
+                Name = courseDef.Name
+            };
+        }
+
+        private ProfessorDTO MapProfessor(User professor) {
+            return new ProfessorDTO {
+                Id = professor.Id,
+                FirstName = professor.FirstName,
+                LastName = professor.LastName
+            };
+        }
+
+        private AssistantDTO MapAssistant(CourseAssistant assistant) {
+            return new AssistantDTO {
+                Id = assistant.AssistantId,
+                CourseId = assistant.CourseId,
+                FirstName = assistant.Assistant.FirstName,
+                LastName = assistant.Assistant.LastName
+            };
+        }
+
+        private static GroupRefDTO MapGroupRef(CourseGroup group) {
+            return new GroupRefDTO {
+                GroupId = group.GroupId,
+                CourseId = group.CourseId,
+                Name = group.Group.Name
+            };
+        }
+
+        private static StudentDTO MapStudent(CourseStudent student) {
+            return new StudentDTO {
+                Id = student.StudentId,
+                CourseId = student.CourseId,
+                FirstName = student.Student.User.FirstName,
+                LastName = student.Student.User.LastName
+            };
+        }
+
+
         public CourseDefinitionDTO MapDefinition(CourseDefinition model) {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
@@ -109,5 +193,6 @@ namespace PortalTeme.API.Mappers {
                 Name = dto.Name
             };
         }
+
     }
 }

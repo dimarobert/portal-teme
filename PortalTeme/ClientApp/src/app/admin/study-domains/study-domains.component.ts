@@ -50,7 +50,7 @@ export class StudyDomainsComponent implements OnInit {
   }
 
   delete(element: StudyDomain): Promise<StudyDomain> {
-    return this.modelSvcFactory.studyDomains.delete(element);
+    return this.modelSvcFactory.studyDomains.delete(element.id);
   }
 
 }

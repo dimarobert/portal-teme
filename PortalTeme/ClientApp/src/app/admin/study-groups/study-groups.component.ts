@@ -79,7 +79,7 @@ export class StudyGroupsComponent implements OnInit {
   }
 
   delete(element: StudyGroup): Promise<StudyGroup> {
-    return this.modelSvcFactory.studyGroups.delete(element);
+    return this.modelSvcFactory.studyGroups.delete(element.id);
   }
 
 }

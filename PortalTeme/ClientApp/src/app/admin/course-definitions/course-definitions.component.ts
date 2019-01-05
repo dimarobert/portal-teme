@@ -54,7 +54,7 @@ export class CourseDefinitionsComponent implements OnInit {
 
   private getData() {
     let years$ = this.modelSvcFactory.years.getAll();
-    let courses$ = this.modelSvcFactory.courses.getAll();
+    let courses$ = this.modelSvcFactory.courseDefinitions.getAll();
 
     forkJoin(
       years$.pipe(take(1)),
@@ -66,11 +66,11 @@ export class CourseDefinitionsComponent implements OnInit {
   }
 
   save(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courses.save(element);
+    return this.modelSvcFactory.courseDefinitions.save(element);
   }
 
   delete(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courses.delete(element);
+    return this.modelSvcFactory.courseDefinitions.delete(element.id);
   }
 
 }
