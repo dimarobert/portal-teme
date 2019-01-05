@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 
-import { CourseDefinition, Semester } from '../../models/course-definition.model';
+import { CourseOwnerDefinition } from '../../models/course-owner.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { Year } from '../../models/year.model';
 import { DatasourceColumnDefinition, ColumnType, ColumnDefinition, NamedModelItemAccessor } from '../../models/column-definition.model';
@@ -18,12 +18,10 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
   columnDefs: ColumnDefinition[];
-  data: BehaviorSubject<CourseDefinition[]>;
+  data: BehaviorSubject<CourseOwnerDefinition[]>;
   itemAccessor: NamedModelItemAccessor<Year>;
 
   years: BehaviorSubject<Year[]>;
-
-  Semester = Semester;
 
   ngOnInit() {
     this.save = this.save.bind(this);
@@ -36,9 +34,20 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
 
     this.columnDefs = [{
       id: 'name',
-      title: 'Name',
+      title: 'Course',
       type: ColumnType.Textbox
-    }, <DatasourceColumnDefinition<Year>>{
+    },
+    {
+      id: 'owner',
+      title: 'Professor',
+      type: ColumnType.Textbox
+    },
+    {
+      id: 'numOfAssistants',
+      title: '# Assistants',
+      type: ColumnType.Textbox
+    }
+    , <DatasourceColumnDefinition<Year>>{
       id: 'year',
       title: 'Year',
       type: ColumnType.Select,
@@ -49,8 +58,8 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
   }
 
   private getData() {
-    let years$ = this.modelSvcFactory.years.getAll();
-    let courses$ = this.modelSvcFactory.courses.getAll();
+    const years$ = this.modelSvcFactory.years.getAll();
+    const courses$ = this.modelSvcFactory.coursesOwners.getAll();
 
     forkJoin(
       years$.pipe(take(1)),
@@ -61,12 +70,12 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
     });
   }
 
-  save(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courses.save(element);
+  save(element: CourseOwnerDefinition): Promise<CourseOwnerDefinition> {
+    return this.modelSvcFactory.coursesOwners.save(element);
   }
 
-  delete(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courses.delete(element);
+  delete(element: CourseOwnerDefinition): Promise<CourseOwnerDefinition> {
+    return this.modelSvcFactory.coursesOwners.delete(element);
   }
 
 }
