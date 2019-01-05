@@ -25,6 +25,8 @@ namespace PortalTeme.API.Mappers {
         Course MapCourseEditDTO(CourseEditDTO dto);
         CourseViewDTO MapCourseView(Course course);
         CourseEditDTO MapCourseEdit(Course course);
+
+        UserDTO MapUser(User user);
     }
 
     public class CourseMapper : ICourseMapper {
@@ -32,7 +34,7 @@ namespace PortalTeme.API.Mappers {
             return new CourseViewDTO {
                 Id = course.Id,
                 CourseDef = MapCourseDefinitionRef(course.CourseInfo),
-                Professor = MapProfessor(course.Professor),
+                Professor = MapUser(course.Professor),
                 Assistants = course.Assistants.Select(assistant => MapAssistant(assistant)).ToList(),
                 Groups = course.Groups.Select(group => MapGroupRef(group)).ToList(),
                 Students = course.Students.Select(student => MapStudent(student)).ToList()
@@ -43,7 +45,7 @@ namespace PortalTeme.API.Mappers {
             return new CourseEditDTO {
                 Id = course.Id,
                 CourseDef = MapCourseDefinitionRef(course.CourseInfo),
-                Professor = MapProfessor(course.Professor)
+                Professor = MapUser(course.Professor)
             };
         }
 
@@ -64,6 +66,14 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
+        public UserDTO MapUser(User user) {
+            return new UserDTO {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+        }
+
         private CourseDefinitionRefDTO MapCourseDefinitionRef(CourseDefinition courseDef) {
             return new CourseDefinitionRefDTO {
                 Id = courseDef.Id,
@@ -71,18 +81,9 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private ProfessorDTO MapProfessor(User professor) {
-            return new ProfessorDTO {
-                Id = professor.Id,
-                FirstName = professor.FirstName,
-                LastName = professor.LastName
-            };
-        }
-
-        private AssistantDTO MapAssistant(CourseAssistant assistant) {
-            return new AssistantDTO {
+        private UserDTO MapAssistant(CourseAssistant assistant) {
+            return new UserDTO {
                 Id = assistant.AssistantId,
-                CourseId = assistant.CourseId,
                 FirstName = assistant.Assistant.FirstName,
                 LastName = assistant.Assistant.LastName
             };
@@ -96,10 +97,9 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private static StudentDTO MapStudent(CourseStudent student) {
-            return new StudentDTO {
+        private static UserDTO MapStudent(CourseStudent student) {
+            return new UserDTO {
                 Id = student.StudentId,
-                CourseId = student.CourseId,
                 FirstName = student.Student.User.FirstName,
                 LastName = student.Student.User.LastName
             };

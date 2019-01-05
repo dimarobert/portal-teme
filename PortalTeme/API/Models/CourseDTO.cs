@@ -12,12 +12,12 @@ namespace PortalTeme.API.Models {
         public CourseDefinitionRefDTO CourseDef { get; set; }
 
         [Required]
-        public ProfessorDTO Professor { get; set; }
+        public UserDTO Professor { get; set; }
     }
 
     public class CourseViewDTO : CourseEditDTO {
 
-        public List<AssistantDTO> Assistants { get; set; }
+        public List<UserDTO> Assistants { get; set; }
 
         /// <summary>
         /// This defines the Study Groups that have access to the Course
@@ -27,7 +27,7 @@ namespace PortalTeme.API.Models {
         /// <summary>
         /// This defines the individual students that have access to the Course. (e.g. that have the course as an optional course)
         /// </summary>
-        public List<StudentDTO> Students { get; set; }
+        public List<UserDTO> Students { get; set; }
 
 
         //public List<Assignment> Assignments { get; set; }
@@ -41,20 +41,7 @@ namespace PortalTeme.API.Models {
         public string Name { get; set; }
     }
 
-    public class ProfessorDTO {
-
-        [Required(AllowEmptyStrings = false)]
-        public string Id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-    }
-
-    public class AssistantDTO {
-
-        [Required]
-        public Guid CourseId { get; set; }
+    public class UserDTO {
 
         [Required(AllowEmptyStrings = false)]
         public string Id { get; set; }
@@ -74,19 +61,6 @@ namespace PortalTeme.API.Models {
         public Guid GroupId { get; set; }
 
         public string Name { get; set; }
-    }
-
-    public class StudentDTO {
-
-        [Required]
-        public Guid CourseId { get; set; }
-
-        [Required(AllowEmptyStrings = false)]
-        public string Id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
     }
 
 }
