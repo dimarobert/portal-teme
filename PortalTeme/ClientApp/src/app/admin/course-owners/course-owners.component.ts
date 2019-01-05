@@ -4,7 +4,7 @@ import { take } from 'rxjs/operators';
 
 import { DataTableColumns } from '../../models/column-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
-import { Course, Professor } from '../../models/course.model';
+import { Course, Professor, CourseDefinitionRef } from '../../models/course.model';
 import { nameof } from '../../type-guards/nameof.guard';
 import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
 import { RelatedItemAccessor, NamedModelItemAccessor } from '../../models/item.accesor';
@@ -32,8 +32,9 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
 
     this.columnDefs = new DataTableColumns([
       {
-        id: nameof<Course>('name'),
+        id: nameof<Course>('courseDef'),
         title: 'Course',
+        itemAccessor: new RelatedItemAccessor<CourseDefinitionRef>(cd => cd.name)
       },
       {
         id: nameof<Course>('professor'),

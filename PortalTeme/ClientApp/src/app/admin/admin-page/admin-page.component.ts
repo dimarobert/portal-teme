@@ -8,10 +8,8 @@ import { Router } from '@angular/router';
 })
 export class AdminPageComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor() { }
 
-  ngOnInit() {
-    this.router.navigate(['/admin/years'])
-  }
+  ngOnInit() { }
 
 }

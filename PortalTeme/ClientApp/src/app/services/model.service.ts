@@ -42,7 +42,10 @@ export class ModelServiceFactory {
       getAll: () => of([
         <Course>{
           id: '1',
-          name: 'Course 0',
+          courseDef: {
+            id: 'GUID string',
+            name: 'Course 0'
+          },
           professor: { professorId: 'GUID string', firstName: 'Radu', lastName: 'Niculcea' },
           assistants: [{ assistantId: 'GUID string', firstName: 'Robert', lastName: 'Dima' }],
           groups: [{ groupId: 'GUID string', name: 'Gruap 143' }],

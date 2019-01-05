@@ -92,6 +92,7 @@ const httpInterceptorProviders: Provider[] = [
         path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
         data: { roles: ['Admin'] },
         children: [
+          { path: '', redirectTo: 'years', pathMatch: 'full' },
           { path: 'years', component: AcademicYearsComponent },
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
