@@ -4,7 +4,7 @@ import { take } from 'rxjs/operators';
 
 import { DataTableColumns } from '../../models/column-definition.model';
 import { ModelServiceFactory } from '../../services/model.service';
-import { Course, Professor } from '../../models/course.model';
+import { Course, Professor, CourseDefinitionRef, CourseEdit } from '../../models/course.model';
 import { nameof } from '../../type-guards/nameof.guard';
 import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
 import { RelatedItemAccessor, NamedModelItemAccessor } from '../../models/item.accesor';
@@ -32,8 +32,9 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
 
     this.columnDefs = new DataTableColumns([
       {
-        id: nameof<Course>('name'),
+        id: nameof<Course>('courseDef'),
         title: 'Course',
+        itemAccessor: new RelatedItemAccessor<CourseDefinitionRef>(cd => cd.name)
       },
       {
         id: nameof<Course>('professor'),
@@ -48,19 +49,19 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
   }
 
   private getData() {
-    this.modelSvcFactory.coursesOwners.getAll()
+    this.modelSvcFactory.courses.getAll()
       .pipe(take(1))
       .subscribe(results => {
         this.data.next(results);
       });
   }
 
-  save(element: Course): Promise<Course> {
-    return this.modelSvcFactory.coursesOwners.save(element);
+  save(element: CourseEdit): Promise<CourseEdit> {
+    return this.modelSvcFactory.courses.save(element);
   }
 
   delete(element: Course): Promise<Course> {
-    return this.modelSvcFactory.coursesOwners.delete(element);
+    return this.modelSvcFactory.courses.delete(element.id);
   }
 
 }

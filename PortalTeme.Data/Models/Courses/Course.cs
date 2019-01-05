@@ -33,5 +33,11 @@ namespace PortalTeme.Data.Models {
 
         public List<Assignment> Assignments { get; set; }
 
+        public Course() {
+            Assistants = new List<CourseAssistant>();
+            Groups = new List<CourseGroup>();
+            Students = new List<CourseStudent>();
+            Assignments = new List<Assignment>();
+        }
     }
 }

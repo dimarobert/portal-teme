@@ -1,28 +1,31 @@
-import { NamedModel } from './base.model';
+import { BaseModel, NamedModel } from './base.model';
 
-export interface Course extends NamedModel {
-    
-    professor: Professor;
+export interface Course extends CourseEdit {
+
     assistants: Assistant[];
 
     groups: StudyGroupRef[];
     students: StudentRef[];
 }
 
-export interface Professor {
-    professorId: string;
+export interface CourseEdit extends BaseModel {
+    courseDef: CourseDefinitionRef;
+    professor: Professor;
+}
+
+export interface CourseDefinitionRef extends NamedModel { }
+
+export interface Professor extends BaseModel {
     firstName: string;
     lastName: string;
 }
 
-export interface Assistant {
-    assistantId: string;
+export interface Assistant extends BaseModel {
     firstName: string;
     lastName: string;
 }
 
-export interface StudentRef {
-    studentId: string;
+export interface StudentRef extends BaseModel {
     firstName: string;
     lastName: string;
 }

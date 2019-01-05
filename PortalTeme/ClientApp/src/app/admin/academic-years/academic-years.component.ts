@@ -51,7 +51,7 @@ export class AcademicYearsComponent implements OnInit {
   }
 
   delete(element: Year): Promise<Year> {
-    return this.modelSvcFactory.years.delete(element);
+    return this.modelSvcFactory.years.delete(element.id);
   }
 
 }

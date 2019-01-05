@@ -4,14 +4,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace PortalTeme.API.Models {
-    public class CourseDTO {
+
+    public class CourseEditDTO {
         public Guid? Id { get; set; }
 
         [Required]
-        public Guid CourseDef { get; set; }
+        public CourseDefinitionRefDTO CourseDef { get; set; }
 
         [Required]
         public ProfessorDTO Professor { get; set; }
+    }
+
+    public class CourseViewDTO : CourseEditDTO {
 
         public List<AssistantDTO> Assistants { get; set; }
 
@@ -29,9 +33,18 @@ namespace PortalTeme.API.Models {
         //public List<Assignment> Assignments { get; set; }
     }
 
+    public class CourseDefinitionRefDTO {
+
+        [Required]
+        public Guid Id { get; set; }
+
+        public string Name { get; set; }
+    }
+
     public class ProfessorDTO {
+
         [Required(AllowEmptyStrings = false)]
-        public string ProfessorId { get; set; }
+        public string Id { get; set; }
 
         public string FirstName { get; set; }
 
@@ -39,11 +52,12 @@ namespace PortalTeme.API.Models {
     }
 
     public class AssistantDTO {
+
         [Required]
         public Guid CourseId { get; set; }
 
         [Required(AllowEmptyStrings = false)]
-        public string AssistantId { get; set; }
+        public string Id { get; set; }
 
         public string FirstName { get; set; }
 
@@ -63,11 +77,12 @@ namespace PortalTeme.API.Models {
     }
 
     public class StudentDTO {
+
         [Required]
         public Guid CourseId { get; set; }
 
         [Required(AllowEmptyStrings = false)]
-        public string StudentId { get; set; }
+        public string Id { get; set; }
 
         public string FirstName { get; set; }
 

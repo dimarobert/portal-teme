@@ -8,7 +8,7 @@ import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
-import { Course } from '../models/course.model';
+import { Course, CourseEdit } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +22,9 @@ export class ModelServiceFactory {
     return this._yearsService || (this._yearsService = new ModelService<Year>('AcademicYears', this.http));
   }
 
-  private _coursesService: ModelService<CourseDefinition> = null;
-  public get courses(): ModelService<CourseDefinition> {
-    return this._coursesService || (this._coursesService = new ModelService<CourseDefinition>('CourseDefinitions', this.http));
+  private _courseDefinitionsService: ModelService<CourseDefinition> = null;
+  public get courseDefinitions(): ModelService<CourseDefinition> {
+    return this._courseDefinitionsService || (this._courseDefinitionsService = new ModelService<CourseDefinition>('CourseDefinitions', this.http));
   }
 
   private _studyDomainsService: ModelService<StudyDomain> = null;
@@ -37,30 +37,21 @@ export class ModelServiceFactory {
     return this._studyGroupsService || (this._studyGroupsService = new ModelService<StudyGroup>('Groups', this.http));
   }
 
-  public get coursesOwners(): ModelService<Course> {
-    return <any>{
-      getAll: () => of([
-        <Course>{
-          id: '1',
-          name: 'Course 0',
-          professor: { professorId: 'GUID string', firstName: 'Radu', lastName: 'Niculcea' },
-          assistants: [{ assistantId: 'GUID string', firstName: 'Robert', lastName: 'Dima' }],
-          groups: [{ groupId: 'GUID string', name: 'Gruap 143' }],
-          students: [{ studentId: 'GUID string', firstName: 'Cristian', lastName: 'Popescu' }]
-        }
-      ])
-    };
+
+  private _coursesService: ComplexModelService<Course, CourseEdit> = null;
+  public get courses(): ComplexModelService<Course, CourseEdit> {
+    return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
   }
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class ModelService<TModel extends BaseModel> {
+export class ModelServiceBase<TModel extends BaseModel> {
 
-  constructor(private apiController: string, private http: HttpClient) { }
+  constructor(private apiController: string, protected http: HttpClient) { }
 
-  private get apiRoot(): string {
+  protected get apiRoot(): string {
     return `/api/${this.apiController}`;
   }
 
@@ -72,14 +63,43 @@ export class ModelService<TModel extends BaseModel> {
     return this.http.get<TModel>(`${this.apiRoot}/${modelId}`);
   }
 
+  public delete(modelId: string): Promise<TModel> {
+    return this.http.delete<TModel>(`${this.apiRoot}/${modelId}`)
+      .pipe(take(1))
+      .toPromise();
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TModel> {
   public save(model: TModel): Promise<TModel> {
     return this.http.post<TModel>(this.apiRoot, model)
       .pipe(take(1))
       .toPromise();
   }
 
-  public delete(model: TModel): Promise<TModel> {
-    return this.http.delete<TModel>(`${this.apiRoot}/${model.id}`)
+  public update(model: TModel): Promise<TModel> {
+    return this.http.put<TModel>(`${this.apiRoot}/${model.id}`, model)
+      .pipe(take(1))
+      .toPromise();
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends BaseModel> extends ModelServiceBase<TViewModel>  {
+
+  public save(model: TEditModel): Promise<TEditModel> {
+    return this.http.post<TEditModel>(this.apiRoot, model)
+      .pipe(take(1))
+      .toPromise();
+  }
+
+  public update(model: TEditModel): Promise<TEditModel> {
+    return this.http.put<TEditModel>(`${this.apiRoot}/${model.id}`, model)
       .pipe(take(1))
       .toPromise();
   }
@@ -148,27 +168,27 @@ export class CachedModelService<TModel extends BaseModel> extends ModelService<T
     oneSub && oneSub.next(resultModel);
   }
 
-  public delete(model: TModel): Promise<TModel> {
-    return super.delete(model)
+  public delete(modelId: string): Promise<TModel> {
+    return super.delete(modelId)
       .then(resultModel => {
-        this.deleteFromCache(model);
+        this.deleteFromCache(modelId);
         return resultModel;
       });
   }
 
 
-  private deleteFromCache(model: TModel) {
+  private deleteFromCache(modelId: string) {
     let newValue = this.modelCache.value.slice();
-    var idx = newValue.findIndex(m => m.id == model.id);
+    var idx = newValue.findIndex(m => m.id == modelId);
     if (idx > -1) {
       newValue.splice(idx, 1);
       this.modelCache.next(newValue);
     }
 
-    let oneSub = this.modelOneCache[model.id];
+    let oneSub = this.modelOneCache[modelId];
     if (oneSub != null) {
       oneSub.complete();
-      delete this.modelOneCache[model.id];
+      delete this.modelOneCache[modelId];
     }
   }
 }

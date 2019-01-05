@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortalTeme.API.Mappers;
+using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
-using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,21 +18,30 @@ namespace PortalTeme.API.Controllers {
     public class CoursesController : ControllerBase {
         private readonly PortalTemeContext _context;
         private readonly IAuthorizationService authorizationService;
+        private readonly ICourseMapper courseMapper;
 
-        public CoursesController(PortalTemeContext context, IAuthorizationService authorizationService) {
+        public CoursesController(PortalTemeContext context, IAuthorizationService authorizationService, ICourseMapper courseMapper) {
             _context = context;
             this.authorizationService = authorizationService;
+            this.courseMapper = courseMapper;
         }
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourses() {
+        public async Task<ActionResult<IEnumerable<CourseViewDTO>>> GetCourses() {
 
-            var courses = await _context.Courses.ToListAsync();
-            var results = new List<Course>();
+            var courses = await _context.Courses
+                .Include(c => c.Professor)
+                .Include(c => c.Assistants)
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Groups)
+                .Include(c => c.Students)
+                .Include(c => c.Assignments)
+                .ToListAsync();
+            var results = new List<CourseViewDTO>();
             foreach (var course in courses) {
                 if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursesPolicy)).Succeeded)
-                    results.Add(course);
+                    results.Add(courseMapper.MapCourseView(course));
             }
 
             return results;
@@ -39,7 +49,7 @@ namespace PortalTeme.API.Controllers {
 
         // GET: api/Courses/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Course>> GetCourse(Guid id) {
+        public async Task<ActionResult<CourseViewDTO>> GetCourse(Guid id) {
             var course = await _context.Courses.FindAsync(id);
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursesPolicy);
@@ -49,20 +59,25 @@ namespace PortalTeme.API.Controllers {
             if (course is null)
                 return NotFound();
 
-            return course;
+            return courseMapper.MapCourseView(course);
         }
 
         // PUT: api/Courses/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCourse(Guid id, Course course) {
-            if (id != course.Id)
-                return BadRequest();
+        public async Task<IActionResult> PutCourse(Guid id, CourseEditDTO course) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanUpdateCoursePolicy);
+            if (id != course.Id)
+                return BadRequest("The request id parameter did not match the course id in the request body.");
+
+            var dbCourse = courseMapper.MapCourseEditDTO(course);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, dbCourse, AuthorizationConstants.CanUpdateCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
 
-            _context.Entry(course).State = EntityState.Modified;
+            _context.Entry(dbCourse).State = EntityState.Modified;
 
             try {
                 await _context.SaveChangesAsync();
@@ -78,22 +93,34 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/Courses
         [HttpPost]
-        public async Task<ActionResult<Course>> PostCourse(Course course) {
+        public async Task<ActionResult<CourseEditDTO>> PostCourse(CourseEditDTO course) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var authorization = await authorizationService.AuthorizeAsync(User, AuthorizationConstants.CanCreateCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
 
-            _context.Courses.Add(course);
+            var dbCourse = courseMapper.MapCourseEditDTO(course);
+
+            _context.Courses.Add(dbCourse);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCourse", new { id = course.Id }, course);
+            return CreatedAtAction("GetCourse", new { id = dbCourse.Id }, courseMapper.MapCourseEdit(dbCourse));
         }
 
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Course>> DeleteCourse(Guid id) {
-            var course = await _context.Courses.FindAsync(id);
+        public async Task<ActionResult<CourseViewDTO>> DeleteCourse(Guid id) {
+            var course = await _context.Courses
+                .Include(c => c.Professor)
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Assistants)
+                .Include(c => c.Groups)
+                .Include(c => c.Students)
+                .Include(c => c.Assignments)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (course is null)
                 return NotFound();
 
@@ -104,7 +131,7 @@ namespace PortalTeme.API.Controllers {
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
 
-            return course;
+            return courseMapper.MapCourseView(course);
         }
 
         private bool CourseExists(Guid id) {
