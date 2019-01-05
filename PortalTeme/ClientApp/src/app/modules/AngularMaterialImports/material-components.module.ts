@@ -15,7 +15,8 @@ import {
   MatCardModule,
 
   MatSlideToggleModule,
-  MatSelectModule
+  MatSelectModule,
+  MatTabsModule
 } from '@angular/material';
 
 const importedMaterialComponents = [
