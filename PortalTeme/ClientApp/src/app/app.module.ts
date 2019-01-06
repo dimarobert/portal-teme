@@ -43,6 +43,7 @@ import { CourseEditComponent } from './admin/courses/course-edit/course-edit.com
 import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
 import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
+import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -87,7 +88,9 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseEditAssistantsComponent,
 
-    CourseCreateComponent
+    CourseCreateComponent,
+
+    CourseEditAttendeesComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -116,7 +119,8 @@ const httpInterceptorProviders: Provider[] = [
               {
                 path: 'create', component: CourseCreateComponent, children: [
                   { path: '', component: CourseBasicComponent, pathMatch: 'full' },
-                  { path: 'assistants', component: CourseEditAssistantsComponent }
+                  { path: 'assistants', component: CourseEditAssistantsComponent },
+                  { path: 'attendees', component: CourseEditAttendeesComponent }
                 ]
               },
               { path: '[id]', component: CourseEditComponent }
