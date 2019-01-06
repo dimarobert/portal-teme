@@ -51,7 +51,14 @@ namespace PortalTeme.API.Controllers {
         // GET: api/Courses/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CourseViewDTO>> GetCourse(Guid id) {
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Professor)
+                .Include(c => c.Assistants)
+                .Include(c => c.Groups)
+                .Include(c => c.Students)
+                //.Include(c => c.Assignments)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy);
             if (!authorization.Succeeded)
