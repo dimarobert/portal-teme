@@ -38,12 +38,12 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
-import { CourseEditBasicComponent } from './admin/courses/basic/basic.component';
-import { CourseEditComponent } from './admin/courses/course-edit/course-edit.component';
+import { CourseEditBasicComponent } from './admin/courses/course-edit-basic/course-edit-basic.component';
 import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
 import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
 import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
+import { CourseEditRouterComponent } from './admin/courses/course-edit-router/course-edit-router.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -69,7 +69,7 @@ const httpInterceptorProviders: Provider[] = [
     CourseDefinitionsComponent,
     CoursesRouterComponent,
     CourseEditBasicComponent,
-    CourseEditComponent,
+    CourseEditRouterComponent,
 
     AcademicYearsComponent,
 
@@ -122,7 +122,7 @@ const httpInterceptorProviders: Provider[] = [
                 ]
               },
               {
-                path: ':id', component: CourseEditComponent, children: [
+                path: ':id', component: CourseEditRouterComponent, children: [
                   { path: '', component: CourseEditBasicComponent, pathMatch: 'full' },
                   { path: 'assistants', component: CourseEditAssistantsComponent },
                   { path: 'attendees', component: CourseEditAttendeesComponent }

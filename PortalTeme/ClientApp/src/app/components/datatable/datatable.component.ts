@@ -32,7 +32,11 @@ export class DataTableComponent implements OnInit {
   @Input() canDelete: boolean;
 
   @Input() save: (element: any) => Promise<any>;
+  @Input() update: (element: any) => Promise<any>;
   @Input() delete: (element: any) => Promise<any>;
+
+  @Input() customEdit: boolean;
+  @Input() customEditAction: (element: any) => void;
 
   get displayedColumns(): string[] {
     var cols = this.columnDefs.columns.map(c => c.id);
@@ -48,7 +52,7 @@ export class DataTableComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  addForms: Map<object, FormGroup> = new Map<object, FormGroup>();
+  activeForms: Map<object, FormGroup> = new Map<object, FormGroup>();
 
   get hasActions(): boolean {
     return this.canAdd || this.canEdit || this.canDelete;
@@ -59,7 +63,10 @@ export class DataTableComponent implements OnInit {
   }
 
   isInEditMode(element: any): boolean {
-    return this.hasEditCapabilities && this.modelAccessor.isNew(element);
+    if (!this.hasEditCapabilities)
+      return false;
+
+    return this.modelAccessor.isNew(element) || this.getForm(element) != null;
   }
 
   ngOnInit() {
@@ -88,10 +95,15 @@ export class DataTableComponent implements OnInit {
       throw new Error('Invalid configuration. The columnDefs property is null.');
     if (this.canAdd && this.save == null)
       throw new Error('Invalid configuration. The canAdd property is true but the save callback is null.');
-    if (this.canEdit && this.save == null)
-      throw new Error('Invalid configuration. The canEdit property is true but the save callback is null.');
+    if (this.canEdit && this.save == null && this.update == null)
+      throw new Error('Invalid configuration. The canEdit property is true but the save and update callbacks are null.');
     if (this.canDelete && this.delete == null)
       throw new Error('Invalid configuration. The canDelete property is true but the delete callback is null.');
+
+    if (this.canEdit && this.customEdit)
+      throw new Error('Invalid configuration. The canEdit and customEdit properties cannot be both true.');
+    if (this.customEdit && this.customEditAction == null)
+      throw new Error('Invalid configuration. The customEdit property is true but the customEditAction callback is null.');
   }
 
   getDatasource(column: ColumnDefinition): ItemDatasource<any> {
@@ -131,7 +143,7 @@ export class DataTableComponent implements OnInit {
   }
 
   getForm(row: object): AbstractControl {
-    return this.addForms.get(row);
+    return this.activeForms.get(row);
   }
 
   getFormControl(row: object, field: string): AbstractControl {
@@ -146,12 +158,26 @@ export class DataTableComponent implements OnInit {
       newAddForm.addControl(column.id, new FormControl(''));
     });
 
-    this.addForms.set(newRow, newAddForm);
+    this.activeForms.set(newRow, newAddForm);
 
     var newData = this.data.value.slice();
     newData.push(newRow);
     this.data.next(newData);
     this.hasData = true;
+  }
+
+  edit(element: any) {
+    const newEditForm = new FormGroup({});
+
+    this.columnDefs.columns.forEach(column => {
+      newEditForm.addControl(column.id, new FormControl(element[column.id]));
+    });
+
+    this.activeForms.set(element, newEditForm);
+  }
+
+  cancelEdit(element: any) {
+    this.activeForms.delete(element);
   }
 
   remove(element: any) {
@@ -161,19 +187,19 @@ export class DataTableComponent implements OnInit {
     this.data.next(newData);
     this.hasData = newData.length > 0;
 
-    this.addForms.delete(element);
+    this.activeForms.delete(element);
   }
 
   saveElement(element: any) {
     this.errors = {};
     let form = this.getForm(element);
-    let value = {};
+    let value = this.modelAccessor.create(element);
 
     this.columnDefs.columns.forEach(column => {
       value[column.id] = form.get(column.id).value;
     });
 
-    this.save(value)
+    this.executeSaveOrUpdate(value)
       .then(sGroup => {
         var newData = this.data.value.slice();
         var index = newData.indexOf(element);
@@ -181,7 +207,7 @@ export class DataTableComponent implements OnInit {
         this.data.next(newData);
         this.hasData = newData.length > 0;
 
-        this.addForms.delete(element);
+        this.activeForms.delete(element);
       })
       .catch(error => {
         if (isHttpErrorResponse(error)) {
@@ -198,6 +224,14 @@ export class DataTableComponent implements OnInit {
           }
         }
       });
+  }
+
+  private executeSaveOrUpdate(value: any): Promise<any> {
+    if (this.update == null)
+      return this.save(value);
+    return this.modelAccessor.isNew(value)
+      ? this.save(value)
+      : this.update(value);
   }
 
   deleteElement(element: any) {

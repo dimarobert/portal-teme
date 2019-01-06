@@ -9,6 +9,7 @@ import { Course, CourseDefinitionRef, User, CourseEdit } from '../../../models/c
 import { RelatedItemAccessor, NamedModelItemAccessor } from '../../../models/item.accesor';
 import { nameof } from '../../../type-guards/nameof.guard';
 import { AdminMenuService, AdminMenuState } from '../../services/admin-menu.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-courses',
@@ -17,7 +18,7 @@ import { AdminMenuService, AdminMenuState } from '../../services/admin-menu.serv
 })
 export class ViewCoursesComponent implements OnInit {
 
-  constructor(private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private router: Router) { }
 
   columnDefs: DataTableColumns;
 
@@ -26,6 +27,7 @@ export class ViewCoursesComponent implements OnInit {
 
   ngOnInit() {
     this.save = this.save.bind(this);
+    this.edit = this.edit.bind(this);
     this.delete = this.delete.bind(this);
 
     this.modelAccessor = new BaseModelAccessor();
@@ -59,6 +61,10 @@ export class ViewCoursesComponent implements OnInit {
 
   save(element: CourseEdit): Promise<CourseEdit> {
     return this.modelSvcFactory.courses.save(element);
+  }
+
+  edit(element: CourseEdit) {
+    this.router.navigate(['../', 'course', element.id], { relativeTo: this.route });
   }
 
   delete(element: Course): Promise<Course> {

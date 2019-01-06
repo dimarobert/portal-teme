@@ -25,6 +25,7 @@ export class AcademicYearsComponent implements OnInit {
 
   ngOnInit() {
     this.save = this.save.bind(this);
+    this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
 
     this.data = new BehaviorSubject([]);
@@ -48,6 +49,10 @@ export class AcademicYearsComponent implements OnInit {
 
   save(element: Year): Promise<Year> {
     return this.modelSvcFactory.years.save(element);
+  }
+
+  update(element: Year): Promise<Year> {
+    return this.modelSvcFactory.years.update(element);
   }
 
   delete(element: Year): Promise<Year> {

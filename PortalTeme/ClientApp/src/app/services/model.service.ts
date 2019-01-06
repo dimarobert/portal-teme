@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 
 import { BaseModel, EditModel } from '../models/base.model';
 import { Year } from '../models/year.model';
@@ -87,8 +87,10 @@ export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TMo
 
   public update(model: TModel): Promise<TModel> {
     return this.http.put<TModel>(`${this.apiRoot}/${model.id}`, model)
-      .pipe(take(1))
-      .toPromise();
+      .pipe(
+        take(1),
+        map(nothing => model)
+      ).toPromise();
   }
 }
 
@@ -105,7 +107,10 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
 
   public update(model: TEditModel): Promise<TEditModel> {
     return this.http.put<TEditModel>(`${this.apiRoot}/${model.id}`, model)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        map(nothing => model)
+      )
       .toPromise();
   }
 }

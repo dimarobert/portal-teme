@@ -2,7 +2,7 @@ import { Component, OnInit, Type } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
-import { CourseEditComponent } from '../courses/course-edit/course-edit.component';
+import { CourseEditRouterComponent } from '../courses/course-edit-router/course-edit-router.component';
 
 @Component({
   selector: 'admin-nav-menu',
@@ -57,26 +57,23 @@ export class AdminNavMenuComponent implements OnInit {
       new NavLink({
         label: 'Back',
         commands: ['courses'],
-        exact: true,
-        action: () => {
-          this.adminMenuSvc.changeMenuState(AdminMenuState.AdminMenu);
-        }
+        exact: true
       }),
       new NavLink({
         label: 'Basic Information',
         commands: ['./'],
         exact: true,
-        relativeTo: CourseEditComponent
+        relativeTo: CourseEditRouterComponent
       }),
       new NavLink({
         label: 'Assistants',
         commands: ['assistants'],
-        relativeTo: CourseEditComponent
+        relativeTo: CourseEditRouterComponent
       }),
       new NavLink({
         label: 'Attendees',
         commands: ['attendees'],
-        relativeTo: CourseEditComponent
+        relativeTo: CourseEditRouterComponent
       })
     ];
   }
@@ -87,6 +84,10 @@ export class AdminNavMenuComponent implements OnInit {
     if (link.relative)
       while (child.component != link.relativeTo) {
         child = child.firstChild;
+        if (child == null) {
+          console.error('', link, this.route.snapshot);
+          throw new Error('invalid link configuration');
+        }
         commands.push(child.snapshot.url.map(url => url.toString()).join('/'));
       }
 

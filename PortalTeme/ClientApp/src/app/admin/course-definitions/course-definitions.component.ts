@@ -30,6 +30,7 @@ export class CourseDefinitionsComponent implements OnInit {
 
   ngOnInit() {
     this.save = this.save.bind(this);
+    this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
 
     this.data = new BehaviorSubject([]);
@@ -67,6 +68,10 @@ export class CourseDefinitionsComponent implements OnInit {
 
   save(element: CourseDefinition): Promise<CourseDefinition> {
     return this.modelSvcFactory.courseDefinitions.save(element);
+  }
+
+  update(element: CourseDefinition): Promise<CourseDefinition> {
+    return this.modelSvcFactory.courseDefinitions.update(element);
   }
 
   delete(element: CourseDefinition): Promise<CourseDefinition> {

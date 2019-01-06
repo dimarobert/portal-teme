@@ -24,6 +24,7 @@ export class StudyDomainsComponent implements OnInit {
 
   ngOnInit() {
     this.save = this.save.bind(this);
+    this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
 
     this.data = new BehaviorSubject([]);
@@ -47,6 +48,10 @@ export class StudyDomainsComponent implements OnInit {
 
   save(element: StudyDomain): Promise<StudyDomain> {
     return this.modelSvcFactory.studyDomains.save(element);
+  }
+
+  update(element: StudyDomain): Promise<StudyDomain> {
+    return this.modelSvcFactory.studyDomains.update(element);
   }
 
   delete(element: StudyDomain): Promise<StudyDomain> {
