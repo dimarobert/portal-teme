@@ -4,7 +4,7 @@ using PortalTeme.Data.Application;
 
 namespace PortalTeme.Data.Identity {
     public class IdentityContext : IdentityDbContext<User> {
-        public IdentityContext(DbContextOptions options)
+        public IdentityContext(DbContextOptions<IdentityContext> options)
             : base(options) {
         }
 

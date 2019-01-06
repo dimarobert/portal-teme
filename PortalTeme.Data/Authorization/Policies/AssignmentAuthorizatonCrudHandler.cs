@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
-using PortalTeme.Data.Managers;
+using Microsoft.AspNetCore.Identity;
+using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace PortalTeme.Data.Authorization.Policies {
     public class AssignmentAuthorizatonCrudHandler : AuthorizationHandler<OperationAuthorizationRequirement, Assignment> {
         private CourseAuthorizatonCrudHandler courseHandler;
 
-        public AssignmentAuthorizatonCrudHandler(IUserManager userManager, PortalTemeContext temeContext) {
+        public AssignmentAuthorizatonCrudHandler(UserManager<User> userManager, PortalTemeContext temeContext) {
             courseHandler = new CourseAuthorizatonCrudHandler(userManager, temeContext);
         }
 

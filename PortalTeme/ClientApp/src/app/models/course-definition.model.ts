@@ -1,9 +1,8 @@
-import { BaseModel } from './base.model';
+import { BaseModel, NamedModel } from './base.model';
 
-export interface CourseDefinition extends BaseModel {
+export interface CourseDefinition extends NamedModel {
     year: string;
-    semester: Semester,
-    name: string;
+    semester: Semester;
 }
 
 export enum Semester {

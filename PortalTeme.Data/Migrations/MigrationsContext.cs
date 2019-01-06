@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.Common.Authorization;
-using PortalTeme.Data.Application;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System;
@@ -31,9 +30,9 @@ namespace PortalTeme.Data.Migrations {
 
 
 
-        public MigrationsContext(DbContextOptions<MigrationsContext> options) : base(options) { }
+        public MigrationsContext(DbContextOptions<IdentityContext> options) : base(options) { }
 
-        public MigrationsContext() : base(new DbContextOptionsBuilder<MigrationsContext>().Options) { }
+        public MigrationsContext() : base(new DbContextOptionsBuilder<IdentityContext>().Options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseSqlServer(@"Data Source=epa.dnnsharp.com;Initial Catalog=portal_teme;user id=portal_teme;password=ptPass!",
