@@ -38,6 +38,8 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
+import { CourseOwnerAddComponent } from './admin/course-owners/add/add.component';
+import { CourseOwnerEditComponent } from './admin/course-owners/edit/edit.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -62,6 +64,8 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseDefinitionsComponent,
     CourseOwnersDefinitionsComponent,
+    CourseOwnerAddComponent,
+    CourseOwnerEditComponent,
 
     AcademicYearsComponent,
 
@@ -97,7 +101,10 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
           { path: 'courses', component: CourseDefinitionsComponent },
-          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent }
+          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent,
+            children: [
+              {path: 'add', component: CourseOwnerAddComponent},
+              {path: 'edit', component: CourseOwnerEditComponent} ] }
         ]
       },
 
