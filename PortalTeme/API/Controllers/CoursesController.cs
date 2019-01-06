@@ -6,6 +6,7 @@ using PortalTeme.API.Mappers;
 using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
+using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,14 +99,19 @@ namespace PortalTeme.API.Controllers {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var authorization = await authorizationService.AuthorizeAsync(User, AuthorizationConstants.CanCreateCoursePolicy);
+            var dbCourse = courseMapper.MapCourseEditDTO(course);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, dbCourse, AuthorizationConstants.CanCreateCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
 
-            var dbCourse = courseMapper.MapCourseEditDTO(course);
-
             _context.Courses.Add(dbCourse);
             await _context.SaveChangesAsync();
+
+            dbCourse = await _context.Courses
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Professor)
+                .FirstOrDefaultAsync(c => c.Id == dbCourse.Id);
 
             return CreatedAtAction("GetCourse", new { id = dbCourse.Id }, courseMapper.MapCourseEdit(dbCourse));
         }

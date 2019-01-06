@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortalTeme.Data.Identity;
@@ -11,7 +12,7 @@ using System.Text;
 namespace PortalTeme.Data {
     public class PortalTemeContext : DbContext {
 
-        public PortalTemeContext(DbContextOptions options) : base(options) { }
+        public PortalTemeContext(DbContextOptions<PortalTemeContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
 

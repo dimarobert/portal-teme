@@ -14,9 +14,11 @@ namespace PortalTeme.Data.Models {
 
         [Required]
         public CourseDefinition CourseInfo { get; set; }
+        public Guid CourseInfoId { get; set; }
 
         [Required]
         public User Professor { get; set; }
+        public string ProfessorId { get; set; }
 
         public List<CourseAssistant> Assistants { get; set; }
 

@@ -24,5 +24,5 @@ export class AdminMenuService {
 
 export enum AdminMenuState {
   AdminMenu,
-  CreateCourseMenu
+  EditCourseMenu
 }

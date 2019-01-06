@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Type } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
+import { CourseEditComponent } from '../courses/course-edit/course-edit.component';
 
 @Component({
   selector: 'admin-nav-menu',
@@ -9,7 +12,7 @@ import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service
 export class AdminNavMenuComponent implements OnInit {
 
   adminLinks: NavLink[];
-  createCourseLinks: NavLink[];
+  editCourseLinks: NavLink[];
 
   AdminMenuState = AdminMenuState;
 
@@ -17,7 +20,7 @@ export class AdminNavMenuComponent implements OnInit {
     return this.adminMenuSvc.menuState;
   }
 
-  constructor(private adminMenuSvc: AdminMenuService) { }
+  constructor(private adminMenuSvc: AdminMenuService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     this.loadAdminLinks();
@@ -28,60 +31,68 @@ export class AdminNavMenuComponent implements OnInit {
     this.adminLinks = [
       new NavLink({
         label: 'Years',
-        path: '/admin/years',
-        index: 0
+        commands: ['years']
       }),
       new NavLink({
         label: 'Study Domains',
-        path: '/admin/study-domains',
-        index: 0
+        commands: ['study-domains']
       }),
       new NavLink({
         label: 'Study Groups',
-        path: '/admin/study-groups',
-        index: 0
+        commands: ['study-groups']
       }),
       new NavLink({
         label: 'Course Definitions',
-        path: '/admin/course-definitions',
-        index: 0
+        commands: ['course-definitions']
       }),
       new NavLink({
         label: 'Courses',
-        path: '/admin/courses',
-        index: 0
+        commands: ['courses']
       })
     ];
   }
 
   private loadCourseLinks() {
-    this.createCourseLinks = [
+    this.editCourseLinks = [
       new NavLink({
         label: 'Back',
-        path: '/admin/courses',
+        commands: ['courses'],
         exact: true,
-        index: 0,
         action: () => {
           this.adminMenuSvc.changeMenuState(AdminMenuState.AdminMenu);
         }
       }),
       new NavLink({
         label: 'Basic Information',
-        path: '/admin/course/create',
+        commands: ['./'],
         exact: true,
-        index: 0
+        relativeTo: CourseEditComponent
       }),
       new NavLink({
         label: 'Assistants',
-        path: '/admin/course/create/assistants',
-        index: 0
+        commands: ['assistants'],
+        relativeTo: CourseEditComponent
       }),
       new NavLink({
         label: 'Attendees',
-        path: '/admin/course/create/attendees',
-        index: 0
+        commands: ['attendees'],
+        relativeTo: CourseEditComponent
       })
     ];
+  }
+
+  getAdminRelativeCommands(link: NavLink) {
+    let commands = [];
+    let child = this.route;
+    if (link.relative)
+      while (child.component != link.relativeTo) {
+        child = child.firstChild;
+        commands.push(child.snapshot.url.map(url => url.toString()).join('/'));
+      }
+
+    if (link.commands.length > 1 || link.commands[0] !== './')
+      commands.push(...link.commands);
+    return commands;
   }
 }
 
@@ -94,12 +105,16 @@ class NavLink implements NavLinkOptions {
     return this.options.label;
   }
 
-  get path(): string {
-    return this.options.path;
+  get commands(): any[] {
+    return this.options.commands;
   }
 
-  get index(): number {
-    return this.options.index;
+  get relative(): boolean {
+    return this.options.relativeTo != null;
+  }
+
+  get relativeTo(): Type<any> {
+    return this.options.relativeTo;
   }
 
   get exact(): boolean {
@@ -113,9 +128,9 @@ class NavLink implements NavLinkOptions {
 
 interface NavLinkOptions {
   label: string;
-  path: string;
-  index: number;
+  commands: any[];
 
+  relativeTo?: Type<any>;
   exact?: boolean;
   action?: () => void;
 }

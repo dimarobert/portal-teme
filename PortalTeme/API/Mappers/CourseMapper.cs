@@ -58,12 +58,8 @@ namespace PortalTeme.API.Mappers {
         public Course MapCourseEditDTO(CourseEditDTO dto) {
             return new Course {
                 Id = dto.Id ?? Guid.Empty,
-                CourseInfo = new CourseDefinition {
-                    Id = dto.CourseDef.Id
-                },
-                Professor = new User {
-                    Id = dto.Professor.Id
-                }
+                CourseInfoId = dto.CourseDef.Id,
+                ProfessorId = dto.Professor.Id
             };
         }
 

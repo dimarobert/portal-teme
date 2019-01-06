@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
-using PortalTeme.Data.Managers;
+using PortalTeme.Data.Identity;
 using PortalTeme.Extensions.CacheExtensions;
 using PortalTeme.Routing;
 using System;
@@ -53,8 +54,13 @@ namespace PortalTeme {
             services.AddDbContext<PortalTemeContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
+            services.AddDbContext<IdentityContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityContextConnection"))
+            );
 
-            services.AddScoped<IUserManager, AppUserManager>();
+            services.AddIdentityCore<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<IdentityContext>();
 
             services.AddScoped<ICourseMapper, CourseMapper>();
             services.AddScoped<IAssignmentMapper, AssignmentMapper>();

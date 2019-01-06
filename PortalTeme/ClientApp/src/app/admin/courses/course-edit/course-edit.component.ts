@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AdminMenuService, AdminMenuState } from '../../services/admin-menu.service';
 
 @Component({
   selector: 'app-course-edit',
@@ -7,6 +8,10 @@ import { Component } from '@angular/core';
 })
 export class CourseEditComponent {
 
-  constructor() {
+  constructor(private adminMenuSvc: AdminMenuService) { }
+
+  ngOnInit() {
+    this.adminMenuSvc.changeMenuState(AdminMenuState.EditCourseMenu);
   }
+  
 }

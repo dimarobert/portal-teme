@@ -1,3 +1,47 @@
-<h4>Create a course</h4>
+<mat-card class="register-card">
 
-<router-outlet></router-outlet>
+    <mat-card-content>
+
+        <form [formGroup]="createCourseForm" (ngSubmit)="save()">
+
+            <mat-form-field class="full-width">
+                <mat-select [formControl]="course" placeholder="Course" required>
+                    <mat-option *ngFor="let option of courses | async" [value]="option.id">
+                        {{option.name}}
+                    </mat-option>
+                </mat-select>
+
+                <mat-error *ngIf="course.hasError('required')">The course is required.</mat-error>
+                <mat-error *ngIf="course.hasError('server')">Server validation failed.</mat-error>
+
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+                <mat-select [formControl]="professor" placeholder="Professor" required>
+                    <mat-option *ngFor="let option of professors | async" [value]="option.id">
+                        {{option.firstName}} {{option.lastName}}
+                    </mat-option>
+                </mat-select>
+
+                <mat-error *ngIf="professor.hasError('required')">The professor is required.</mat-error>
+                <mat-error *ngIf="professor.hasError('server')">Server validation failed.</mat-error>
+            </mat-form-field>
+            <br />
+            <button mat-raised-button color="secondary" type="button" [routerLink]="['../../courses']">Back</button>
+            <button mat-raised-button color="accent" type="submit" [disabled]="createCourseForm.invalid">Next</button>
+
+            <mat-list *ngIf="hasAnyError()">
+                <mat-list-item class="text-danger" *ngFor="let error of errors | keys">
+                    <div matLine>{{error.key}}:</div>
+                    <div matLine *ngFor="let valLine of error.value">
+                        <div class="value">
+                            <mat-icon>chevron_right</mat-icon>
+                            {{valLine}}
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                </mat-list-item>
+            </mat-list>
+        </form>
+    </mat-card-content>
+</mat-card>
