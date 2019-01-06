@@ -1,7 +1,4 @@
 <app-data-table [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No courses available'" [modelAccessor]="modelAccessor"
   [canAdd]="false" [save]="save" [canDelete]="true" [delete]="delete">
 </app-data-table>
-<button mat-raised-button [routerLink]="['/admin/courses-owners/basic']" color="primary">Add</button>
-
-<router-outlet></router-outlet>
-
+<button mat-raised-button [routerLink]="['/admin/course/create']" color="primary">Add</button>

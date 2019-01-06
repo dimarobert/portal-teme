@@ -2,19 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { DataTableColumns } from '../../models/column-definition.model';
-import { ModelServiceFactory } from '../../services/model.service';
-import { Course, User, CourseDefinitionRef, CourseEdit } from '../../models/course.model';
-import { nameof } from '../../type-guards/nameof.guard';
-import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
-import { RelatedItemAccessor, NamedModelItemAccessor } from '../../models/item.accesor';
+import { ModelServiceFactory } from '../../../services/model.service';
+import { DataTableColumns } from '../../../models/column-definition.model';
+import { ModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
+import { Course, CourseDefinitionRef, User, CourseEdit } from '../../../models/course.model';
+import { RelatedItemAccessor, NamedModelItemAccessor } from '../../../models/item.accesor';
+import { nameof } from '../../../type-guards/nameof.guard';
+import { AdminMenuService, AdminMenuState } from '../../services/admin-menu.service';
 
 @Component({
-  selector: 'app-course-owners-definitions',
-  templateUrl: './course-owners.component.html',
-  styleUrls: ['./course-owners.component.scss']
+  selector: 'app-view-courses',
+  templateUrl: './view-courses.component.html',
+  styleUrls: ['./view-courses.component.scss']
 })
-export class CourseOwnersDefinitionsComponent implements OnInit {
+export class ViewCoursesComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
@@ -63,5 +64,4 @@ export class CourseOwnersDefinitionsComponent implements OnInit {
   delete(element: Course): Promise<Course> {
     return this.modelSvcFactory.courses.delete(element.id);
   }
-
 }

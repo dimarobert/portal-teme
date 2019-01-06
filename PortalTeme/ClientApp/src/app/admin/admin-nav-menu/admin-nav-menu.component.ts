@@ -8,8 +8,8 @@ import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service
 })
 export class AdminNavMenuComponent implements OnInit {
 
-  adminLinks: any[];
-  createCourseLinks: any[];
+  adminLinks: NavLink[];
+  createCourseLinks: NavLink[];
 
   AdminMenuState = AdminMenuState;
 
@@ -17,61 +17,100 @@ export class AdminNavMenuComponent implements OnInit {
     return this.adminMenuSvc.menuState;
   }
 
-  constructor(private adminMenuSvc: AdminMenuService) {
-
-    this.adminLinks = [
-      {
-        label: 'Years',
-        link: '/admin/years',
-        index: 0
-      },
-      {
-        label: 'Study Domains',
-        link: '/admin/study-domains',
-        index: 0
-      },
-      {
-        label: 'Study Groups',
-        link: '/admin/study-groups',
-        index: 0
-      },
-      {
-        label: 'Course Definitions',
-        link: '/admin/courses',
-        index: 0
-      },
-      {
-        label: 'Course Users (Profersors)',
-        link: '/admin/courses-owners',
-        index: 0
-      }
-    ];
-
-    this.createCourseLinks = [
-      {
-        label: 'Back',
-        link: '/admin/courses-owners',
-        index: 0
-      },
-      {
-        label: 'Basic Information',
-        link: '/admin/courses-owners/Basic',
-        index: 0
-      },
-      {
-        label: 'Assitants',
-        link: '/admin/courses-owners/assitants',
-        index: 0
-      },
-      {
-        label: 'Attentees',
-        link: '/admin/courses-owners/attentees',
-        index: 0
-      }
-    ];
-  }
+  constructor(private adminMenuSvc: AdminMenuService) { }
 
   ngOnInit() {
+    this.loadAdminLinks();
+    this.loadCourseLinks();
   }
 
+  private loadAdminLinks() {
+    this.adminLinks = [
+      new NavLink({
+        label: 'Years',
+        path: '/admin/years',
+        index: 0
+      }),
+      new NavLink({
+        label: 'Study Domains',
+        path: '/admin/study-domains',
+        index: 0
+      }),
+      new NavLink({
+        label: 'Study Groups',
+        path: '/admin/study-groups',
+        index: 0
+      }),
+      new NavLink({
+        label: 'Course Definitions',
+        path: '/admin/course-definitions',
+        index: 0
+      }),
+      new NavLink({
+        label: 'Courses',
+        path: '/admin/courses',
+        index: 0
+      })
+    ];
+  }
+
+  private loadCourseLinks() {
+    this.createCourseLinks = [
+      new NavLink({
+        label: 'Basic Information',
+        path: '/admin/course/create',
+        exact: true,
+        index: 0
+      }),
+      new NavLink({
+        label: 'Assistants',
+        path: '/admin/course/create/assistants',
+        index: 0
+      }),
+      new NavLink({
+        label: 'Attendees',
+        path: '/admin/course/create/attendees',
+        index: 0
+      })
+    ];
+  }
+
+  updateState(state: AdminMenuState) {
+    this.adminMenuSvc.changeMenuState(state);
+  }
+}
+
+
+class NavLink implements NavLinkOptions {
+
+  constructor(private options: NavLinkOptions) { }
+
+  get label(): string {
+    return this.options.label;
+  }
+
+  get path(): string {
+    return this.options.path;
+  }
+
+  get index(): number {
+    return this.options.index;
+  }
+
+  get exact(): boolean {
+    return this.options.exact || false;
+  }
+
+  get action(): () => void {
+    return this.options.action || (() => { });
+  }
+}
+
+interface NavLinkOptions {
+  label: string;
+  path: string;
+  index: number;
+
+  exact?: boolean;
+  action?: () => void;
 }
