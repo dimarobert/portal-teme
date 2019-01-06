@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
-import { MaterialComponentsModule} from './modules/AngularMaterialImports/material-components.module';
+import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -30,7 +30,7 @@ import { externalUrlProvider, externalUrlRedirect } from './external-urls/extern
 import { AuthGuardService as AuthGuard } from './authentication/services/auth-guard.service';
 import { AuthenticationInterceptor } from './authentication/services/authentication.interceptor';
 import { CourseDefinitionsComponent } from './admin/course-definitions/course-definitions.component';
-import { CourseOwnersDefinitionsComponent } from './admin/course-owners/course-owners.component';
+import { CoursesRouterComponent } from './admin/courses/courses-router.component';
 import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
@@ -38,8 +38,11 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
-import { CourseOwnerBasicComponent } from './admin/course-owners/basic/basic.component';
-import { CourseOwnerEditComponent } from './admin/course-owners/edit/edit.component';
+import { CourseBasicComponent } from './admin/courses/basic/basic.component';
+import { CourseEditComponent } from './admin/courses/course-edit/course-edit.component';
+import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
+import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
+import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -63,9 +66,9 @@ const httpInterceptorProviders: Provider[] = [
     KeysPipe,
 
     CourseDefinitionsComponent,
-    CourseOwnersDefinitionsComponent,
-    CourseOwnerBasicComponent,
-    CourseOwnerEditComponent,
+    CoursesRouterComponent,
+    CourseBasicComponent,
+    CourseEditComponent,
 
     AcademicYearsComponent,
 
@@ -78,7 +81,13 @@ const httpInterceptorProviders: Provider[] = [
     StudyDomainsComponent,
     StudyGroupsComponent,
 
-    DataTableComponent
+    DataTableComponent,
+
+    ViewCoursesComponent,
+
+    CourseEditAssistantsComponent,
+
+    CourseCreateComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -100,11 +109,17 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'years', component: AcademicYearsComponent },
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
-          { path: 'courses', component: CourseDefinitionsComponent },
-          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent,
-            children: [
-              {path: 'basic', component: CourseOwnerBasicComponent},
-              {path: 'edit', component: CourseOwnerEditComponent}
+          { path: 'course-definitions', component: CourseDefinitionsComponent },
+          { path: 'courses', component: ViewCoursesComponent },
+          {
+            path: 'course', component: CoursesRouterComponent, children: [
+              {
+                path: 'create', component: CourseCreateComponent, children: [
+                  { path: '', component: CourseBasicComponent, pathMatch: 'full' },
+                  { path: 'assistants', component: CourseEditAssistantsComponent }
+                ]
+              },
+              { path: '[id]', component: CourseEditComponent }
             ]
           }
         ]
