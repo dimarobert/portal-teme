@@ -8,7 +8,7 @@ import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
-import { Course, CourseEdit } from '../models/course.model';
+import { Course, CourseEdit, User } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,11 @@ export class ModelServiceFactory {
   private _coursesService: ComplexModelService<Course, CourseEdit> = null;
   public get courses(): ComplexModelService<Course, CourseEdit> {
     return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
+  }
+
+  private _usersService: UsersService = null;
+  public get users(): UsersService {
+    return this._usersService || (this._usersService = new UsersService(this.http));
   }
 }
 
@@ -102,6 +107,35 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
     return this.http.put<TEditModel>(`${this.apiRoot}/${model.id}`, model)
       .pipe(take(1))
       .toPromise();
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UsersService {
+
+  constructor(private http: HttpClient) { }
+
+  protected get apiRoot(): string {
+    return `/api/Users`;
+  }
+
+  public getProfessors(): Observable<User[]> {
+    return this.getUsersByRole('Professors');
+  }
+
+  public getAssistants(): Observable<User[]> {
+    return this.getUsersByRole('Assistants');
+  }
+
+  public getStudents(): Observable<User[]> {
+    return this.getUsersByRole('Students');
+  }
+
+  private getUsersByRole(role: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiRoot}/${role}`);
+
   }
 }
 
