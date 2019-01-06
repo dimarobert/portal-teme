@@ -37,6 +37,8 @@ namespace PortalTeme.Data {
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<User>().ToTable("AspNetUsers");
+
             modelBuilder.Entity<Assignment>().Property(a => a.DateAdded).HasConversion(new DateTimeValueConverter());
             modelBuilder.Entity<Assignment>().Property(a => a.LastUpdated).HasConversion(new DateTimeValueConverter());
             modelBuilder.Entity<Assignment>().Property(a => a.StartDate).HasConversion(new DateTimeValueConverter());
