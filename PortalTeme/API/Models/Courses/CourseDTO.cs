@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace PortalTeme.API.Models {
+namespace PortalTeme.API.Models.Courses {
 
     public class CourseEditDTO {
         public Guid? Id { get; set; }
@@ -31,36 +31,6 @@ namespace PortalTeme.API.Models {
 
 
         //public List<Assignment> Assignments { get; set; }
-    }
-
-    public class CourseDefinitionRefDTO {
-
-        [Required]
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
-    }
-
-    public class UserDTO {
-
-        [Required(AllowEmptyStrings = false)]
-        public string Id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-    }
-
-    /// <summary>
-    /// This is a read-only reference to a Course-Group relation.
-    /// </summary>
-    public class GroupRefDTO {
-
-        public Guid CourseId { get; set; }
-
-        public Guid GroupId { get; set; }
-
-        public string Name { get; set; }
     }
 
 }

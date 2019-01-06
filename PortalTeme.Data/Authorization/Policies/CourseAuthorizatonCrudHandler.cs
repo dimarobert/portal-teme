@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Managers;
@@ -18,7 +19,7 @@ namespace PortalTeme.Data.Authorization.Policies {
             this.temeContext = temeContext;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Course resource) {
+        public async Task HandleCourseRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Course resource) {
 
             var isAdmin = context.User.IsInRole(AuthorizationConstants.AdministratorRoleName);
             if (isAdmin) {
@@ -54,7 +55,9 @@ namespace PortalTeme.Data.Authorization.Policies {
 
                 var isAssignedStudent = resource.Students.Any(student => student.StudentId == currentUser.Id);
                 if (!isAssignedStudent) {
-                    var student = temeContext.Students.First(s => s.UserId == currentUser.Id);
+                    var student = await temeContext.Students
+                        .Include(s => s.Group)
+                        .FirstAsync(s => s.UserId == currentUser.Id);
                     isAssignedStudent = resource.Groups.Any(group => group.GroupId == student.Group.Id);
                 }
 
@@ -63,6 +66,10 @@ namespace PortalTeme.Data.Authorization.Policies {
                     return;
                 }
             }
+        }
+
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Course resource) {
+            await HandleCourseRequirementAsync(context, requirement, resource);
         }
     }
 }

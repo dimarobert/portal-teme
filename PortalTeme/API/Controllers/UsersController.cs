@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models;
 using PortalTeme.Common.Authorization;
-using PortalTeme.Data;
 using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ namespace PortalTeme.API.Controllers {
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
     public class UsersController : ControllerBase {
 
         private readonly UserManager<User> userManager;
