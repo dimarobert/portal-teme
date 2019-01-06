@@ -39,7 +39,7 @@ import { StudyDomainsComponent } from './admin/study-domains/study-domains.compo
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
 import { CourseBasicComponent } from './admin/courses/basic/basic.component';
-import { CourseEditComponent } from './admin/courses/edit/edit.component';
+import { CourseEditComponent } from './admin/courses/course-edit/course-edit.component';
 import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
 import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
