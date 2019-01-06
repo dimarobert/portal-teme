@@ -57,6 +57,15 @@ export class AdminNavMenuComponent implements OnInit {
   private loadCourseLinks() {
     this.createCourseLinks = [
       new NavLink({
+        label: 'Back',
+        path: '/admin/courses',
+        exact: true,
+        index: 0,
+        action: () => {
+          this.adminMenuSvc.changeMenuState(AdminMenuState.AdminMenu);
+        }
+      }),
+      new NavLink({
         label: 'Basic Information',
         path: '/admin/course/create',
         exact: true,
@@ -73,10 +82,6 @@ export class AdminNavMenuComponent implements OnInit {
         index: 0
       })
     ];
-  }
-
-  updateState(state: AdminMenuState) {
-    this.adminMenuSvc.changeMenuState(state);
   }
 }
 
