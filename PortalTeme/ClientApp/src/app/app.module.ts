@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
-import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
+import { MaterialComponentsModule} from './modules/AngularMaterialImports/material-components.module';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -38,7 +38,7 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
-import { CourseOwnerAddComponent } from './admin/course-owners/add/add.component';
+import { CourseOwnerBasicComponent } from './admin/course-owners/basic/basic.component';
 import { CourseOwnerEditComponent } from './admin/course-owners/edit/edit.component';
 
 const httpInterceptorProviders: Provider[] = [
@@ -64,7 +64,7 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseDefinitionsComponent,
     CourseOwnersDefinitionsComponent,
-    CourseOwnerAddComponent,
+    CourseOwnerBasicComponent,
     CourseOwnerEditComponent,
 
     AcademicYearsComponent,
@@ -103,8 +103,10 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'courses', component: CourseDefinitionsComponent },
           { path: 'courses-owners', component: CourseOwnersDefinitionsComponent,
             children: [
-              {path: 'add', component: CourseOwnerAddComponent},
-              {path: 'edit', component: CourseOwnerEditComponent} ] }
+              {path: 'basic', component: CourseOwnerBasicComponent},
+              {path: 'edit', component: CourseOwnerEditComponent}
+            ]
+          }
         ]
       },
 

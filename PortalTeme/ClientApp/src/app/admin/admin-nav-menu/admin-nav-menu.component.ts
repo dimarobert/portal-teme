@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
 
 @Component({
   selector: 'admin-nav-menu',
@@ -7,9 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminNavMenuComponent implements OnInit {
 
-  links: any[];
-  constructor() {
-    this.links = [
+  adminLinks: any[];
+  createCourseLinks: any[];
+
+  AdminMenuState = AdminMenuState;
+
+  get menuState() {
+    return this.adminMenuSvc.menuState;
+  }
+
+  constructor(private adminMenuSvc: AdminMenuService) {
+
+    this.adminLinks = [
       {
         label: 'Years',
         link: '/admin/years',
@@ -36,7 +46,30 @@ export class AdminNavMenuComponent implements OnInit {
         index: 0
       }
     ];
-   }
+
+    this.createCourseLinks = [
+      {
+        label: 'Back',
+        link: '/admin/courses-owners',
+        index: 0
+      },
+      {
+        label: 'Basic Information',
+        link: '/admin/courses-owners/Basic',
+        index: 0
+      },
+      {
+        label: 'Assitants',
+        link: '/admin/courses-owners/assitants',
+        index: 0
+      },
+      {
+        label: 'Attentees',
+        link: '/admin/courses-owners/attentees',
+        index: 0
+      }
+    ];
+  }
 
   ngOnInit() {
   }
