@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { BaseModel } from '../models/base.model';
+import { BaseModel, EditModel } from '../models/base.model';
 import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
@@ -95,7 +95,7 @@ export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TMo
 @Injectable({
   providedIn: 'root'
 })
-export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends BaseModel> extends ModelServiceBase<TViewModel>  {
+export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ModelServiceBase<TViewModel>  {
 
   public save(model: TEditModel): Promise<TEditModel> {
     return this.http.post<TEditModel>(this.apiRoot, model)

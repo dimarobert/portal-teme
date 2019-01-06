@@ -1,6 +1,8 @@
-import { BaseModel, NamedModel } from './base.model';
+import { BaseModel, EditModel } from './base.model';
 
-export interface Course extends CourseEdit {
+export interface Course extends BaseModel {
+    courseDef: CourseDefinitionRef;
+    professor: UserRef;
 
     assistants: User[];
 
@@ -8,14 +10,18 @@ export interface Course extends CourseEdit {
     students: User[];
 }
 
-export interface CourseEdit extends BaseModel {
+export interface CourseEdit extends EditModel {
     courseDef: CourseDefinitionRef;
-    professor: User;
+    professor: UserRef;
 }
 
-export interface CourseDefinitionRef extends NamedModel { }
+export interface CourseDefinitionRef extends BaseModel {
+    name?: string;
+}
 
-export interface User extends BaseModel {
+export interface UserRef extends BaseModel { }
+
+export interface User extends UserRef {
     firstName: string;
     lastName: string;
 }

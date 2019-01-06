@@ -1,25 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Observable, forkJoin, BehaviorSubject } from 'rxjs';
+import { forkJoin, BehaviorSubject } from 'rxjs';
 
 import { CourseDefinition } from '../../../models/course-definition.model';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { User } from '../../../models/course.model';
 import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-course-basic',
   templateUrl: 'basic.component.html',
   styleUrls: ['basic.component.scss']
 })
-export class CourseBasicComponent implements OnInit {
+export class CourseEditBasicComponent implements OnInit {
 
   createCourseForm: FormGroup;
 
   courses: BehaviorSubject<CourseDefinition[]>;
   professors: BehaviorSubject<User[]>;
 
-  constructor(private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private router: Router) { }
 
   ngOnInit() {
 

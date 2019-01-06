@@ -36,7 +36,7 @@ namespace PortalTeme.Data.Authorization.Policies {
 
             var currentUser = await userManager.GetUserAsync(context.User);
 
-            var isOwner = currentUser.Id == resource.Professor.Id;
+            var isOwner = currentUser.Id == resource.ProfessorId;
             if (isOwner) {
                 context.Succeed(requirement);
                 return;

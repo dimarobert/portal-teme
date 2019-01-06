@@ -38,7 +38,7 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
-import { CourseBasicComponent } from './admin/courses/basic/basic.component';
+import { CourseEditBasicComponent } from './admin/courses/basic/basic.component';
 import { CourseEditComponent } from './admin/courses/course-edit/course-edit.component';
 import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
 import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
@@ -68,7 +68,7 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseDefinitionsComponent,
     CoursesRouterComponent,
-    CourseBasicComponent,
+    CourseEditBasicComponent,
     CourseEditComponent,
 
     AcademicYearsComponent,
@@ -118,12 +118,16 @@ const httpInterceptorProviders: Provider[] = [
             path: 'course', component: CoursesRouterComponent, children: [
               {
                 path: 'create', component: CourseCreateComponent, children: [
-                  { path: '', component: CourseBasicComponent, pathMatch: 'full' },
+                  // { path: '', component: CourseBasicComponent, pathMatch: 'full' },
+                ]
+              },
+              {
+                path: ':id', component: CourseEditComponent, children: [
+                  { path: '', component: CourseEditBasicComponent, pathMatch: 'full' },
                   { path: 'assistants', component: CourseEditAssistantsComponent },
                   { path: 'attendees', component: CourseEditAttendeesComponent }
                 ]
-              },
-              { path: '[id]', component: CourseEditComponent }
+              }
             ]
           }
         ]
@@ -136,7 +140,9 @@ const httpInterceptorProviders: Provider[] = [
       { path: 'access-denied', component: AccessDeniedPageComponent },
 
       { path: 'externalRedirect', resolve: { url: externalUrlProvider }, component: NotFoundPageComponent }
-    ])
+    ], {
+        relativeLinkResolution: 'corrected'
+      })
   ],
   providers: [
     SettingsProvider,
