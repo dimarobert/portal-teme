@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
 
 @Component({
   selector: 'app-admin-page',
@@ -8,8 +9,10 @@ import { Router } from '@angular/router';
 })
 export class AdminPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(private adminMenuSvc: AdminMenuService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.adminMenuSvc.changeMenuState(AdminMenuState.AdminMenu);
+  }
 
 }

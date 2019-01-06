@@ -1,13 +1,24 @@
 <h2>Admin</h2>
 
 <nav mat-tab-nav-bar [backgroundColor]="['primary']">
-    <a mat-tab-link
-    *ngFor="let link of links"
-    [routerLink]="link.link"
-    routerLinkActive #rla="routerLinkActive"
-    [active]="rla.isActive">
-    {{link.label}}
-    </a>
+    <ng-container *ngIf="(menuState | async) == AdminMenuState.AdminMenu">
+        <a mat-tab-link
+        *ngFor="let link of adminLinks"
+        [routerLink]="link.link"
+        routerLinkActive #rla="routerLinkActive"
+        [active]="rla.isActive">
+        {{link.label}}
+        </a>
+    </ng-container>
+    <ng-container *ngIf="(menuState | async) == AdminMenuState.CreateCourseMenu">
+        <a mat-tab-link
+        *ngFor="let link of createCourseLinks"
+        [routerLink]="link.link"
+        routerLinkActive #rla="routerLinkActive"
+        [active]="rla.isActive">
+        {{link.label}}
+        </a>
+    </ng-container>
 </nav>
 
 <ng-content></ng-content>

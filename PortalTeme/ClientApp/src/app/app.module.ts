@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
-import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
+import { MaterialComponentsModule} from './modules/AngularMaterialImports/material-components.module';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -38,6 +38,8 @@ import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
+import { CourseOwnerBasicComponent } from './admin/course-owners/basic/basic.component';
+import { CourseOwnerEditComponent } from './admin/course-owners/edit/edit.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -62,6 +64,8 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseDefinitionsComponent,
     CourseOwnersDefinitionsComponent,
+    CourseOwnerBasicComponent,
+    CourseOwnerEditComponent,
 
     AcademicYearsComponent,
 
@@ -97,7 +101,12 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'study-domains', component: StudyDomainsComponent },
           { path: 'study-groups', component: StudyGroupsComponent },
           { path: 'courses', component: CourseDefinitionsComponent },
-          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent }
+          { path: 'courses-owners', component: CourseOwnersDefinitionsComponent,
+            children: [
+              {path: 'basic', component: CourseOwnerBasicComponent},
+              {path: 'edit', component: CourseOwnerEditComponent}
+            ]
+          }
         ]
       },
 
