@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PortalTeme.API.Models {
+namespace PortalTeme.API.Models.Courses {
     public class GroupDTO {
 
         public Guid? Id { get; set; }
