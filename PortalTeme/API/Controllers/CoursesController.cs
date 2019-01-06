@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
-using PortalTeme.API.Models;
+using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using System;
@@ -40,7 +40,7 @@ namespace PortalTeme.API.Controllers {
                 .ToListAsync();
             var results = new List<CourseViewDTO>();
             foreach (var course in courses) {
-                if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursesPolicy)).Succeeded)
+                if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
                     results.Add(courseMapper.MapCourseView(course));
             }
 
@@ -52,7 +52,7 @@ namespace PortalTeme.API.Controllers {
         public async Task<ActionResult<CourseViewDTO>> GetCourse(Guid id) {
             var course = await _context.Courses.FindAsync(id);
 
-            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursesPolicy);
+            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
 

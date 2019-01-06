@@ -57,6 +57,7 @@ namespace PortalTeme {
             services.AddScoped<IUserManager, AppUserManager>();
 
             services.AddScoped<ICourseMapper, CourseMapper>();
+            services.AddScoped<IAssignmentMapper, AssignmentMapper>();
 
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();
@@ -80,6 +81,7 @@ namespace PortalTeme {
             services.AddAuthorization(SetupAuthorization);
 
             services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
+            services.AddScoped<IAuthorizationHandler, AssignmentAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, GroupsAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, StudyDomainsAuthorizationHandler>();
 
@@ -294,7 +296,7 @@ namespace PortalTeme {
         }
 
         private void AddCoursePolicies(AuthorizationOptions options) {
-            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewCoursesPolicy, policy => {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewCoursePolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
                 policy.AddRequirements(Common.Authorization.Operations.Read);

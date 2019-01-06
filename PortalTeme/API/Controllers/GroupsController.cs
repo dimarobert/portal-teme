@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
-using PortalTeme.API.Models;
+using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using System;

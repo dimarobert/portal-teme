@@ -1,4 +1,5 @@
 ﻿using PortalTeme.API.Models;
+using PortalTeme.API.Models.Courses;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System;
