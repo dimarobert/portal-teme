@@ -27,6 +27,9 @@ namespace PortalTeme.Data {
         public DbSet<Group> Groups { get; set; }
 
         public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseGroup> CourseGroups { get; set; }
+        public DbSet<CourseAssistant> CourseAssistants { get; set; }
+        public DbSet<CourseStudent> CourseStudents { get; set; }
 
         public DbSet<Assignment> Assignments { get; set; }
 
@@ -39,6 +42,9 @@ namespace PortalTeme.Data {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>().ToTable("AspNetUsers");
+            modelBuilder.Entity<CourseGroup>().ToTable("CourseGroup");
+            modelBuilder.Entity<CourseAssistant>().ToTable("CourseAssistant");
+            modelBuilder.Entity<CourseStudent>().ToTable("CourseStudent");
 
             modelBuilder.Entity<Assignment>().Property(a => a.DateAdded).HasConversion(new DateTimeValueConverter());
             modelBuilder.Entity<Assignment>().Property(a => a.LastUpdated).HasConversion(new DateTimeValueConverter());

@@ -4,7 +4,7 @@ namespace PortalTeme.API.Models.Courses {
     /// <summary>
     /// This is a read-only reference to a Course-Group relation.
     /// </summary>
-    public class GroupRefDTO {
+    public class CourseGroupDTO {
 
         public Guid CourseId { get; set; }
 
@@ -12,5 +12,4 @@ namespace PortalTeme.API.Models.Courses {
 
         public string Name { get; set; }
     }
-
 }

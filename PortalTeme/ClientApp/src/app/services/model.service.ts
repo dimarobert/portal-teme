@@ -8,7 +8,7 @@ import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
-import { Course, CourseEdit, User } from '../models/course.model';
+import { Course, CourseEdit, User, StudyGroupRef, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,11 @@ export class ModelServiceFactory {
   private _coursesService: ComplexModelService<Course, CourseEdit> = null;
   public get courses(): ComplexModelService<Course, CourseEdit> {
     return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
+  }
+
+  private _courseRelationsService: CourseRelationsService = null;
+  public get courseRelations(): CourseRelationsService {
+    return this._courseRelationsService || (this._courseRelationsService = new CourseRelationsService(this.http));
   }
 
   private _usersService: UsersService = null;
@@ -140,6 +145,35 @@ export class UsersService {
 
   private getUsersByRole(role: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiRoot}/${role}`);
+
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CourseRelationsService {
+
+  constructor(private http: HttpClient) { }
+
+  protected get apiRoot(): string {
+    return `/api/Courses`;
+  }
+
+  public addGroup(courseGroup: StudyGroupRef): Observable<StudyGroupRef> {
+    return this.addModel('AddGroup', courseGroup);
+  }
+
+  public getAssistants(courseAssistant: CourseAssistant): Observable<CourseAssistant> {
+    return this.addModel('AddAssistant', courseAssistant);
+  }
+
+  public getStudents(courseStudent: CourseStudent): Observable<CourseStudent> {
+    return this.addModel('AddStudent', courseStudent);
+  }
+
+  private addModel<T extends CourseRelation>(modelEndpoint: string, model: T): Observable<T> {
+    return this.http.post<T>(`${this.apiRoot}/${model.courseId}/${modelEndpoint}`, model);
 
   }
 }

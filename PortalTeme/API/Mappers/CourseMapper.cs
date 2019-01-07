@@ -28,6 +28,15 @@ namespace PortalTeme.API.Mappers {
         CourseEditDTO MapCourseEdit(Course course);
 
         UserDTO MapUser(User user);
+
+        CourseGroup MapCourseGroupDTO(CourseGroupDTO group);
+        CourseGroupDTO MapCourseGroup(CourseGroup cGroup);
+
+        CourseAssistant MapCourseAssistantDTO(CourseAssistantDTO courseAssistant);
+        CourseAssistantDTO MapCourseAssistant(CourseAssistant courseAssistant);
+
+        CourseStudent MapCourseStudentDTO(CourseStudentDTO student);
+        CourseStudentDTO MapCourseStudent(CourseStudent courseStudent);
     }
 
     public class CourseMapper : ICourseMapper {
@@ -86,8 +95,8 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private static GroupRefDTO MapGroupRef(CourseGroup group) {
-            return new GroupRefDTO {
+        private static CourseGroupDTO MapGroupRef(CourseGroup group) {
+            return new CourseGroupDTO {
                 GroupId = group.GroupId,
                 CourseId = group.CourseId,
                 Name = group.Group.Name
@@ -191,5 +200,47 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
+        public CourseGroup MapCourseGroupDTO(CourseGroupDTO courseGroup) {
+            return new CourseGroup {
+                CourseId = courseGroup.CourseId,
+                GroupId = courseGroup.GroupId
+            };
+        }
+
+        public CourseGroupDTO MapCourseGroup(CourseGroup courseGroup) {
+            return new CourseGroupDTO {
+                CourseId = courseGroup.CourseId,
+                GroupId = courseGroup.GroupId,
+                Name = courseGroup.Group.Name,
+            };
+        }
+
+        public CourseAssistant MapCourseAssistantDTO(CourseAssistantDTO courseAssistant) {
+            return new CourseAssistant {
+                CourseId = courseAssistant.CourseId,
+                AssistantId = courseAssistant.Assistant.Id
+            };
+        }
+
+        public CourseAssistantDTO MapCourseAssistant(CourseAssistant courseAssistant) {
+            return new CourseAssistantDTO {
+                CourseId = courseAssistant.CourseId,
+                Assistant = MapAssistant(courseAssistant)
+            };
+        }
+
+        public CourseStudent MapCourseStudentDTO(CourseStudentDTO student) {
+            return new CourseStudent {
+                CourseId = student.CourseId,
+                StudentId = student.Student.Id
+            };
+        }
+
+        public CourseStudentDTO MapCourseStudent(CourseStudent courseStudent) {
+            return new CourseStudentDTO {
+                CourseId = courseStudent.CourseId,
+                Student = MapStudent(courseStudent)
+            };
+        }
     }
 }
