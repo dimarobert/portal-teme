@@ -160,21 +160,40 @@ export class CourseRelationsService {
     return `/api/Courses`;
   }
 
-  public addGroup(courseGroup: StudyGroupRef): Observable<StudyGroupRef> {
+  public addGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
     return this.addModel('AddGroup', courseGroup);
   }
 
-  public getAssistants(courseAssistant: CourseAssistant): Observable<CourseAssistant> {
+  public deleteGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
+    return this.deleteModel('DeleteGroup', courseGroup.courseId, courseGroup.groupId);
+  }
+
+  public getAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
     return this.addModel('AddAssistant', courseAssistant);
   }
 
-  public getStudents(courseStudent: CourseStudent): Observable<CourseStudent> {
+  public deleteAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
+    return this.deleteModel('DeleteAssistant', courseAssistant.courseId, courseAssistant.assistant.id);
+  }
+
+  public getStudents(courseStudent: CourseStudent): Promise<CourseStudent> {
     return this.addModel('AddStudent', courseStudent);
   }
 
-  private addModel<T extends CourseRelation>(modelEndpoint: string, model: T): Observable<T> {
-    return this.http.post<T>(`${this.apiRoot}/${model.courseId}/${modelEndpoint}`, model);
+  public deleteStudent(courseStudent: CourseStudent): Promise<CourseStudent> {
+    return this.deleteModel('DeleteStudent', courseStudent.courseId, courseStudent.student.id);
+  }
 
+  private addModel<T extends CourseRelation>(modelEndpoint: string, model: T): Promise<T> {
+    return this.http.post<T>(`${this.apiRoot}/${model.courseId}/${modelEndpoint}`, model)
+      .pipe(take(1))
+      .toPromise();
+  }
+
+  private deleteModel<T extends CourseRelation>(modelEndpoint: string, courseId: string, modelId: string): Promise<T> {
+    return this.http.delete<T>(`${this.apiRoot}/${courseId}/${modelEndpoint}/${modelId}`)
+      .pipe(take(1))
+      .toPromise();
   }
 }
 

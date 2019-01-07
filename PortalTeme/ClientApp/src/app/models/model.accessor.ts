@@ -1,4 +1,5 @@
 import { BaseModel } from './base.model';
+import { StudyGroupRef } from './course.model';
 
 export interface ModelAccessor {
 
@@ -18,6 +19,20 @@ export class BaseModelAccessor implements ModelAccessor {
     create(item: BaseModel): BaseModel {
         return {
             id: item.id || ''
+        };
+    }
+}
+
+export class CourseGroupModelAccessor implements ModelAccessor {
+    isNew(item: StudyGroupRef): boolean {
+        return !item.courseId && !item.courseId;
+    }
+
+    create(item: StudyGroupRef): StudyGroupRef {
+        return {
+            courseId: item.courseId || '',
+            groupId: item.groupId || '',
+            name: null
         };
     }
 }
