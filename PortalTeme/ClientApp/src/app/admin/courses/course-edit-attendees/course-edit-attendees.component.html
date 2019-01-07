@@ -1,4 +1,7 @@
-<app-data-table [columnDefs]="groupColumnDefs" [data]="groupList" [emptyDataMessage]="'No courses available'" [modelAccessor]="modelAccessor"
+<app-data-table [columnDefs]="groupColumnDefs" [data]="groupList" [emptyDataMessage]="'No groups are added to this course'" [modelAccessor]="groupsModelAccessor"
   [canAdd]="true" [save]="saveGroup" [canDelete]="true" [delete]="deleteGroup">
 </app-data-table>
 
+<app-data-table [columnDefs]="studentColumnDefs" [data]="studentList" [emptyDataMessage]="'No students are added to this course'" [modelAccessor]="studentsModelAccessor"
+  [canAdd]="true" [save]="saveStudent" [canDelete]="true" [delete]="deleteStudent">
+</app-data-table>

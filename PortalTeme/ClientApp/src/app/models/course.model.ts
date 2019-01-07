@@ -6,7 +6,7 @@ export interface Course extends BaseModel {
 
     assistants: User[];
 
-    groups: StudyGroupRef[];
+    groups: CourseGroup[];
     students: User[];
 }
 
@@ -26,7 +26,7 @@ export interface User extends UserRef {
     lastName: string;
 }
 
-export interface StudyGroupRef extends CourseRelation {
+export interface CourseGroup extends CourseRelation {
     groupId: string;
     name: string;
 }

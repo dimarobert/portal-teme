@@ -8,7 +8,7 @@ import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
-import { Course, CourseEdit, User, StudyGroupRef, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
+import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -160,15 +160,15 @@ export class CourseRelationsService {
     return `/api/Courses`;
   }
 
-  public addGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
+  public addGroup(courseGroup: CourseGroup): Promise<CourseGroup> {
     return this.addModel('AddGroup', courseGroup);
   }
 
-  public deleteGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
+  public deleteGroup(courseGroup: CourseGroup): Promise<CourseGroup> {
     return this.deleteModel('DeleteGroup', courseGroup.courseId, courseGroup.groupId);
   }
 
-  public getAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
+  public addAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
     return this.addModel('AddAssistant', courseAssistant);
   }
 
@@ -176,7 +176,7 @@ export class CourseRelationsService {
     return this.deleteModel('DeleteAssistant', courseAssistant.courseId, courseAssistant.assistant.id);
   }
 
-  public getStudents(courseStudent: CourseStudent): Promise<CourseStudent> {
+  public addStudent(courseStudent: CourseStudent): Promise<CourseStudent> {
     return this.addModel('AddStudent', courseStudent);
   }
 
