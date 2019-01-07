@@ -22,7 +22,7 @@ namespace PortalTeme.API.Models.Courses {
         /// <summary>
         /// This defines the Study Groups that have access to the Course
         /// </summary>
-        public List<GroupRefDTO> Groups { get; set; }
+        public List<CourseGroupDTO> Groups { get; set; }
 
         /// <summary>
         /// This defines the individual students that have access to the Course. (e.g. that have the course as an optional course)

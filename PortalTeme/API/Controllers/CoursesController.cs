@@ -35,7 +35,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Professor)
                 .Include(c => c.Assistants)
                 .Include(c => c.CourseInfo)
-                .Include(c => c.Groups)
+                .Include(c => c.Groups).ThenInclude(c => c.Group)
                 .Include(c => c.Students)
                 .Include(c => c.Assignments)
                 .ToListAsync();
@@ -55,7 +55,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
                 .Include(c => c.Assistants)
-                .Include(c => c.Groups)
+                .Include(c => c.Groups).ThenInclude(c => c.Group)
                 .Include(c => c.Students)
                 //.Include(c => c.Assignments)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -145,6 +145,137 @@ namespace PortalTeme.API.Controllers {
             await _context.SaveChangesAsync();
 
             return courseMapper.MapCourseView(course);
+        }
+
+
+        // POST: api/Courses/5/AddAssistant
+        [HttpPost("{courseId}/AddAssistant")]
+        public async Task<ActionResult<CourseAssistantDTO>> PostCourseAssistant(Guid courseId, CourseAssistantDTO assistant) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (courseId != assistant.CourseId) {
+                ModelState.AddModelError(string.Empty, "The courseId request parameter did not match the courseId property in the data.");
+                return BadRequest(ModelState);
+            }
+
+            var cAssistant = courseMapper.MapCourseAssistantDTO(assistant);
+
+            _context.CourseAssistants.Add(cAssistant);
+            await _context.SaveChangesAsync();
+
+            cAssistant = await _context.CourseAssistants
+                .Include(ca => ca.Assistant)
+                .FirstOrDefaultAsync(ca => ca.CourseId == cAssistant.CourseId && ca.AssistantId == cAssistant.AssistantId);
+
+            return CreatedAtAction("GetCourse", new { id = cAssistant.CourseId }, courseMapper.MapCourseAssistant(cAssistant));
+        }
+
+        // POST: api/Courses/5/DeleteAssistant/6
+        [HttpDelete("{courseId}/DeleteAssistant/{assistantId}")]
+        public async Task<ActionResult<CourseAssistantDTO>> DeleteCourseAssistant(Guid courseId, string assistantId) {
+            var courseAssistant = await _context.CourseAssistants
+                .FirstOrDefaultAsync(ca => ca.CourseId == courseId && ca.AssistantId == assistantId);
+
+            if (courseAssistant is null)
+                return NotFound();
+
+            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
+            //if (!authorization.Succeeded)
+            //    return Forbid();
+
+            _context.CourseAssistants.Remove(courseAssistant);
+            await _context.SaveChangesAsync();
+
+            return courseMapper.MapCourseAssistant(courseAssistant);
+        }
+
+        // POST: api/Courses/5/AddGroup
+        [HttpPost("{courseId}/AddGroup")]
+        public async Task<ActionResult<CourseGroupDTO>> PostCourseGroup(Guid courseId, CourseGroupDTO group) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (courseId != group.CourseId) {
+                ModelState.AddModelError(string.Empty, "The courseId request parameter did not match the courseId property in the data.");
+                return BadRequest(ModelState);
+            }
+
+            var cGroup = courseMapper.MapCourseGroupDTO(group);
+
+            _context.CourseGroups.Add(cGroup);
+            await _context.SaveChangesAsync();
+
+            cGroup = await _context.CourseGroups
+                .Include(cg => cg.Group)
+                .FirstOrDefaultAsync(cg => cg.CourseId == cGroup.CourseId && cg.GroupId == cGroup.GroupId);
+
+            return CreatedAtAction("GetCourse", new { id = cGroup.CourseId }, courseMapper.MapCourseGroup(cGroup));
+        }
+
+        // POST: api/Courses/5/DeleteGroup/6
+        [HttpDelete("{courseId}/DeleteGroup/{groupId}")]
+        public async Task<ActionResult<CourseGroupDTO>> DeleteCourseGroup(Guid courseId, Guid groupId) {
+            var courseGroup = await _context.CourseGroups
+                .Include(cg => cg.Group)
+                .FirstOrDefaultAsync(cg => cg.CourseId == courseId && cg.GroupId == groupId);
+
+            if (courseGroup is null)
+                return NotFound();
+
+            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
+            //if (!authorization.Succeeded)
+            //    return Forbid();
+
+            _context.CourseGroups.Remove(courseGroup);
+            await _context.SaveChangesAsync();
+
+            return courseMapper.MapCourseGroup(courseGroup);
+        }
+
+        // POST: api/Courses/5/AddStudent
+        [HttpPost("{courseId}/AddStudent")]
+        public async Task<ActionResult<CourseStudentDTO>> PostCourseStudent(Guid courseId, CourseStudentDTO student) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (courseId != student.CourseId) {
+                ModelState.AddModelError(string.Empty, "The courseId request parameter did not match the courseId property in the data.");
+                return BadRequest(ModelState);
+            }
+
+            var cStudent = courseMapper.MapCourseStudentDTO(student);
+
+            _context.CourseStudents.Add(cStudent);
+            await _context.SaveChangesAsync();
+
+            cStudent = await _context.CourseStudents
+                .Include(cs => cs.Student)
+                .FirstOrDefaultAsync(cs => cs.CourseId == cStudent.CourseId && cs.StudentId == cStudent.StudentId);
+
+            return CreatedAtAction("GetCourse", new { id = cStudent.CourseId }, courseMapper.MapCourseStudent(cStudent));
+        }
+
+        // POST: api/Courses/5/DeleteStudent/6
+        [HttpDelete("{courseId}/DeleteStudent/{studentId}")]
+        public async Task<ActionResult<CourseStudentDTO>> DeleteCourseGroup(Guid courseId, string studentId) {
+            var courseStudent = await _context.CourseStudents
+                .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
+
+            if (courseStudent is null)
+                return NotFound();
+
+            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
+            //if (!authorization.Succeeded)
+            //    return Forbid();
+
+            _context.CourseStudents.Remove(courseStudent);
+            await _context.SaveChangesAsync();
+
+            return courseMapper.MapCourseStudent(courseStudent);
         }
 
         private bool CourseExists(Guid id) {

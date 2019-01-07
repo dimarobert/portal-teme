@@ -8,7 +8,7 @@ import { Year } from '../models/year.model';
 import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
-import { Course, CourseEdit, User } from '../models/course.model';
+import { Course, CourseEdit, User, StudyGroupRef, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,11 @@ export class ModelServiceFactory {
   private _coursesService: ComplexModelService<Course, CourseEdit> = null;
   public get courses(): ComplexModelService<Course, CourseEdit> {
     return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
+  }
+
+  private _courseRelationsService: CourseRelationsService = null;
+  public get courseRelations(): CourseRelationsService {
+    return this._courseRelationsService || (this._courseRelationsService = new CourseRelationsService(this.http));
   }
 
   private _usersService: UsersService = null;
@@ -141,6 +146,54 @@ export class UsersService {
   private getUsersByRole(role: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiRoot}/${role}`);
 
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CourseRelationsService {
+
+  constructor(private http: HttpClient) { }
+
+  protected get apiRoot(): string {
+    return `/api/Courses`;
+  }
+
+  public addGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
+    return this.addModel('AddGroup', courseGroup);
+  }
+
+  public deleteGroup(courseGroup: StudyGroupRef): Promise<StudyGroupRef> {
+    return this.deleteModel('DeleteGroup', courseGroup.courseId, courseGroup.groupId);
+  }
+
+  public getAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
+    return this.addModel('AddAssistant', courseAssistant);
+  }
+
+  public deleteAssistant(courseAssistant: CourseAssistant): Promise<CourseAssistant> {
+    return this.deleteModel('DeleteAssistant', courseAssistant.courseId, courseAssistant.assistant.id);
+  }
+
+  public getStudents(courseStudent: CourseStudent): Promise<CourseStudent> {
+    return this.addModel('AddStudent', courseStudent);
+  }
+
+  public deleteStudent(courseStudent: CourseStudent): Promise<CourseStudent> {
+    return this.deleteModel('DeleteStudent', courseStudent.courseId, courseStudent.student.id);
+  }
+
+  private addModel<T extends CourseRelation>(modelEndpoint: string, model: T): Promise<T> {
+    return this.http.post<T>(`${this.apiRoot}/${model.courseId}/${modelEndpoint}`, model)
+      .pipe(take(1))
+      .toPromise();
+  }
+
+  private deleteModel<T extends CourseRelation>(modelEndpoint: string, courseId: string, modelId: string): Promise<T> {
+    return this.http.delete<T>(`${this.apiRoot}/${courseId}/${modelEndpoint}/${modelId}`)
+      .pipe(take(1))
+      .toPromise();
   }
 }
 

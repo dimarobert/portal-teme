@@ -26,7 +26,19 @@ export interface User extends UserRef {
     lastName: string;
 }
 
-export interface StudyGroupRef {
+export interface StudyGroupRef extends CourseRelation {
     groupId: string;
     name: string;
+}
+
+export interface CourseAssistant extends CourseRelation {
+    assistant: User;
+}
+
+export interface CourseStudent extends CourseRelation {
+    student: User;
+}
+
+export interface CourseRelation {
+    courseId: string;
 }
