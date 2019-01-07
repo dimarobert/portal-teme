@@ -1,3 +1,4 @@
-<p>
-  course-edit-attendees works!
-</p>
+<app-data-table [columnDefs]="groupColumnDefs" [data]="courseGroups" [emptyDataMessage]="'No courses available'" [modelAccessor]="modelAccessor"
+  [canAdd]="true" [save]="saveGroups" [canDelete]="true" [delete]="deleteGroups">
+</app-data-table>
+
