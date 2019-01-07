@@ -1,5 +1,5 @@
 import { BaseModel } from './base.model';
-import { StudyGroupRef } from './course.model';
+import { CourseGroup, CourseStudent } from './course.model';
 
 export interface ModelAccessor {
 
@@ -24,15 +24,32 @@ export class BaseModelAccessor implements ModelAccessor {
 }
 
 export class CourseGroupModelAccessor implements ModelAccessor {
-    isNew(item: StudyGroupRef): boolean {
-        return !item.courseId && !item.courseId;
+    isNew(item: CourseGroup): boolean {
+        return !item.courseId && !item.groupId;
     }
 
-    create(item: StudyGroupRef): StudyGroupRef {
+    create(item: CourseGroup): CourseGroup {
         return {
             courseId: item.courseId || '',
             groupId: item.groupId || '',
             name: null
+        };
+    }
+}
+
+export class CourseStudentModelAccessor implements ModelAccessor {
+    isNew(item: CourseStudent): boolean {
+        return !item.courseId && (!item.student || !item.student.id);
+    }
+
+    create(item: CourseStudent): CourseStudent {
+        return {
+            courseId: item.courseId || '',
+            student: {
+                id: (!item.student ? null : item.student.id) || '',
+                firstName: null,
+                lastName: null
+            }
         };
     }
 }

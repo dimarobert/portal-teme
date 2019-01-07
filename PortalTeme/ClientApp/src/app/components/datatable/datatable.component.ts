@@ -193,13 +193,14 @@ export class DataTableComponent implements OnInit {
   saveElement(element: any) {
     this.errors = {};
     let form = this.getForm(element);
-    let value = this.modelAccessor.create(element);
+    let itemToSave = this.modelAccessor.create(element);
 
     this.columnDefs.columns.forEach(column => {
-      value[column.id] = form.get(column.id).value;
+      const value = form.get(column.id).value;
+      column.itemAccessor.setPropertyToItem(itemToSave, column, value);
     });
 
-    this.executeSaveOrUpdate(value)
+    this.executeSaveOrUpdate(itemToSave)
       .then(sGroup => {
         var newData = this.data.value.slice();
         var index = newData.indexOf(element);
