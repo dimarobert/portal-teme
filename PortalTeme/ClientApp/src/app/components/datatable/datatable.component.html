@@ -80,7 +80,7 @@
 
 <mat-list *ngIf="hasAnyError()">
   <mat-list-item class="text-danger" *ngFor="let error of errors | keys">
-    <div matLine>{{error.key}}:</div>
+    <div matLine *ngIf="error.key">{{error.key}}:</div>
     <div matLine *ngFor="let valLine of error.value">
       <div class="value">
         <mat-icon>chevron_right</mat-icon>
