@@ -178,6 +178,7 @@ export class DataTableComponent implements OnInit {
 
   cancelEdit(element: any) {
     this.activeForms.delete(element);
+    this.errors = {};
   }
 
   remove(element: any) {
@@ -188,6 +189,7 @@ export class DataTableComponent implements OnInit {
     this.hasData = newData.length > 0;
 
     this.activeForms.delete(element);
+    this.errors = {};
   }
 
   saveElement(element: any) {

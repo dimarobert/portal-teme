@@ -11,6 +11,8 @@ namespace PortalTeme.Common.Authorization {
             new OperationAuthorizationRequirement { Name = nameof(Read) };
         public static OperationAuthorizationRequirement Update =
             new OperationAuthorizationRequirement { Name = nameof(Update) };
+        public static OperationAuthorizationRequirement CourseEditAssistents =
+            new OperationAuthorizationRequirement { Name = nameof(CourseEditAssistents) };
         public static OperationAuthorizationRequirement Delete =
             new OperationAuthorizationRequirement { Name = nameof(Delete) };
 

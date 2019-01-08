@@ -30,7 +30,6 @@ namespace PortalTeme.API.Controllers {
         // GET: api/Courses
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseViewDTO>>> GetCourses() {
-
             var courses = await _context.Courses
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
@@ -39,6 +38,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
                 .Include(c => c.Assignments)
                 .ToListAsync();
+
             var results = new List<CourseViewDTO>();
             foreach (var course in courses) {
                 if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
@@ -185,9 +185,13 @@ namespace PortalTeme.API.Controllers {
                 return BadRequest(ModelState);
             }
 
-            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
-            //if (!authorization.Succeeded)
-            //    return Forbid();
+            var course = await _context.Courses
+                .Include(c => c.Professor)
+                .FirstOrDefaultAsync(c => c.Id == cAssistant.CourseId);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanEditCourseAssistantsPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
 
             _context.CourseAssistants.Add(cAssistant);
             await _context.SaveChangesAsync();
@@ -203,15 +207,16 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteAssistant/{assistantId}")]
         public async Task<ActionResult<CourseAssistantDTO>> DeleteCourseAssistant(Guid courseId, string assistantId) {
             var courseAssistant = await _context.CourseAssistants
+                .Include(ca => ca.Course)
                 .Include(ca => ca.Assistant)
                 .FirstOrDefaultAsync(ca => ca.CourseId == courseId && ca.AssistantId == assistantId);
 
             if (courseAssistant is null)
                 return NotFound();
 
-            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
-            //if (!authorization.Succeeded)
-            //    return Forbid();
+            var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant.Course, AuthorizationConstants.CanEditCourseAssistantsPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
 
             _context.CourseAssistants.Remove(courseAssistant);
             await _context.SaveChangesAsync();
@@ -239,6 +244,14 @@ namespace PortalTeme.API.Controllers {
                 return BadRequest(ModelState);
             }
 
+            var course = await _context.Courses
+               .Include(c => c.Professor)
+               .FirstOrDefaultAsync(c => c.Id == cGroup.CourseId);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanUpdateCoursePolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
             _context.CourseGroups.Add(cGroup);
             await _context.SaveChangesAsync();
 
@@ -253,15 +266,16 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteGroup/{groupId}")]
         public async Task<ActionResult<CourseGroupDTO>> DeleteCourseGroup(Guid courseId, Guid groupId) {
             var courseGroup = await _context.CourseGroups
+                .Include(cg => cg.Course)
                 .Include(cg => cg.Group)
                 .FirstOrDefaultAsync(cg => cg.CourseId == courseId && cg.GroupId == groupId);
 
             if (courseGroup is null)
                 return NotFound();
 
-            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
-            //if (!authorization.Succeeded)
-            //    return Forbid();
+            var authorization = await authorizationService.AuthorizeAsync(User, courseGroup.Course, AuthorizationConstants.CanUpdateCoursePolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
 
             _context.CourseGroups.Remove(courseGroup);
             await _context.SaveChangesAsync();
@@ -289,6 +303,14 @@ namespace PortalTeme.API.Controllers {
                 return BadRequest(ModelState);
             }
 
+            var course = await _context.Courses
+               .Include(c => c.Professor)
+               .FirstOrDefaultAsync(c => c.Id == cStudent.CourseId);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanUpdateCoursePolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
             _context.CourseStudents.Add(cStudent);
             await _context.SaveChangesAsync();
 
@@ -303,15 +325,16 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteStudent/{studentId}")]
         public async Task<ActionResult<CourseStudentDTO>> DeleteCourseStudent(Guid courseId, string studentId) {
             var courseStudent = await _context.CourseStudents
+                .Include(cs => cs.Course)
                 .Include(cs => cs.Student).ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
 
             if (courseStudent is null)
                 return NotFound();
 
-            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
-            //if (!authorization.Succeeded)
-            //    return Forbid();
+            var authorization = await authorizationService.AuthorizeAsync(User, courseStudent.Course, AuthorizationConstants.CanUpdateCoursePolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
 
             _context.CourseStudents.Remove(courseStudent);
             await _context.SaveChangesAsync();

@@ -20,6 +20,9 @@ namespace PortalTeme.Data.Authorization.Policies {
 
         public async Task HandleCourseRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Course resource) {
 
+            if (!context.PendingRequirements.Contains(requirement))
+                return;
+
             if (requirement.Name == Operations.Create.Name) {
                 var canCreate = context.User.IsInRole(AuthorizationConstants.ProfessorRoleName);
                 if (canCreate) {

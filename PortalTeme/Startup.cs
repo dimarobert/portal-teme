@@ -325,6 +325,12 @@ namespace PortalTeme {
                 policy.AddRequirements(Common.Authorization.Operations.Update);
             });
 
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditCourseAssistantsPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.CourseEditAssistents);
+            });
+
             options.AddPolicy(Common.Authorization.AuthorizationConstants.CanDeleteCoursePolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
