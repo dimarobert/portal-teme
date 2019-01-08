@@ -76,7 +76,7 @@
   <mat-footer-row *matFooterRowDef="[ displayedColumns[0] ]" [ngClass]="{ 'hide': hasData }"></mat-footer-row>
 </mat-table>
 
-<button mat-raised-button color="primary" (click)="add()" *ngIf="canAdd">Add</button>
+<button mat-raised-button color="primary" class="grid-add-button" (click)="add()" *ngIf="canAdd"><mat-icon>add_to_photos</mat-icon>Add</button>
 
 <mat-list *ngIf="hasAnyError()">
   <mat-list-item class="text-danger" *ngFor="let error of errors | keys">
