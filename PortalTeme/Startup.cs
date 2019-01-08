@@ -58,7 +58,11 @@ namespace PortalTeme {
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityContextConnection"))
             );
 
-            services.AddIdentityCore<User>()
+            services.AddIdentityCore<User>(options => {
+                options.ClaimsIdentity.UserIdClaimType = JwtClaimTypes.Subject;
+                options.ClaimsIdentity.UserNameClaimType = JwtClaimTypes.Name;
+                options.ClaimsIdentity.RoleClaimType = JwtClaimTypes.Role;
+            })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
 
@@ -86,6 +90,7 @@ namespace PortalTeme {
 
             services.AddAuthorization(SetupAuthorization);
 
+            services.AddScoped<IAuthorizationHandler, AdminAuthorizatonHandler>();
             services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, AssignmentAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, GroupsAuthorizationHandler>();
