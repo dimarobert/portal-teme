@@ -10,16 +10,12 @@ namespace PortalTeme.Data.Authorization.Policies {
 
             switch (requirement.Name) {
                 case nameof(Operations.ViewDomains):
-                    var canView = context.User.IsInRole(AuthorizationConstants.AdministratorRoleName) ||
-                    context.User.IsInRole(AuthorizationConstants.ProfessorRoleName);
+                    var canView = context.User.IsInRole(AuthorizationConstants.ProfessorRoleName);
                     if (canView)
                         context.Succeed(requirement);
                     break;
 
                 case nameof(Operations.EditDomains):
-                    var isAdmin = context.User.IsInRole(AuthorizationConstants.AdministratorRoleName);
-                    if (isAdmin)
-                        context.Succeed(requirement);
                     break;
             }
 

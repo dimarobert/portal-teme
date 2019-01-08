@@ -51,11 +51,11 @@ namespace PortalTeme.API.Controllers {
         // GET: api/Courses/Ref
         [HttpGet("Ref")]
         public async Task<ActionResult<IEnumerable<CourseEditDTO>>> GetCoursesRef() {
-
             var courses = await _context.Courses
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
                 .ToListAsync();
+
             var results = new List<CourseEditDTO>();
             foreach (var course in courses) {
                 if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
