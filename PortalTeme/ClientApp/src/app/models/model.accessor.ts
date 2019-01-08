@@ -1,5 +1,5 @@
 import { BaseModel } from './base.model';
-import { CourseGroup, CourseStudent, CourseAssistant } from './course.model';
+import { CourseGroup } from './course.model';
 
 export interface ModelAccessor {
 
