@@ -50,22 +50,37 @@
     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
     <mat-cell *matCellDef="let element">
       <ng-container *ngIf="canAdd">
-        <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)" (click)="saveElement(element)"><mat-icon>save</mat-icon>Save</button>
-        <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="remove(element)"><mat-icon>cancel_presentation</mat-icon>Cancel</button>
+        <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)" (click)="saveElement(element)">
+          <mat-icon>save</mat-icon>
+          <span class="icon-button-text">Save</span>
+        </button>
+        <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="remove(element)">
+          <mat-icon>cancel_presentation</mat-icon>
+          <span class="icon-button-text">Cancel</span>
+        </button>
       </ng-container>
 
       <ng-container *ngIf="canEdit">
         <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
           (click)="edit(element)">Edit</button>
-        <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)" (click)="saveElement(element)"><mat-icon>update</mat-icon>Update</button>
-        <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)" (click)="cancelEdit(element)"><mat-icon>cancel_presentation</mat-icon>Cancel</button>
+        <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)" (click)="saveElement(element)">
+          <mat-icon>update</mat-icon>
+          <span class="icon-button-text">Update</span>
+        </button>
+        <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)" (click)="cancelEdit(element)">
+          <mat-icon>cancel_presentation</mat-icon>
+          <span class="icon-button-text">Cancel</span>
+        </button>
       </ng-container>
       <ng-container *ngIf="customEdit">
         <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
           (click)="customEditAction(element)">Edit</button>
       </ng-container>
       <ng-container *ngIf="canDelete && !isInEditMode(element)">
-        <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)" (click)="deleteElement(element)"><mat-icon>delete</mat-icon> Delete</button>
+        <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)" (click)="deleteElement(element)">
+          <mat-icon>delete</mat-icon>
+          <span class="icon-button-text">Delete</span>
+        </button>
       </ng-container>
     </mat-cell>
   </ng-container>
@@ -76,7 +91,10 @@
   <mat-footer-row *matFooterRowDef="[ displayedColumns[0] ]" [ngClass]="{ 'hide': hasData }"></mat-footer-row>
 </mat-table>
 
-<button mat-raised-button color="primary" class="grid-add-button" (click)="add()" *ngIf="canAdd"><mat-icon>add_to_photos</mat-icon> Add</button>
+<button mat-raised-button color="primary" class="grid-add-button" (click)="add()" *ngIf="canAdd">
+  <mat-icon>add_to_photos</mat-icon>
+  <span class="icon-button-text">Add</span>
+</button>
 
 <mat-list *ngIf="hasAnyError()">
   <mat-list-item class="text-danger" *ngFor="let error of errors | keys">
@@ -84,7 +102,7 @@
     <div matLine *ngFor="let valLine of error.value">
       <div class="value">
         <mat-icon>warning</mat-icon>
-        {{valLine}}
+        <span class="icon-button-text">{{valLine}}</span>
       </div>
     </div>
     <mat-divider></mat-divider>
