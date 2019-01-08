@@ -36,7 +36,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Groups).ThenInclude(c => c.Group)
-                .Include(c => c.Students)
+                .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
                 .Include(c => c.Assignments)
                 .ToListAsync();
             var results = new List<CourseViewDTO>();
