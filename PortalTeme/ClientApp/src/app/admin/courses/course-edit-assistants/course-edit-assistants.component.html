@@ -1,3 +1,12 @@
-<app-data-table [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No assistents assigned to the course'" [modelAccessor]="modelAccessor"
-  [canAdd]="true" [save]="save" [canDelete]="true" [delete]="delete">
-</app-data-table>
+
+<mat-card class="example-card">
+  <mat-card-header>
+    <mat-card-title><mat-icon>record_voice_over</mat-icon>  Assistents</mat-card-title>
+    <mat-card-subtitle>Add or delete assistents.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+      <app-data-table [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No assistents assigned to the course'" [modelAccessor]="modelAccessor"
+      [canAdd]="true" [save]="save" [canDelete]="true" [delete]="delete">
+    </app-data-table>      
+  </mat-card-content>
+</mat-card>
