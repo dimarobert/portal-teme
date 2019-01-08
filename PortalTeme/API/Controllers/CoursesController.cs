@@ -32,9 +32,9 @@ namespace PortalTeme.API.Controllers {
         public async Task<ActionResult<IEnumerable<CourseViewDTO>>> GetCourses() {
 
             var courses = await _context.Courses
+                .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
                 .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
-                .Include(c => c.CourseInfo)
                 .Include(c => c.Groups).ThenInclude(c => c.Group)
                 .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
                 .Include(c => c.Assignments)
@@ -43,6 +43,23 @@ namespace PortalTeme.API.Controllers {
             foreach (var course in courses) {
                 if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
                     results.Add(courseMapper.MapCourseView(course));
+            }
+
+            return results;
+        }
+
+        // GET: api/Courses/Ref
+        [HttpGet("Ref")]
+        public async Task<ActionResult<IEnumerable<CourseEditDTO>>> GetCoursesRef() {
+
+            var courses = await _context.Courses
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Professor)
+                .ToListAsync();
+            var results = new List<CourseEditDTO>();
+            foreach (var course in courses) {
+                if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
+                    results.Add(courseMapper.MapCourseEdit(course));
             }
 
             return results;
@@ -167,6 +184,10 @@ namespace PortalTeme.API.Controllers {
                 ModelState.AddModelError(string.Empty, "The assistent you are trying to add already exists.");
                 return BadRequest(ModelState);
             }
+
+            //var authorization = await authorizationService.AuthorizeAsync(User, courseAssistant, AuthorizationConstants.CanDeleteCoursePolicy);
+            //if (!authorization.Succeeded)
+            //    return Forbid();
 
             _context.CourseAssistants.Add(cAssistant);
             await _context.SaveChangesAsync();
