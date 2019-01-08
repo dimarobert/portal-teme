@@ -128,10 +128,6 @@ export class DataTableComponent implements OnInit {
     return control.touched && control.invalid;
   }
 
-  showError(element: object){
-    
-  }
-
   getError(element: object, field: string): string {
     let control = this.getFormControl(element, field);
     if (control.valid)
@@ -182,6 +178,7 @@ export class DataTableComponent implements OnInit {
 
   cancelEdit(element: any) {
     this.activeForms.delete(element);
+    this.errors = {};
   }
 
   remove(element: any) {
@@ -192,6 +189,7 @@ export class DataTableComponent implements OnInit {
     this.hasData = newData.length > 0;
 
     this.activeForms.delete(element);
+    this.errors = {};
   }
 
   saveElement(element: any) {

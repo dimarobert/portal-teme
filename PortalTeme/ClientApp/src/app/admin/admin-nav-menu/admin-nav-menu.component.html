@@ -1,11 +1,14 @@
-<mat-toolbar><mat-icon>dashboard</mat-icon> Admin Dashboard</mat-toolbar>
+<mat-toolbar>
+    <mat-icon>dashboard</mat-icon>
+    <span class="icon-title-text">Admin Dashboard</span>
+</mat-toolbar>
 
 <nav mat-tab-nav-bar [backgroundColor]="['primary']">
     <ng-container *ngIf="(menuState | async) == AdminMenuState.AdminMenu">
         <a mat-tab-link *ngFor="let link of adminLinks" [routerLink]="getAdminRelativeCommands(link)" routerLinkActive
             #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive" (click)="link.action()">
-            <mat-icon>{{link.icon}}</mat-icon>  
-            {{link.label}}
+            <mat-icon>{{link.icon}}</mat-icon>
+            <span class="tab-text">{{link.label}}</span>
         </a>
     </ng-container>
     <ng-container *ngIf="(menuState | async) == AdminMenuState.EditCourseMenu">
@@ -13,7 +16,7 @@
             routerLinkActive #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive"
             (click)="link.action()">
             <mat-icon>{{link.icon}}</mat-icon>
-            {{link.label}}
+            <span class="tab-text">{{link.label}}</span>
         </a>
     </ng-container>
 </nav>
