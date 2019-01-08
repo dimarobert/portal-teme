@@ -104,6 +104,10 @@ export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TMo
 })
 export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ModelServiceBase<TViewModel>  {
 
+  public getAllRef(): Observable<TEditModel[]> {
+    return this.http.get<TEditModel[]>(`${this.apiRoot}/Ref`);
+  }
+
   public save(model: TEditModel): Promise<TEditModel> {
     return this.http.post<TEditModel>(this.apiRoot, model)
       .pipe(take(1))
