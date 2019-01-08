@@ -7,7 +7,7 @@ import { nameof } from '../../../type-guards/nameof.guard';
 import { DatasourceColumnDefinition, ColumnType } from './../../../models/column-definition.model';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { NamedModelItemDatasource, CustomModelItemDatasource } from '../../../datasources/named-model.item-datasource';
-import { ModelAccessor, CourseGroupModelAccessor, CourseStudentModelAccessor } from '../../../models/model.accessor';
+import { ModelAccessor, CourseGroupModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
 import { CustomItemAccessor } from '../../..//models/item.accesor';
 
 import { StudyGroup } from './../../../models/study-group.model';
@@ -55,7 +55,7 @@ export class CourseEditAttendeesComponent implements OnInit {
     this.students = new BehaviorSubject([]);
 
     this.groupsModelAccessor = new CourseGroupModelAccessor();
-    this.studentsModelAccessor = new CourseStudentModelAccessor();
+    this.studentsModelAccessor = new BaseModelAccessor();
 
     this.groupColumnDefs = new DataTableColumns([
       <DatasourceColumnDefinition<StudyGroup>>{
@@ -78,9 +78,8 @@ export class CourseEditAttendeesComponent implements OnInit {
           findByValue: (item, value) => item.id == value,
           modelName: 'student'
         }),
-        itemAccessor: new CustomItemAccessor<CourseStudent>(null, item => item.student.id, (item, value) => {
-          item.student = item.student || <User>{};
-          item.student.id = value;
+        itemAccessor: new CustomItemAccessor<User>(null, item => item.id, (item, value) => {
+          item.id = value;
         })
       }
     ]);
@@ -104,8 +103,7 @@ export class CourseEditAttendeesComponent implements OnInit {
 
       this.groupList.next(this.currentCourse.groups);
       this.studentList.next(this.currentCourse.students);
-    }
-    );
+    });
   }
 
   saveGroup(element: CourseGroup): Promise<CourseGroup> {
@@ -119,13 +117,21 @@ export class CourseEditAttendeesComponent implements OnInit {
   }
 
 
-  saveStudent(element: CourseStudent): Promise<CourseStudent> {
-    element.courseId = this.currentCourse.id;
-    return this.modelSvcFactory.courseRelations.addStudent(element);
+  saveStudent(element: User): Promise<User> {
+    const value = <CourseStudent>{
+      courseId: this.courseId,
+      student: element
+    };
+    return this.modelSvcFactory.courseRelations.addStudent(value)
+      .then(cs => cs.student);
   }
 
-  deleteStudent(element: CourseStudent): Promise<CourseStudent> {
-    element.courseId = this.currentCourse.id;
-    return this.modelSvcFactory.courseRelations.deleteStudent(element);
+  deleteStudent(element: User): Promise<User> {
+    const value = <CourseStudent>{
+      courseId: this.courseId,
+      student: element
+    };
+    return this.modelSvcFactory.courseRelations.deleteStudent(value)
+      .then(cs => cs.student);
   }
 }

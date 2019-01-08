@@ -33,7 +33,7 @@ namespace PortalTeme.API.Controllers {
 
             var courses = await _context.Courses
                 .Include(c => c.Professor)
-                .Include(c => c.Assistants)
+                .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Groups).ThenInclude(c => c.Group)
                 .Include(c => c.Students)
@@ -54,9 +54,9 @@ namespace PortalTeme.API.Controllers {
             var course = await _context.Courses
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
-                .Include(c => c.Assistants)
+                .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
                 .Include(c => c.Groups).ThenInclude(c => c.Group)
-                .Include(c => c.Students)
+                .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
                 //.Include(c => c.Assignments)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -176,6 +176,7 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteAssistant/{assistantId}")]
         public async Task<ActionResult<CourseAssistantDTO>> DeleteCourseAssistant(Guid courseId, string assistantId) {
             var courseAssistant = await _context.CourseAssistants
+                .Include(ca => ca.Assistant)
                 .FirstOrDefaultAsync(ca => ca.CourseId == courseId && ca.AssistantId == assistantId);
 
             if (courseAssistant is null)
@@ -253,7 +254,7 @@ namespace PortalTeme.API.Controllers {
             await _context.SaveChangesAsync();
 
             cStudent = await _context.CourseStudents
-                .Include(cs => cs.Student)
+                .Include(cs => cs.Student).ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(cs => cs.CourseId == cStudent.CourseId && cs.StudentId == cStudent.StudentId);
 
             return CreatedAtAction("GetCourse", new { id = cStudent.CourseId }, courseMapper.MapCourseStudent(cStudent));
@@ -261,8 +262,9 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/Courses/5/DeleteStudent/6
         [HttpDelete("{courseId}/DeleteStudent/{studentId}")]
-        public async Task<ActionResult<CourseStudentDTO>> DeleteCourseGroup(Guid courseId, string studentId) {
+        public async Task<ActionResult<CourseStudentDTO>> DeleteCourseStudent(Guid courseId, string studentId) {
             var courseStudent = await _context.CourseStudents
+                .Include(cs => cs.Student).ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
 
             if (courseStudent is null)
