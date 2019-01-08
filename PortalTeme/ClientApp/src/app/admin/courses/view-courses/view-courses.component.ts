@@ -26,7 +26,6 @@ export class ViewCoursesComponent implements OnInit {
   data: BehaviorSubject<Course[]>;
 
   ngOnInit() {
-    this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
     this.delete = this.delete.bind(this);
 
@@ -57,10 +56,6 @@ export class ViewCoursesComponent implements OnInit {
       .subscribe(results => {
         this.data.next(results);
       });
-  }
-
-  save(element: CourseEdit): Promise<CourseEdit> {
-    return this.modelSvcFactory.courses.save(element);
   }
 
   edit(element: CourseEdit) {

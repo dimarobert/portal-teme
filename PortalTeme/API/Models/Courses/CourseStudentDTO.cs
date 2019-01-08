@@ -6,4 +6,5 @@ namespace PortalTeme.API.Models.Courses {
 
         public UserDTO Student { get; set; }
     }
+
 }

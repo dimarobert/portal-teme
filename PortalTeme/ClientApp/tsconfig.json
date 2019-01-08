@@ -17,6 +17,6 @@
       "dom"
     ],
     "module": "es2015",
-    "baseUrl": "./"
+    // "baseUrl": "./" // disabled this so that vscode would AutoImport with relative paths.
   }
 }

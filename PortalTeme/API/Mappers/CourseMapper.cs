@@ -47,7 +47,7 @@ namespace PortalTeme.API.Mappers {
                 Professor = MapUser(course.Professor),
                 Assistants = course.Assistants.Select(assistant => MapAssistant(assistant)).ToList(),
                 Groups = course.Groups.Select(group => MapGroupRef(group)).ToList(),
-                Students = course.Students.Select(student => MapStudent(student)).ToList()
+                Students = course.Students.Select(student => MapStudent(student.Student)).ToList()
             };
         }
 
@@ -103,11 +103,11 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private static UserDTO MapStudent(CourseStudent student) {
+        private static UserDTO MapStudent(StudentInfo student) {
             return new UserDTO {
-                Id = student.StudentId,
-                FirstName = student.Student.User.FirstName,
-                LastName = student.Student.User.LastName
+                Id = student.UserId,
+                FirstName = student.User.FirstName,
+                LastName = student.User.LastName
             };
         }
 
@@ -239,7 +239,7 @@ namespace PortalTeme.API.Mappers {
         public CourseStudentDTO MapCourseStudent(CourseStudent courseStudent) {
             return new CourseStudentDTO {
                 CourseId = courseStudent.CourseId,
-                Student = MapStudent(courseStudent)
+                Student = MapStudent(courseStudent.Student)
             };
         }
     }
