@@ -4,6 +4,7 @@
     <ng-container *ngIf="(menuState | async) == AdminMenuState.AdminMenu">
         <a mat-tab-link *ngFor="let link of adminLinks" [routerLink]="getAdminRelativeCommands(link)" routerLinkActive
             #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive" (click)="link.action()">
+            <mat-icon>{{link.icon}}</mat-icon>  
             {{link.label}}
         </a>
     </ng-container>
@@ -11,6 +12,7 @@
         <a mat-tab-link *ngFor="let link of editCourseLinks" [routerLink]="getAdminRelativeCommands(link)"
             routerLinkActive #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive"
             (click)="link.action()">
+            <mat-icon>{{link.icon}}</mat-icon>
             {{link.label}}
         </a>
     </ng-container>
