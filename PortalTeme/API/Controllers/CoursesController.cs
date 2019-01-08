@@ -162,6 +162,12 @@ namespace PortalTeme.API.Controllers {
 
             var cAssistant = courseMapper.MapCourseAssistantDTO(assistant);
 
+            var existingAssistant = await _context.CourseAssistants.FindAsync(cAssistant.CourseId, cAssistant.AssistantId);
+            if (existingAssistant != null) {
+                ModelState.AddModelError(string.Empty, "The assistent you are trying to add already exists.");
+                return BadRequest(ModelState);
+            }
+
             _context.CourseAssistants.Add(cAssistant);
             await _context.SaveChangesAsync();
 
@@ -206,6 +212,12 @@ namespace PortalTeme.API.Controllers {
 
             var cGroup = courseMapper.MapCourseGroupDTO(group);
 
+            var existingGroup = await _context.CourseGroups.FindAsync(cGroup.CourseId, cGroup.GroupId);
+            if (existingGroup != null) {
+                ModelState.AddModelError(string.Empty, "The group you are trying to add already exists.");
+                return BadRequest(ModelState);
+            }
+
             _context.CourseGroups.Add(cGroup);
             await _context.SaveChangesAsync();
 
@@ -249,6 +261,12 @@ namespace PortalTeme.API.Controllers {
             }
 
             var cStudent = courseMapper.MapCourseStudentDTO(student);
+
+            var existingStudent = await _context.CourseStudents.FindAsync(cStudent.CourseId, cStudent.StudentId);
+            if (existingStudent != null) {
+                ModelState.AddModelError(string.Empty, "The student you are trying to add already exists.");
+                return BadRequest(ModelState);
+            }
 
             _context.CourseStudents.Add(cStudent);
             await _context.SaveChangesAsync();
