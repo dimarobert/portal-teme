@@ -31,23 +31,28 @@ export class AdminNavMenuComponent implements OnInit {
     this.adminLinks = [
       new NavLink({
         label: 'Years',
-        commands: ['years']
+        commands: ['years'],
+        icon: 'calendar_today'
       }),
       new NavLink({
         label: 'Study Domains',
-        commands: ['study-domains']
+        commands: ['study-domains'],
+        icon: 'class'
       }),
       new NavLink({
         label: 'Study Groups',
-        commands: ['study-groups']
+        commands: ['study-groups'],
+        icon: 'chrome_reader_mode'
       }),
       new NavLink({
         label: 'Course Definitions',
-        commands: ['course-definitions']
+        commands: ['course-definitions'],
+        icon: 'extension'
       }),
       new NavLink({
         label: 'Courses',
-        commands: ['courses']
+        commands: ['courses'],
+        icon: 'art_track'
       })
     ];
   }
@@ -57,23 +62,27 @@ export class AdminNavMenuComponent implements OnInit {
       new NavLink({
         label: 'Back',
         commands: ['courses'],
-        exact: true
+        exact: true,
+        icon: 'arrow_left'
       }),
       new NavLink({
         label: 'Basic Information',
         commands: ['./'],
         exact: true,
-        relativeTo: CourseEditRouterComponent
+        relativeTo: CourseEditRouterComponent,
+        icon: 'supervisor_account'
       }),
       new NavLink({
         label: 'Assistants',
         commands: ['assistants'],
-        relativeTo: CourseEditRouterComponent
+        relativeTo: CourseEditRouterComponent,
+        icon: 'record_voice_over'
       }),
       new NavLink({
         label: 'Attendees',
         commands: ['attendees'],
-        relativeTo: CourseEditRouterComponent
+        relativeTo: CourseEditRouterComponent,
+        icon: 'people'
       })
     ];
   }
@@ -125,12 +134,17 @@ class NavLink implements NavLinkOptions {
   get action(): () => void {
     return this.options.action || (() => { });
   }
+
+  get icon(): string{
+    return this.options.icon;
+  }
 }
 
 interface NavLinkOptions {
   label: string;
   commands: any[];
 
+  icon?: string;
   relativeTo?: Type<any>;
   exact?: boolean;
   action?: () => void;
