@@ -23,7 +23,7 @@ export class ViewCoursesComponent implements OnInit {
   columnDefs: DataTableColumns;
 
   modelAccessor: ModelAccessor;
-  data: BehaviorSubject<Course[]>;
+  data: BehaviorSubject<CourseEdit[]>;
 
   ngOnInit() {
     this.edit = this.edit.bind(this);
@@ -34,12 +34,12 @@ export class ViewCoursesComponent implements OnInit {
 
     this.columnDefs = new DataTableColumns([
       {
-        id: nameof<Course>('courseDef'),
+        id: nameof<CourseEdit>('courseDef'),
         title: 'Course',
         itemAccessor: new RelatedItemAccessor<CourseDefinitionRef>(cd => cd.name)
       },
       {
-        id: nameof<Course>('professor'),
+        id: nameof<CourseEdit>('professor'),
         title: 'Professor',
         itemAccessor: new RelatedItemAccessor<User>(p => `${p.firstName} ${p.lastName}`)
       }],
@@ -51,7 +51,7 @@ export class ViewCoursesComponent implements OnInit {
   }
 
   private getData() {
-    this.modelSvcFactory.courses.getAll()
+    this.modelSvcFactory.courses.getAllRef()
       .pipe(take(1))
       .subscribe(results => {
         this.data.next(results);
@@ -62,7 +62,7 @@ export class ViewCoursesComponent implements OnInit {
     this.router.navigate(['../', 'course', element.id], { relativeTo: this.route });
   }
 
-  delete(element: Course): Promise<Course> {
+  delete(element: CourseEdit): Promise<Course> {
     return this.modelSvcFactory.courses.delete(element.id);
   }
 }

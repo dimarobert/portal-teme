@@ -20,12 +20,6 @@ namespace PortalTeme.Data.Authorization.Policies {
 
         public async Task HandleCourseRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, Course resource) {
 
-            var isAdmin = context.User.IsInRole(AuthorizationConstants.AdministratorRoleName);
-            if (isAdmin) {
-                context.Succeed(requirement);
-                return;
-            }
-
             if (requirement.Name == Operations.Create.Name) {
                 var canCreate = context.User.IsInRole(AuthorizationConstants.ProfessorRoleName);
                 if (canCreate) {
@@ -53,11 +47,12 @@ namespace PortalTeme.Data.Authorization.Policies {
             if (requirement.Name == Operations.Read.Name) {
 
                 var isAssignedStudent = resource.Students.Any(student => student.StudentId == currentUser.Id);
-                if (!isAssignedStudent) {
+                if (!isAssignedStudent && resource.Groups.Any()) {
                     var student = await temeContext.Students
                         .Include(s => s.Group)
-                        .FirstAsync(s => s.UserId == currentUser.Id);
-                    isAssignedStudent = resource.Groups.Any(group => group.GroupId == student.Group.Id);
+                        .FirstOrDefaultAsync(s => s.UserId == currentUser.Id);
+                    if (!(student is null))
+                        isAssignedStudent = resource.Groups.Any(group => group.GroupId == student.Group.Id);
                 }
 
                 if (isAssignedStudent) {
