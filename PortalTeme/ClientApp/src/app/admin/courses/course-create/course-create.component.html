@@ -1,5 +1,9 @@
+<mat-toolbar><mat-icon>apps</mat-icon> Course Management</mat-toolbar>
 <mat-card class="register-card">
-
+    <mat-card-header>
+            <mat-card-title><mat-icon>person</mat-icon><mat-icon>arrow_forward</mat-icon><mat-icon>subject</mat-icon>  Basic Information</mat-card-title>
+            <mat-card-subtitle>Please match a Curse definition with a profesor.</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
 
         <form [formGroup]="createCourseForm" (ngSubmit)="save()">
