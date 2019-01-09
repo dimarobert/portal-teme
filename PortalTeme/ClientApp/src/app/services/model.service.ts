@@ -38,9 +38,9 @@ export class ModelServiceFactory {
   }
 
 
-  private _coursesService: ComplexModelService<Course, CourseEdit> = null;
-  public get courses(): ComplexModelService<Course, CourseEdit> {
-    return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
+  private _coursesService: CourseModelService = null;
+  public get courses(): CourseModelService {
+    return this._coursesService || (this._coursesService = new CourseModelService('Courses', this.http));
   }
 
   private _courseRelationsService: CourseRelationsService = null;
@@ -113,6 +113,14 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
       )
       .toPromise();
   }
+}
+
+export class CourseModelService extends ComplexModelService<Course, CourseEdit>{
+
+  public getBySlug(slug: string): Observable<Course> {
+    return this.http.get<Course>(`${this.apiRoot}/slug/${slug}`);
+  }
+
 }
 
 @Injectable({

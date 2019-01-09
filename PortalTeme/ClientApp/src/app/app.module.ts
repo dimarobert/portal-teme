@@ -41,6 +41,7 @@ import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assis
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
 import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
 import { CourseEditRouterComponent } from './admin/courses/course-edit-router/course-edit-router.component';
+import { CoursePageComponent } from './user-pages/course-page/course-page.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -84,7 +85,9 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseCreateComponent,
 
-    CourseEditAttendeesComponent
+    CourseEditAttendeesComponent,
+
+    CoursePageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -97,7 +100,7 @@ const httpInterceptorProviders: Provider[] = [
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'my-courses', component: MyCoursesComponent, canActivate: [AuthGuard] },
+      { path: 'course/:slug', component: CoursePageComponent, canActivate: [AuthGuard] },
       {
         path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
         data: { roles: ['Admin'] },

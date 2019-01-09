@@ -11,14 +11,14 @@
 
       <ng-container *ngIf="(isAuthenticated$ | async)">
         <mat-divider></mat-divider>
-        <button cdkAccordionItem #panel="cdkAccordionItem" (click)="panel.toggle()" [attr.aria-controls]="'panel-courses'"
-          [attr.aria-expanded]="panel.expanded">
+        <button cdkAccordionItem #panelCourses="cdkAccordionItem" (click)="panelCourses.toggle()" [attr.aria-controls]="'panel-courses'"
+          [attr.aria-expanded]="panelCourses.expanded">
           <span>My Courses</span>
-          <mat-icon>{{panel.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+          <mat-icon>{{panelCourses.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
         </button>
-        <ul [@bodyExpansion]="panel.expanded ? 'expanded' : 'collapsed'" id="panel-courses">
+        <ul [@bodyExpansion]="panelCourses.expanded ? 'expanded' : 'collapsed'" id="panel-courses">
           <li *ngFor="let course of courses | async">
-            <a mat-list-item [routerLink]="['/course', course.slug]" routerLinkActive="active" (click)="toggleSidenav()">
+            <a mat-list-item [routerLink]="['/course', course.courseDef.slug]" routerLinkActive="active" (click)="toggleSidenav()">
               {{course.courseDef.name}}
             </a>
           </li>

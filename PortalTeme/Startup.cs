@@ -26,6 +26,7 @@ using PortalTeme.Data.Authorization.Policies;
 using PortalTeme.Data.Identity;
 using PortalTeme.Extensions.CacheExtensions;
 using PortalTeme.Routing;
+using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -65,6 +66,8 @@ namespace PortalTeme {
             })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
+
+            services.AddSingleton<IUrlSlugService, UrlSlugService>();
 
             services.AddScoped<ICourseMapper, CourseMapper>();
             services.AddScoped<IAssignmentMapper, AssignmentMapper>();
