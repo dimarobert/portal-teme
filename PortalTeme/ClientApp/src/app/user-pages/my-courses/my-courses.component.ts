@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../authentication/services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { Course } from '../../models/course.model';
 
@@ -14,17 +14,19 @@ export class MyCoursesComponent implements OnInit {
   constructor(private auth: AuthService, private modelSvcFactory: ModelServiceFactory) { }
 
 
+  courses: BehaviorSubject<Course[]>;
+
   ngOnInit() {
+    this.courses = new BehaviorSubject([]);
 
+    this.getData();
   }
 
-  //get courses(): Observable<Course>{
-
-  //}
-
-  get canAddCourses$(): Observable<boolean> {
-    return this.auth.canAddCourse();
+  getData() {
+    const courses$ = this.modelSvcFactory.courses.getAllRef();
   }
+
+
 
 
 }

@@ -5,6 +5,7 @@ using PortalTeme.API.Mappers;
 using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
+using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,12 @@ namespace PortalTeme.API.Controllers {
     public class CourseDefinitionsController : ControllerBase {
         private readonly PortalTemeContext _context;
         private readonly ICourseMapper courseMapper;
+        private readonly IUrlSlugService slugService;
 
-        public CourseDefinitionsController(PortalTemeContext context, ICourseMapper courseMapper) {
+        public CourseDefinitionsController(PortalTemeContext context, ICourseMapper courseMapper, IUrlSlugService slugService) {
             _context = context;
             this.courseMapper = courseMapper;
+            this.slugService = slugService;
         }
 
         // GET: api/CourseDefinitions
@@ -57,6 +60,13 @@ namespace PortalTeme.API.Controllers {
             }
 
             var courseDef = courseMapper.MapDefinitionDTO(courseDefinition, year);
+            courseDef.Slug = slugService.TransformText(courseDef.Name);
+
+            var existingDef = await _context.CourseDefinitions.FirstOrDefaultAsync(c => c.Id != courseDef.Id && c.Slug == courseDef.Slug);
+            if (!(existingDef is null)) {
+                ModelState.AddModelError("name", $"Failed to generate unique url slug from the course name. The generated slug ({courseDef.Slug}) is used by another course.");
+                return BadRequest(ModelState);
+            }
 
             _context.Entry(courseDef).State = EntityState.Modified;
 
@@ -80,7 +90,15 @@ namespace PortalTeme.API.Controllers {
                 ModelState.AddModelError("year", "Invalid course year provided.");
                 return BadRequest(ModelState);
             }
+
             var courseDef = courseMapper.MapDefinitionDTO(courseDefinition, year);
+            courseDef.Slug = slugService.TransformText(courseDef.Name);
+
+            var existingDef = await _context.CourseDefinitions.FirstOrDefaultAsync(c => c.Slug == courseDef.Slug);
+            if (!(existingDef is null)) {
+                ModelState.AddModelError("name", $"Failed to generate unique url slug. The generated slug ({courseDef.Slug}) is used by another course.");
+                return BadRequest(ModelState);
+            }
 
             _context.CourseDefinitions.Add(courseDef);
             await _context.SaveChangesAsync();

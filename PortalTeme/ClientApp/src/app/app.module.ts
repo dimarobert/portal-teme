@@ -8,13 +8,10 @@ import { RouterModule } from '@angular/router';
 import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LayoutModule } from '@angular/cdk/layout';
 import { LoginPageComponent } from './authentication/login-page/login-page.component';
-import { RegisterPageComponent } from './authentication/register-page/register-page.component';
 
 import { NotFoundPageComponent } from './error-pages/not-found-page/not-found-page.component';
 import { ErrorPageComponent } from './error-pages/error-page/error-page.component';
@@ -44,6 +41,7 @@ import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assis
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
 import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
 import { CourseEditRouterComponent } from './admin/courses/course-edit-router/course-edit-router.component';
+import { CoursePageComponent } from './user-pages/course-page/course-page.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -54,10 +52,7 @@ const httpInterceptorProviders: Provider[] = [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     LoginPageComponent,
-    RegisterPageComponent,
     ErrorPageComponent,
     NotFoundPageComponent,
     AccessDeniedPageComponent,
@@ -90,7 +85,9 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseCreateComponent,
 
-    CourseEditAttendeesComponent
+    CourseEditAttendeesComponent,
+
+    CoursePageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -103,7 +100,7 @@ const httpInterceptorProviders: Provider[] = [
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'my-courses', component: MyCoursesComponent, canActivate: [AuthGuard] },
+      { path: 'course/:slug', component: CoursePageComponent, canActivate: [AuthGuard] },
       {
         path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
         data: { roles: ['Admin'] },

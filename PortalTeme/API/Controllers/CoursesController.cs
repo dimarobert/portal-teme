@@ -87,6 +87,29 @@ namespace PortalTeme.API.Controllers {
             return courseMapper.MapCourseView(course);
         }
 
+        // GET: api/Courses/Slug/my-course
+        [HttpGet("slug/{slug}")]
+        public async Task<ActionResult<CourseViewDTO>> GetCourseBySlug(string slug) {
+            var course = await _context.Courses
+                .Include(c => c.CourseInfo)
+                .Include(c => c.Professor)
+                .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
+                .Include(c => c.Groups).ThenInclude(c => c.Group)
+                .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
+                //.Include(c => c.Assignments)
+                .FirstOrDefaultAsync(c => c.CourseInfo.Slug == slug);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
+            if (course is null)
+                return NotFound();
+
+            return courseMapper.MapCourseView(course);
+        }
+
+
         // PUT: api/Courses/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCourse(Guid id, CourseEditDTO course) {

@@ -40,6 +40,7 @@ namespace PortalTeme.API.Mappers {
     }
 
     public class CourseMapper : ICourseMapper {
+
         public CourseViewDTO MapCourseView(Course course) {
             return new CourseViewDTO {
                 Id = course.Id,
@@ -83,7 +84,8 @@ namespace PortalTeme.API.Mappers {
         private CourseDefinitionRefDTO MapCourseDefinitionRef(CourseDefinition courseDef) {
             return new CourseDefinitionRefDTO {
                 Id = courseDef.Id,
-                Name = courseDef.Name
+                Name = courseDef.Name,
+                Slug = courseDef.Slug
             };
         }
 

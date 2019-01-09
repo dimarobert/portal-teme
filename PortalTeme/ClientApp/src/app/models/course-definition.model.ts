@@ -1,4 +1,4 @@
-import { BaseModel, NamedModel } from './base.model';
+import { NamedModel } from './base.model';
 
 export interface CourseDefinition extends NamedModel {
     year: string;

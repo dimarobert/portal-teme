@@ -38,9 +38,9 @@ export class ModelServiceFactory {
   }
 
 
-  private _coursesService: ComplexModelService<Course, CourseEdit> = null;
-  public get courses(): ComplexModelService<Course, CourseEdit> {
-    return this._coursesService || (this._coursesService = new ComplexModelService<Course, CourseEdit>('Courses', this.http));
+  private _coursesService: CourseModelService = null;
+  public get courses(): CourseModelService {
+    return this._coursesService || (this._coursesService = new CourseModelService('Courses', this.http));
   }
 
   private _courseRelationsService: CourseRelationsService = null;
@@ -54,9 +54,6 @@ export class ModelServiceFactory {
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ModelServiceBase<TModel extends BaseModel> {
 
   constructor(private apiController: string, protected http: HttpClient) { }
@@ -80,9 +77,6 @@ export class ModelServiceBase<TModel extends BaseModel> {
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TModel> {
   public save(model: TModel): Promise<TModel> {
     return this.http.post<TModel>(this.apiRoot, model)
@@ -99,9 +93,6 @@ export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TMo
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ModelServiceBase<TViewModel>  {
 
   public getAllRef(): Observable<TEditModel[]> {
@@ -122,6 +113,14 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
       )
       .toPromise();
   }
+}
+
+export class CourseModelService extends ComplexModelService<Course, CourseEdit>{
+
+  public getBySlug(slug: string): Observable<Course> {
+    return this.http.get<Course>(`${this.apiRoot}/slug/${slug}`);
+  }
+
 }
 
 @Injectable({
@@ -201,9 +200,6 @@ export class CourseRelationsService {
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
 export class CachedModelService<TModel extends BaseModel> extends ModelService<TModel> {
   // TODO: Support for multiple users editing the data. 
   // This is a must because the app is a SPA and a full refresh would be required to view other users changes.
