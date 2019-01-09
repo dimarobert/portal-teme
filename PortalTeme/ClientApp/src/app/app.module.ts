@@ -8,13 +8,10 @@ import { RouterModule } from '@angular/router';
 import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LayoutModule } from '@angular/cdk/layout';
 import { LoginPageComponent } from './authentication/login-page/login-page.component';
-import { RegisterPageComponent } from './authentication/register-page/register-page.component';
 
 import { NotFoundPageComponent } from './error-pages/not-found-page/not-found-page.component';
 import { ErrorPageComponent } from './error-pages/error-page/error-page.component';
@@ -54,10 +51,7 @@ const httpInterceptorProviders: Provider[] = [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     LoginPageComponent,
-    RegisterPageComponent,
     ErrorPageComponent,
     NotFoundPageComponent,
     AccessDeniedPageComponent,

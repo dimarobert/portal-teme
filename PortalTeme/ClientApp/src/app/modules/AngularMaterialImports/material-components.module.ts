@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 
 import {
+  CdkAccordionModule
+} from '@angular/cdk/accordion';
+
+import {
   MatToolbarModule,
   MatButtonModule,
   MatIconModule,
@@ -20,6 +24,8 @@ import {
 } from '@angular/material';
 
 const importedMaterialComponents = [
+  CdkAccordionModule,
+
   MatTooltipModule,
   MatButtonModule,
   MatIconModule,

@@ -11,18 +11,27 @@
 
       <ng-container *ngIf="(isAuthenticated$ | async)">
         <mat-divider></mat-divider>
-        <a mat-list-item [routerLink]="['/my-courses']" [routerLinkActive]="['active']" (click)="toggleSidenav()">My Courses</a>
+        <button cdkAccordionItem #panel="cdkAccordionItem" (click)="panel.toggle()" [attr.aria-controls]="'panel-courses'"
+          [attr.aria-expanded]="panel.expanded">
+          <span>My Courses</span>
+          <mat-icon>{{panel.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+        </button>
+        <ul [@bodyExpansion]="panel.expanded ? 'expanded' : 'collapsed'" id="panel-courses">
+          <li *ngFor="let course of courses | async">
+            <a mat-list-item [routerLink]="['/course', course.slug]" routerLinkActive="active" (click)="toggleSidenav()">
+              {{course.courseDef.name}}
+            </a>
+          </li>
+        </ul>
       </ng-container>
 
       <ng-container *ngIf="isAdmin$ | async">
         <mat-divider></mat-divider>
-        <a mat-list-item [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
+        <a mat-list-item class="admin-button" [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
         <mat-divider></mat-divider>
       </ng-container>
     </mat-nav-list>
-    <mat-nav-list>
 
-    </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
@@ -39,13 +48,11 @@
 
         <ng-container *ngIf="!(isAuthenticated$ | async)">
           <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
-          <!-- <button mat-menu-item [routerLink]="['/register']" [queryParams]="{ returnUrl: returnUrl }">Register</button> -->
         </ng-container>
         <ng-container *ngIf="isAuthenticated$ | async">
           <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
           <a mat-menu-item (click)="logout()">Logout</a>
         </ng-container>
-        <!--<button mat-menu-item>Help</button>-->
       </mat-menu>
       <button mat-icon-button [matMenuTriggerFor]="userProfile" [matTooltip]="userDisplayName$ | async"
         matTooltipPosition="left" [matTooltipDisabled]="isHandset$ | async">
