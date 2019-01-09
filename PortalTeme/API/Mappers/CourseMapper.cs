@@ -1,4 +1,5 @@
 ﻿using PortalTeme.API.Models;
+using PortalTeme.API.Models.Assignments;
 using PortalTeme.API.Models.Courses;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
@@ -48,7 +49,20 @@ namespace PortalTeme.API.Mappers {
                 Professor = MapUser(course.Professor),
                 Assistants = course.Assistants.Select(assistant => MapAssistant(assistant)).ToList(),
                 Groups = course.Groups.Select(group => MapGroupRef(group)).ToList(),
-                Students = course.Students.Select(student => MapStudent(student.Student)).ToList()
+                Students = course.Students.Select(student => MapStudent(student.Student)).ToList(),
+                Assignments = course.Assignments.Select(assignment => MapAssignment(assignment)).ToList()
+            };
+        }
+
+        private AssignmentDTO MapAssignment(Assignment assignment) {
+            return new AssignmentDTO {
+                Id = assignment.Id,
+                Name = assignment.Name,
+                Description = assignment.Description,
+                DateAdded = assignment.DateAdded,
+                LastUpdated = assignment.LastUpdated,
+                StartDate = assignment.StartDate,
+                EndDate = assignment.EndDate
             };
         }
 
