@@ -77,12 +77,12 @@ namespace PortalTeme.API.Controllers {
                 //.Include(c => c.Assignments)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
+            if (course is null)
+                return NotFound();
+
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
-
-            if (course is null)
-                return NotFound();
 
             return courseMapper.MapCourseView(course);
         }
@@ -96,15 +96,15 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Assistants).ThenInclude(c => c.Assistant)
                 .Include(c => c.Groups).ThenInclude(c => c.Group)
                 .Include(c => c.Students).ThenInclude(s => s.Student).ThenInclude(si => si.User)
-                //.Include(c => c.Assignments)
+                .Include(c => c.Assignments)
                 .FirstOrDefaultAsync(c => c.CourseInfo.Slug == slug);
+
+            if (course is null)
+                return NotFound();
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy);
             if (!authorization.Succeeded)
                 return Forbid();
-
-            if (course is null)
-                return NotFound();
 
             return courseMapper.MapCourseView(course);
         }
@@ -174,6 +174,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Students)
                 .Include(c => c.Assignments)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
             if (course is null)
                 return NotFound();
 

@@ -1,4 +1,5 @@
-﻿using PortalTeme.Data.Models;
+﻿using PortalTeme.API.Models.Assignments;
+using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,7 +31,7 @@ namespace PortalTeme.API.Models.Courses {
         public List<UserDTO> Students { get; set; }
 
 
-        //public List<Assignment> Assignments { get; set; }
+        public List<AssignmentDTO> Assignments { get; set; }
     }
 
 }
