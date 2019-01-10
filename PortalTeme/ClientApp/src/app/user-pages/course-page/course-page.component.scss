@@ -1,16 +1,19 @@
-.course-title{
-    color:#7b28a1;
-}
-
-mat-toolbar mat-icon.mat-icon.material-icons{
+mat-toolbar mat-icon.mat-icon.material-icons {
     vertical-align: sub;
 }
 
 .assignments-card {
-    margin:10px 10px 0 10px;
-  }
+    margin: 10px 10px 0 10px;
+}
 
-.special-need-toolbar{
+.special-need-toolbar {
     white-space: pre-line;
     flex-wrap: wrap;
 }
+
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
