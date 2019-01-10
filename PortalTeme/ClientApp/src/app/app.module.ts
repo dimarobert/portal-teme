@@ -31,7 +31,6 @@ import { CoursesRouterComponent } from './admin/courses/courses-router.component
 import { AcademicYearsComponent } from './admin/academic-years/academic-years.component';
 import { AdminPageComponent } from './admin/admin-page/admin-page.component';
 import { AdminNavMenuComponent } from './admin/admin-nav-menu/admin-nav-menu.component';
-import { MyCoursesComponent } from './user-pages/my-courses/my-courses.component';
 import { StudyDomainsComponent } from './admin/study-domains/study-domains.component';
 import { StudyGroupsComponent } from './admin/study-groups/study-groups.component';
 import { DataTableComponent } from './components/datatable/datatable.component';
@@ -42,6 +41,10 @@ import { CourseCreateComponent } from './admin/courses/course-create/course-crea
 import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
 import { CourseEditRouterComponent } from './admin/courses/course-edit-router/course-edit-router.component';
 import { CoursePageComponent } from './user-pages/course-page/course-page.component';
+import { CourseRouterComponent } from './user-pages/course-router/course-router.component';
+import { CourseManagePageComponent } from './user-pages/course-manage/course-manage-page/course-manage-page.component';
+import { NewAssignmentComponent } from './user-pages/course-manage/new-assignment/new-assignment.component';
+import { CourseManageRouterComponent } from './user-pages/course-manage/course-manage-router/course-manage-router.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -51,43 +54,42 @@ const httpInterceptorProviders: Provider[] = [
   declarations: [
     AppComponent,
     NavMenuComponent,
+
+    DataTableComponent,
+    ExternalUrlDirective,
+
     HomeComponent,
     LoginPageComponent,
     ErrorPageComponent,
     NotFoundPageComponent,
     AccessDeniedPageComponent,
 
-    ExternalUrlDirective,
-
     KeysPipe,
 
-    CourseDefinitionsComponent,
     CoursesRouterComponent,
-    CourseEditBasicComponent,
     CourseEditRouterComponent,
+    CourseRouterComponent,
+    CourseManageRouterComponent,
 
-    AcademicYearsComponent,
 
     AdminPageComponent,
-
     AdminNavMenuComponent,
-
-    MyCoursesComponent,
-
+    AcademicYearsComponent,
     StudyDomainsComponent,
     StudyGroupsComponent,
-
-    DataTableComponent,
+    CourseDefinitionsComponent,
 
     ViewCoursesComponent,
-
-    CourseEditAssistantsComponent,
-
     CourseCreateComponent,
-
+    CourseEditBasicComponent,
+    CourseEditAssistantsComponent,
     CourseEditAttendeesComponent,
 
-    CoursePageComponent
+    CoursePageComponent,
+
+    CourseManagePageComponent,
+    NewAssignmentComponent
+
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -100,7 +102,24 @@ const httpInterceptorProviders: Provider[] = [
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'course/:slug', component: CoursePageComponent, canActivate: [AuthGuard] },
+      { path: 'login', component: LoginPageComponent },
+
+      {
+        path: 'course/:slug', component: CourseRouterComponent, canActivate: [AuthGuard],
+        children: [
+          { path: '', component: CoursePageComponent, canActivate: [AuthGuard], pathMatch: 'full' },
+          {
+            path: 'manage', component: CourseManageRouterComponent, canActivate: [AuthGuard],
+            data: {
+              roles: ['Professor']
+            },
+            children: [
+              { path: '', component: CourseManagePageComponent, pathMatch: 'full' },
+              { path: 'new-assignment', component: NewAssignmentComponent }
+            ]
+          },
+        ]
+      },
       {
         path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard],
         data: { roles: ['Admin'] },
@@ -113,11 +132,7 @@ const httpInterceptorProviders: Provider[] = [
           { path: 'courses', component: ViewCoursesComponent },
           {
             path: 'course', component: CoursesRouterComponent, children: [
-              {
-                path: 'create', component: CourseCreateComponent, children: [
-                  // { path: '', component: CourseBasicComponent, pathMatch: 'full' },
-                ]
-              },
+              { path: 'create', component: CourseCreateComponent },
               {
                 path: ':id', component: CourseEditRouterComponent, children: [
                   { path: '', component: CourseEditBasicComponent, pathMatch: 'full' },
@@ -129,8 +144,6 @@ const httpInterceptorProviders: Provider[] = [
           }
         ]
       },
-
-      { path: 'login', component: LoginPageComponent },
 
       // TODO: these will not work because the authorization is made at application level in the MVC view. 
       { path: 'error', component: ErrorPageComponent },
