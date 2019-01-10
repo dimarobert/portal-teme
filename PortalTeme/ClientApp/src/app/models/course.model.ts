@@ -2,7 +2,7 @@ import { BaseModel, EditModel } from './base.model';
 
 export interface Course extends BaseModel {
     courseDef: CourseDefinitionRef;
-    professor: UserRef;
+    professor: User;
 
     assistants: User[];
 
