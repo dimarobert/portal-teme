@@ -1,4 +1,55 @@
-You are viewing course: {{course?.courseDef?.name}}.
+<mat-toolbar class="special-need-toolbar">
+  <b class="course-title">{{course?.courseDef?.name}}</b>&nbsp;with&nbsp;<b><mat-icon>person</mat-icon>Prof. {{course.professor.firstName}}&nbsp;{{course.professor.lastName}}</b>
+  <ng-container *ngIf="course.assistants.length >= 1">
+      &nbsp;|&nbsp;Assistant
+      <ng-container *ngIf="course.assistants.length > 1">s</ng-container>
+      :&nbsp;
+      <ng-container *ngFor="let ass of course.assistants; let i = index">
+        <mat-icon>record_voice_over</mat-icon>{{ass.firstName}} {{ass.lastName}}
+        <ng-container *ngIf="i+1 != course.assistants.length">,&nbsp;</ng-container>
+      </ng-container>
+  </ng-container>
+</mat-toolbar>
+
+  <mat-card class="assignments-card">
+    <mat-card-header>
+      <mat-card-title>Assignment: [Name Here]</mat-card-title>
+      <mat-card-subtitle>
+        Added on: [Date] 
+        <br> 
+        <b class="text-danger">DATELINE: [Date]</b> 
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus diam turpis, eget ullamcorper est interdum ut. Quisque id est semper, posuere libero in, porttitor est. Nullam nec enim ut enim rutrum fringilla. Nam quam purus, commodo vitae aliquam eu, pellentesque at dolor. Vestibulum vestibulum augue in sem interdum fringilla. Cras nec purus ut ante egestas faucibus ut a metus. Nunc sodales nisi vel sem porta ullamcorper. Duis consequat tempor lacinia. Donec gravida dolor tortor, eu blandit dolor imperdiet ac. Sed scelerisque malesuada tortor, ut pharetra nisi efficitur sit amet. Aliquam ultricies enim leo. Pellentesque sit amet neque in odio porttitor molestie.
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="basic">UPLOAD <mat-icon>cloud_upload</mat-icon></button>
+      <button mat-button color="accent">SUBMIT <mat-icon>send</mat-icon></button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card class="assignments-card">
+      <mat-card-header>
+        <mat-card-title>Assignment: [Name Here]</mat-card-title>
+        <mat-card-subtitle>
+          Added on: [Date] 
+          <br> 
+          <b class="text-danger">DATELINE: [Date]</b> 
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus diam turpis, eget ullamcorper est interdum ut. Quisque id est semper, posuere libero in, porttitor est. Nullam nec enim ut enim rutrum fringilla. Nam quam purus, commodo vitae aliquam eu, pellentesque at dolor. Vestibulum vestibulum augue in sem interdum fringilla. Cras nec purus ut ante egestas faucibus ut a metus. Nunc sodales nisi vel sem porta ullamcorper. Duis consequat tempor lacinia. Donec gravida dolor tortor, eu blandit dolor imperdiet ac. Sed scelerisque malesuada tortor, ut pharetra nisi efficitur sit amet. Aliquam ultricies enim leo. Pellentesque sit amet neque in odio porttitor molestie.
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="basic">UPLOAD <mat-icon>cloud_upload</mat-icon></button>
+        <button mat-button color="accent">SUBMIT <mat-icon>send</mat-icon></button>
+      </mat-card-actions>
+    </mat-card>
 
 <pre>
   {{course | json}}
