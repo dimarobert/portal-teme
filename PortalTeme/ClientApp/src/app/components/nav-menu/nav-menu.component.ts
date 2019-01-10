@@ -71,10 +71,8 @@ export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {
   ngAfterViewInit(): void {
     this.coursesMenuStateSub = this.menuService.watchCoursesCollapseChanges()
       .subscribe(state => {
-        if (!this.panelCourses)
-          throw new Error('panelCourses ViewChild was null.');
-
-        this.panelCourses.expanded = state;
+        if (this.panelCourses)
+          this.panelCourses.expanded = state;
       })
   }
 
