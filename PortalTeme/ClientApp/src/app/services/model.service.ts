@@ -9,6 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
+import { Assignment, AssignmentEdit } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,11 @@ export class ModelServiceFactory {
   private _usersService: UsersService = null;
   public get users(): UsersService {
     return this._usersService || (this._usersService = new UsersService(this.http));
+  }
+
+  private _assignmentsService: ComplexModelService<Assignment, AssignmentEdit> = null;
+  public get assignments(): ComplexModelService<Assignment, AssignmentEdit> {
+    return this._assignmentsService || (this._assignmentsService = new ComplexModelService<Assignment, AssignmentEdit>('Assignments', this.http));
   }
 }
 

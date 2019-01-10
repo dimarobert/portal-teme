@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AntiforgeryService } from './antiforgery.service';
 import { ReplaySubject, Observable, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { flatMap, take } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
@@ -28,7 +28,7 @@ export class TokenService {
   }
 
   private validateToken(accessToken: string) {
-    if (this.jwt.isTokenExpired(accessToken))
+    if (!accessToken || this.jwt.isTokenExpired(accessToken))
       return this.getAccessToken(true);
 
     return of(accessToken);
@@ -41,13 +41,16 @@ export class TokenService {
     let headers = {};
     headers[this.antiforgery.getHeaderName()] = antiforgeryToken;
 
-    var subsciption = this.http.get('/authentication/token', {
+    this.http.get('/authentication/token', {
       observe: 'response',
       headers: new HttpHeaders(headers)
-    }).subscribe(response => {
-      const accessToken = response.headers.get('AccessToken') || null;
-      this.cachedAccessToken.next(accessToken);
-      subsciption.unsubscribe();
-    });
+    }).pipe(take(1))
+      .subscribe(response => {
+        let accessToken = response.headers.get('AccessToken') || null;
+        if (accessToken == null || this.jwt.isTokenExpired(accessToken))
+          accessToken = null;
+
+        this.cachedAccessToken.next(accessToken);
+      });
   }
 }
