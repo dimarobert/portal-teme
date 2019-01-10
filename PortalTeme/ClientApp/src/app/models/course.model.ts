@@ -1,4 +1,5 @@
 import { BaseModel, EditModel } from './base.model';
+import { Assignment } from './assignment.model';
 
 export interface Course extends BaseModel {
     courseDef: CourseDefinitionRef;
@@ -8,6 +9,8 @@ export interface Course extends BaseModel {
 
     groups: CourseGroup[];
     students: User[];
+
+    assignments: Assignment[];
 }
 
 export interface CourseEdit extends EditModel {
