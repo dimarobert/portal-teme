@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MenuService, CollapseOption } from '../../services/menu.service';
 import { Course } from '../../models/course.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { ActivatedRoute } from '@angular/router';
@@ -13,13 +12,12 @@ import { Subscription } from 'rxjs';
 })
 export class CoursePageComponent implements OnInit, OnDestroy {
 
-  constructor(private route: ActivatedRoute, private menuService: MenuService, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
 
   course: Course;
   private courseSlug: string;
   private routerParamsSub: Subscription;
   ngOnInit() {
-    this.menuService.setCourseCollapse(CollapseOption.Open);
 
     this.routerParamsSub = this.route.paramMap.subscribe(params => {
       this.courseSlug = params.get('slug');
