@@ -39,9 +39,9 @@ export class ModelServiceFactory {
   }
 
 
-  private _coursesService: CourseModelService = null;
-  public get courses(): CourseModelService {
-    return this._coursesService || (this._coursesService = new CourseModelService('Courses', this.http));
+  private _coursesService: ModelWithSlugService<Course, CourseEdit> = null;
+  public get courses(): ModelWithSlugService<Course, CourseEdit> {
+    return this._coursesService || (this._coursesService = new ModelWithSlugService<Course, CourseEdit>('Courses', this.http));
   }
 
   private _courseRelationsService: CourseRelationsService = null;
@@ -54,9 +54,9 @@ export class ModelServiceFactory {
     return this._usersService || (this._usersService = new UsersService(this.http));
   }
 
-  private _assignmentsService: ComplexModelService<Assignment, AssignmentEdit> = null;
-  public get assignments(): ComplexModelService<Assignment, AssignmentEdit> {
-    return this._assignmentsService || (this._assignmentsService = new ComplexModelService<Assignment, AssignmentEdit>('Assignments', this.http));
+  private _assignmentsService: ModelWithSlugService<Assignment, AssignmentEdit> = null;
+  public get assignments(): ModelWithSlugService<Assignment, AssignmentEdit> {
+    return this._assignmentsService || (this._assignmentsService = new ModelWithSlugService<Assignment, AssignmentEdit>('Assignments', this.http));
   }
 }
 
@@ -121,10 +121,10 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
   }
 }
 
-export class CourseModelService extends ComplexModelService<Course, CourseEdit>{
+export class ModelWithSlugService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ComplexModelService<TViewModel, TEditModel>{
 
-  public getBySlug(slug: string): Observable<Course> {
-    return this.http.get<Course>(`${this.apiRoot}/slug/${slug}`);
+  public getBySlug(slug: string): Observable<TViewModel> {
+    return this.http.get<TViewModel>(`${this.apiRoot}/slug/${slug}`);
   }
 
 }

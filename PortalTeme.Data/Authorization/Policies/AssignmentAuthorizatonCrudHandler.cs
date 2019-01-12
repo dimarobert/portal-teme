@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PortalTeme.Data.Authorization.Policies {

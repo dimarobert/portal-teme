@@ -1,11 +1,20 @@
-<mat-toolbar>
-    <button mat-icon-button color="warn" (click)="backClicked()">
-        <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
-    </button>
-    Manage course: {{course?.courseDef?.name}}
-    <button mat-button color="accent" [routerLink]="['new-assignment']"><mat-icon>add_box</mat-icon>New assignment</button>
-</mat-toolbar>
+<div class="center-content">
+    <mat-spinner *ngIf="!course"></mat-spinner>
+</div>
 
+<ng-container *ngIf="course">
+    <mat-toolbar>
+        <button mat-icon-button color="warn" (click)="backClicked()">
+            <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
+        </button>
+        Manage course: {{course?.courseDef?.name}}
+        <span class="filler"></span>
+        <button mat-button color="accent" [routerLink]="['new-assignment']">
+            <mat-icon>add_box</mat-icon>
+            <span>New assignment</span>
+        </button>
+    </mat-toolbar>
+</ng-container>
 <mat-tab-group [backgroundColor]="['primary']">
         <mat-tab>
             <ng-template mat-tab-label>
