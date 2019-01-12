@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {Location} from '@angular/common'
 
 @Component({
   selector: 'app-new-assignment',
@@ -8,13 +7,9 @@ import {Location} from '@angular/common'
 })
 export class NewAssignmentComponent implements OnInit {
 
-  constructor(private _location: Location) {}
+  constructor() { }
 
   ngOnInit() {
-  }
-  
-  backClicked() {
-    this._location.back();
   }
 
 }
