@@ -21,7 +21,8 @@ import {
   MatSlideToggleModule,
   MatSelectModule,
   MatTabsModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatProgressBarModule
 } from '@angular/material';
 
 const importedMaterialComponents = [
@@ -31,6 +32,7 @@ const importedMaterialComponents = [
   MatButtonModule,
   MatIconModule,
   MatProgressSpinnerModule,
+  MatProgressBarModule,
 
   MatMenuModule,
   MatListModule,

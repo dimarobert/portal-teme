@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
 
 import { nameof } from '../../../type-guards/nameof.guard';
 import { ModelServiceFactory } from '../../../services/model.service';
@@ -11,15 +11,16 @@ import { DataTableColumns, DatasourceColumnDefinition, ColumnType } from '../../
 import { CourseAssistant, User, Course } from '../../../models/course.model';
 import { CustomModelItemDatasource } from '../../../datasources/named-model.item-datasource';
 import { take } from 'rxjs/operators';
+import { DataTableComponent } from '../../datatable/datatable.component';
 
 @Component({
   selector: 'app-course-edit-assistants',
   templateUrl: './course-edit-assistants.component.html',
   styleUrls: ['./course-edit-assistants.component.scss']
 })
-export class CourseEditAssistantsComponent implements OnInit {
+export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
 
-  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute) { }
+  constructor(private modelSvcFactory: ModelServiceFactory) { }
 
   @Input() courseId: string;
 
@@ -28,6 +29,8 @@ export class CourseEditAssistantsComponent implements OnInit {
   data: BehaviorSubject<User[]>;
   modelAccessor: BaseModelAccessor;
   assistants: BehaviorSubject<User[]>;
+
+  @ViewChild('assistantsTable') assistantsTable: DataTableComponent;
 
   private currentCourse: Course;
 
@@ -61,9 +64,15 @@ export class CourseEditAssistantsComponent implements OnInit {
     this.getData();
   }
 
-  getData() {
+  update() {
+    this.getData();
+  }
+
+  private getData() {
     const assistants$ = this.modelSvcFactory.users.getAssistants();
     const currentCourse$ = this.modelSvcFactory.courses.get(this.courseId);
+
+    this.assistantsTable.loading = true;
 
     forkJoin(
       assistants$.pipe(take(1)),
@@ -73,10 +82,12 @@ export class CourseEditAssistantsComponent implements OnInit {
       this.currentCourse = results[1];
 
       this.data.next(this.currentCourse.assistants);
+
+      this.assistantsTable.loading = false;
     });
   }
 
-  save(element: User): Promise<User> {
+  protected save(element: User): Promise<User> {
     const value = <CourseAssistant>{
       courseId: this.courseId,
       assistant: element
@@ -85,7 +96,7 @@ export class CourseEditAssistantsComponent implements OnInit {
       .then(ca => ca.assistant);
   }
 
-  delete(element: User): Promise<User> {
+  protected delete(element: User): Promise<User> {
     const value = <CourseAssistant>{
       courseId: this.courseId,
       assistant: element
@@ -94,4 +105,5 @@ export class CourseEditAssistantsComponent implements OnInit {
       .then(ca => ca.assistant);
   }
 
+  ngOnDestroy(): void { }
 }

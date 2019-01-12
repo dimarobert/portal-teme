@@ -7,7 +7,7 @@
     <mat-card-subtitle>Add or delete assistents.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <app-data-table [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No assistants assigned to the course'"
+    <app-data-table #assistantsTable [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No assistants assigned to the course'"
       [modelAccessor]="modelAccessor" [canAdd]="true" [save]="save" [canDelete]="true" [delete]="delete">
     </app-data-table>
   </mat-card-content>
