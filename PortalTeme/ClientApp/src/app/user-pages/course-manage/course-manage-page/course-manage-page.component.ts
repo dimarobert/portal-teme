@@ -1,3 +1,4 @@
+import { CourseAssistant } from './../../../models/course.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {Location } from '@angular/common'
@@ -7,6 +8,7 @@ import { take } from 'rxjs/operators';
 
 import { Course } from '../../../models/course.model';
 import { ModelServiceFactory } from '../../../services/model.service';
+import {CourseEditAssistantsComponent} from '../../../admin/courses/course-edit-assistants/course-edit-assistants.component'
 
 
 @Component({
