@@ -25,5 +25,9 @@ namespace PortalTeme.Common.Authorization {
             new OperationAuthorizationRequirement { Name = nameof(ViewDomains) };
         public static OperationAuthorizationRequirement EditDomains =
             new OperationAuthorizationRequirement { Name = nameof(EditDomains) };
-    }
+
+        public static OperationAuthorizationRequirement ViewAssignmentEntries =
+            new OperationAuthorizationRequirement { Name = nameof(ViewAssignmentEntries) };
+    };
 }
+

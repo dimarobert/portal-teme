@@ -14,6 +14,9 @@ namespace PortalTeme.Common.Authorization {
         public const string CanEditCourseAssistantsPolicy = "CanEditCourseAssistants";
         public const string CanDeleteCoursePolicy = "CanDeleteCourse";
 
+        public const string CanViewAssignmentEntriesPolicy = "CanViewAssignmentEntries";
+
+
         public const string CanViewGroupsPolicy = "CanViewGroups";
         public const string CanEditGroupsPolicy = "CanEditGroups";
 

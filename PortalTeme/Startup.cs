@@ -96,6 +96,7 @@ namespace PortalTeme {
             services.AddScoped<IAuthorizationHandler, AdminAuthorizatonHandler>();
             services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, AssignmentAuthorizatonCrudHandler>();
+            services.AddScoped<IAuthorizationHandler, AssignmentEntriesAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, GroupsAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, StudyDomainsAuthorizationHandler>();
 
