@@ -15,3 +15,22 @@
         </button>
     </mat-toolbar>
 </ng-container>
+<mat-tab-group [backgroundColor]="['primary']">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon class="example-tab-icon">record_voice_over</mat-icon>
+                Assistants
+            </ng-template>
+            <app-course-edit-assistants></app-course-edit-assistants>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon class="example-tab-icon">people</mat-icon>
+                Atendees
+            </ng-template>
+            <h1>Some tab content</h1>
+            <p>...</p>
+        </mat-tab>
+      </mat-tab-group>
+
+{{course | json}}
