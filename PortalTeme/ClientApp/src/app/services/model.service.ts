@@ -54,9 +54,9 @@ export class ModelServiceFactory {
     return this._usersService || (this._usersService = new UsersService(this.http));
   }
 
-  private _assignmentsService: ModelWithSlugService<Assignment, AssignmentEdit> = null;
-  public get assignments(): ModelWithSlugService<Assignment, AssignmentEdit> {
-    return this._assignmentsService || (this._assignmentsService = new ModelWithSlugService<Assignment, AssignmentEdit>('Assignments', this.http));
+  private _assignmentsService: AssignmentsService = null;
+  public get assignments(): AssignmentsService {
+    return this._assignmentsService || (this._assignmentsService = new AssignmentsService('Assignments', this.http));
   }
 }
 
@@ -125,6 +125,18 @@ export class ModelWithSlugService<TViewModel extends BaseModel, TEditModel exten
 
   public getBySlug(slug: string): Observable<TViewModel> {
     return this.http.get<TViewModel>(`${this.apiRoot}/slug/${slug}`);
+  }
+
+}
+
+export class AssignmentsService extends ModelWithSlugService<Assignment, AssignmentEdit> {
+
+  public getAll(): Observable<Assignment[]> {
+    throw new Error('Invalid operation. GetAll is not supported for assignments. Use the getByCourse(courseId) method instead.');
+  }
+
+  public getByCourse(courseId: string): Observable<Assignment[]> {
+    return this.http.get<Assignment[]>(`${this.apiRoot}/${courseId}`);
   }
 
 }

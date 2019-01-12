@@ -24,9 +24,13 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
   @ViewChild('assistants') assistants: CourseEditAssistantsComponent;
   @ViewChild('attendees') attendees: CourseEditAttendeesComponent;
 
+  isAssignmentsTab: boolean;
+
   constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
 
   ngOnInit() {
+
+    this.isAssignmentsTab = true;
 
     this.routerParamsSub = this.route.parent.parent.paramMap.subscribe(params => {
       this.courseSlug = params.get('slug');
@@ -43,10 +47,21 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(event: MatTabChangeEvent) {
-    if (event.index == 0)
-      this.assistants.update();
-    else if (event.index == 1)
-      this.attendees.update();
+    this.isAssignmentsTab = false;
+
+    switch (event.index) {
+      case 0:
+        this.isAssignmentsTab = true;
+        break;
+
+      case 1:
+        this.assistants.update();
+        break;
+
+      case 2:
+        this.attendees.update();
+        break;
+    }
   }
 
   ngOnDestroy(): void {

@@ -10,12 +10,19 @@
         </button>
         Manage course: {{course?.courseDef?.name}}
         <span class="filler"></span>
-        <button mat-button color="accent" [routerLink]="['new-assignment']">
+        <button mat-button color="accent" [routerLink]="['new-assignment']" *ngIf="isAssignmentsTab">
             <mat-icon class="mr-1">add_box</mat-icon>
             <span>New assignment</span>
         </button>
     </mat-toolbar>
-    <mat-tab-group [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+    <mat-tab-group #assignTabs [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon class="mr-1">assignment</mat-icon>
+                <span>Assignments</span>
+            </ng-template>
+            <app-assignments-manage-view [courseId]="course.id" #assignments></app-assignments-manage-view>
+        </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <mat-icon class="mr-1">record_voice_over</mat-icon>
