@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PortalTeme.API.Mappers;
+using PortalTeme.API.Models.Assignments;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Models;
+using PortalTeme.Data.Models.Assignments.Projections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace PortalTeme.API.Controllers {
@@ -16,15 +20,39 @@ namespace PortalTeme.API.Controllers {
     [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
     public class AssignmentEntriesController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly IAssignmentMapper assignmentMapper;
+        private readonly IAuthorizationService authorizationService;
 
-        public AssignmentEntriesController(PortalTemeContext context) {
+        public AssignmentEntriesController(PortalTemeContext context, IAssignmentMapper assignmentMapper, IAuthorizationService authorizationService) {
             _context = context;
+            this.assignmentMapper = assignmentMapper;
+            this.authorizationService = authorizationService;
         }
 
-        // GET: api/AssignmentEntries
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AssignmentEntry>>> GetAssignmentEntries() {
-            return await _context.AssignmentEntries.ToListAsync();
+        // GET: api/AssignmentEntries/5
+        [HttpGet("{assignmentId}")]
+        public async Task<ActionResult<IEnumerable<AssignmentEntryDTO>>> GetAssignmentEntries(Guid assignmentId) {
+            var entries = await _context.AssignmentEntries
+                .Where(ae => ae.Assignment.Id == assignmentId)
+                .Select(ae => new AssignmentEntryProjection {
+                    Id = ae.Id,
+                    AssignmentId = ae.Assignment.Id,
+                    CourseId = ae.Assignment.Course.Id,
+                    StudentId = ae.Student.UserId,
+                    State = ae.State,
+                    Grading = ae.Grading,
+                    Versions = ae.Versions
+                })
+                .ToListAsync();
+
+            var results = new List<AssignmentEntryDTO>();
+            foreach (var entry in entries) {
+                var authorization = await authorizationService.AuthorizeAsync(User, entry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
+                if (!authorization.Succeeded)
+                    results.Add(assignmentMapper.MapAssignmentEntryProjection(entry));
+            }
+
+            return results;
         }
 
         // GET: api/AssignmentEntries/5

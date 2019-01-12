@@ -45,6 +45,7 @@ import { CourseRouterComponent } from './user-pages/course-router/course-router.
 import { CourseManagePageComponent } from './user-pages/course-manage/course-manage-page/course-manage-page.component';
 import { NewAssignmentComponent } from './user-pages/course-manage/new-assignment/new-assignment.component';
 import { CourseManageRouterComponent } from './user-pages/course-manage/course-manage-router/course-manage-router.component';
+import { ViewAssignmentPageComponent } from './user-pages/view-assignment-page/view-assignment-page.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -88,7 +89,8 @@ const httpInterceptorProviders: Provider[] = [
     CoursePageComponent,
 
     CourseManagePageComponent,
-    NewAssignmentComponent
+    NewAssignmentComponent,
+    ViewAssignmentPageComponent
 
   ],
   imports: [
@@ -118,6 +120,7 @@ const httpInterceptorProviders: Provider[] = [
               { path: 'new-assignment', component: NewAssignmentComponent }
             ]
           },
+          { path: ':assigSlug', component: ViewAssignmentPageComponent }
         ]
       },
       {
