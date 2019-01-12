@@ -4,21 +4,22 @@
 
 <ng-container *ngIf="course">
   <mat-toolbar class="special-need-toolbar">
-    <span>
-      <b class="text-primary">{{course.courseDef.name}}</b>
-      <b>
-        <mat-icon class="ml-2 mr-1">person</mat-icon>Prof. {{course.professor.firstName}}
-        {{course.professor.lastName}}
-      </b>
-    </span>
-    <span *ngIf="course.assistants.length > 0">
-      <span class="pl-1" [innerText]="'| Assistant' + (course.assistants.length > 1 ? 's' : '') + ':'"></span>
-      <span *ngFor="let assistant of course.assistants; let last = last">
-        <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>{{assistant.firstName}}
-        {{assistant.lastName}}
-        <ng-container *ngIf="!last">, </ng-container>
+      <span>
+        <b class="text-primary">{{course.courseDef.name}}</b>
+        <b>
+          <mat-icon class="ml-2 mr-1">person</mat-icon>Prof. {{course.professor.firstName}}
+          {{course.professor.lastName}}
+        </b>
       </span>
-    </span>
+      <span *ngIf="course.assistants.length > 0">
+        <span class="pl-1" [innerText]="'| Assistant' + (course.assistants.length > 1 ? 's' : '') + ':'"></span>
+        <span *ngFor="let assistant of course.assistants; let last = last">
+          <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>{{assistant.firstName}}
+          {{assistant.lastName}}
+          <ng-container *ngIf="!last">, </ng-container>
+        </span>
+      </span>
+      <button mat-button color="accent" [routerLink]="['manage']"><mat-icon>edit</mat-icon>Manage course</button>
   </mat-toolbar>
 
   <mat-card class="assignments-card" *ngFor="let assignment of course.assignments">

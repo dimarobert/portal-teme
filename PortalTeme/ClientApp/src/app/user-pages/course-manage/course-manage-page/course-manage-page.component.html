@@ -1,3 +1,7 @@
-Manage course: {{course?.courseDef?.name}}
-<br />
-<button mat-raised-button color="primary" [routerLink]="['new-assignment']">New assignment</button>
+<mat-toolbar>
+    <button mat-icon-button color="warn" (click)="backClicked()">
+        <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
+    </button>
+    Manage course: {{course?.courseDef?.name}}
+    <button mat-button color="accent" [routerLink]="['new-assignment']"><mat-icon>add_box</mat-icon>New assignment</button>
+</mat-toolbar>

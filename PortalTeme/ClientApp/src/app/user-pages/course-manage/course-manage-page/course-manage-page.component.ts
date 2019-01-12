@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import {Location } from '@angular/common'
 
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -19,9 +20,10 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
   private courseSlug: string;
   course: Course;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory, private _location: Location) { }
 
   ngOnInit() {
+
     this.routerParamsSub = this.route.parent.parent.paramMap.subscribe(params => {
       this.courseSlug = params.get('slug');
       if (!this.courseSlug)
@@ -34,6 +36,10 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
         });
 
     });
+  }
+
+  backClicked() {
+    this._location.back();
   }
 
   ngOnDestroy(): void {
