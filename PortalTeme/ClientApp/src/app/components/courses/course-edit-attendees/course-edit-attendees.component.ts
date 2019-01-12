@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -24,6 +24,8 @@ export class CourseEditAttendeesComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute) { }
 
+  @Input() courseId: string;
+
   studentColumnDefs: DataTableColumns;
   groupColumnDefs: DataTableColumns;
 
@@ -34,7 +36,6 @@ export class CourseEditAttendeesComponent implements OnInit {
   students: BehaviorSubject<User[]>;
 
   private currentCourse: Course;
-  private courseId: string;
 
   groupsModelAccessor: ModelAccessor;
   studentsModelAccessor: ModelAccessor;
@@ -45,8 +46,6 @@ export class CourseEditAttendeesComponent implements OnInit {
 
     this.saveStudent = this.saveStudent.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
-
-    this.courseId = this.route.parent.snapshot.paramMap.get('id');
 
     this.groupList = new BehaviorSubject([]);
     this.studentList = new BehaviorSubject([]);

@@ -3,34 +3,35 @@
 </div>
 
 <ng-container *ngIf="course">
+
     <mat-toolbar>
-        <button mat-icon-button color="warn" (click)="backClicked()">
+        <button mat-icon-button (click)="backClicked()">
             <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
         </button>
         Manage course: {{course?.courseDef?.name}}
         <span class="filler"></span>
         <button mat-button color="accent" [routerLink]="['new-assignment']">
-            <mat-icon>add_box</mat-icon>
+            <mat-icon class="mr-1">add_box</mat-icon>
             <span>New assignment</span>
         </button>
     </mat-toolbar>
-</ng-container>
-<mat-tab-group [backgroundColor]="['primary']">
+    <mat-tab-group [backgroundColor]="['primary']" animationDuration="0ms">
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon class="example-tab-icon">record_voice_over</mat-icon>
-                Assistants
+                <mat-icon class="mr-1">record_voice_over</mat-icon>
+                <span>Assistants</span>
             </ng-template>
-            <app-course-edit-assistants></app-course-edit-assistants>
+            <app-course-edit-assistants [courseId]="course.id"></app-course-edit-assistants>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon class="example-tab-icon">people</mat-icon>
-                Atendees
+                <mat-icon class="mr-1">people</mat-icon>
+                <span>Attendees</span>
             </ng-template>
-            <h1>Some tab content</h1>
-            <p>...</p>
+            <app-course-edit-attendees [courseId]="course.id"></app-course-edit-attendees>
         </mat-tab>
-      </mat-tab-group>
+    </mat-tab-group>
 
-{{course | json}}
+    {{course | json}}
+
+</ng-container>
