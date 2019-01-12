@@ -6,6 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
@@ -48,6 +49,7 @@ import { CourseEditAssistantsPageComponent } from './admin/courses/course-edit-a
 import { CourseEditAssistantsComponent } from './components/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseEditAttendeesPageComponent } from './admin/courses/course-edit-attendees-page/course-edit-attendees-page.component';
 import { CourseEditAttendeesComponent } from './components/courses/course-edit-attendees/course-edit-attendees.component';
+import { AssignmentsManageViewComponent } from './components/assignments/assignments-manage-view/assignments-manage-view.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -95,7 +97,8 @@ const httpInterceptorProviders: Provider[] = [
 
     CourseManagePageComponent,
     NewAssignmentComponent,
-    ViewAssignmentPageComponent
+    ViewAssignmentPageComponent,
+    AssignmentsManageViewComponent
 
   ],
   imports: [
@@ -106,6 +109,8 @@ const httpInterceptorProviders: Provider[] = [
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
+
+    CKEditorModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },

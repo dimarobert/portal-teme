@@ -18,6 +18,8 @@ export interface CourseEdit extends EditModel {
     professor: UserRef;
 }
 
+export interface CourseRef extends EditModel { }
+
 export interface CourseDefinitionRef extends BaseModel {
     name?: string;
     slug?: string;

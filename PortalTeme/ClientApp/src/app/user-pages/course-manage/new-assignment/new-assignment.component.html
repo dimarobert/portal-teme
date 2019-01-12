@@ -4,3 +4,30 @@
     </button>
     New Assignment
 </mat-toolbar>
+
+<form [formGroup]="assignmentForm" (submit)="create()">
+
+    <mat-form-field>
+        <input matInput type="text" placeholder="Assignment Name" [formControl]="name" />
+    </mat-form-field>
+
+    <mat-form-field>
+        <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate">
+        <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #startDatepicker></mat-datepicker>
+    </mat-form-field>
+
+
+    <mat-form-field>
+        <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate">
+        <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #endDatepicker></mat-datepicker>
+    </mat-form-field>
+
+    <div>
+        <label>Assignment details:</label>
+        <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
+    </div>
+
+    <button mat-raised-button type="submit" color="accent" class="mt-2">Create</button>
+</form>

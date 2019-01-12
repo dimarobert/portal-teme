@@ -25,7 +25,9 @@
               "src/styles.css",
               "src/sass/bootstrap-material-indigo.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@ckeditor/ckeditor5-build-classic/build/translations/ro.js"
+            ]
           },
           "configurations": {
             "production": {

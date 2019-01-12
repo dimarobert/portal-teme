@@ -1,10 +1,14 @@
-import { NamedModel } from './base.model';
-import { CourseEdit } from './course.model';
+import { EditModel } from './base.model';
+import { CourseRef } from './course.model';
 
-export interface AssignmentEdit extends NamedModel {
+export interface Assignment extends AssignmentEdit {
+    id: string;
+}
 
-    course: CourseEdit;
-
+export interface AssignmentEdit extends EditModel {
+    course: CourseRef;
+    
+    name: string;
     description: string;
 
     startDate: Date;
@@ -12,9 +16,4 @@ export interface AssignmentEdit extends NamedModel {
 
     dateAdded?: Date;
     lastUpdated?: Date;
-}
-
-export interface Assignment extends AssignmentEdit {
-    dateAdded: Date;
-    lastUpdated: Date;
 }

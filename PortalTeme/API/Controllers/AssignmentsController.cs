@@ -30,8 +30,7 @@ namespace PortalTeme.API.Controllers {
         [HttpGet("{courseId}")]
         public async Task<ActionResult<IEnumerable<AssignmentDTO>>> GetAssignments(Guid courseId) {
             var courseAssignments = await _context.Assignments
-                .Include(a => a.Course)
-                .ThenInclude(c => c.CourseInfo)
+                .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .Where(assignment => assignment.Course.Id == courseId)
                 .ToListAsync();
 
@@ -53,8 +52,7 @@ namespace PortalTeme.API.Controllers {
         [HttpGet("{id}")]
         public async Task<ActionResult<AssignmentDTO>> GetAssignment(Guid id) {
             var assignment = await _context.Assignments
-                .Include(a => a.Course)
-                .ThenInclude(c => c.CourseInfo)
+                .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (assignment is null)
