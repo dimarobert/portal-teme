@@ -38,6 +38,8 @@ export class DataTableComponent implements OnInit {
   @Input() customEdit: boolean;
   @Input() customEditAction: (element: any) => void;
 
+  @Input() loading: boolean;
+
   get displayedColumns(): string[] {
     var cols = this.columnDefs.columns.map(c => c.id);
     if (this.hasActions)
@@ -71,6 +73,8 @@ export class DataTableComponent implements OnInit {
 
   ngOnInit() {
     this.validateInput();
+
+    this.loading = this.loading || false;
 
     this.errors = {};
     this.hasData = true;

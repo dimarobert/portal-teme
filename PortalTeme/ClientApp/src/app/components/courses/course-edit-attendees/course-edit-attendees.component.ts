@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { nameof } from '../../../type-guards/nameof.guard';
@@ -13,6 +13,7 @@ import { CustomItemAccessor } from '../../..//models/item.accesor';
 import { StudyGroup } from './../../../models/study-group.model';
 import { Course, User, CourseGroup, CourseStudent } from './../../../models/course.model';
 import { DataTableColumns } from '../../../models/column-definition.model';
+import { DataTableComponent } from '../../datatable/datatable.component';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { DataTableColumns } from '../../../models/column-definition.model';
   templateUrl: './course-edit-attendees.component.html',
   styleUrls: ['./course-edit-attendees.component.scss']
 })
-export class CourseEditAttendeesComponent implements OnInit {
+export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
 
   constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute) { }
 
@@ -39,6 +40,9 @@ export class CourseEditAttendeesComponent implements OnInit {
 
   groupsModelAccessor: ModelAccessor;
   studentsModelAccessor: ModelAccessor;
+
+  @ViewChild('groupsTable') groupsTable: DataTableComponent;
+  @ViewChild('studentsTable') studentsTable: DataTableComponent;
 
   ngOnInit() {
     this.saveGroup = this.saveGroup.bind(this);
@@ -86,10 +90,17 @@ export class CourseEditAttendeesComponent implements OnInit {
     this.getData();
   }
 
+  update() {
+    this.getData();
+  }
+
   private getData() {
     const studyGroups$ = this.modelSvcFactory.studyGroups.getAll();
     const students$ = this.modelSvcFactory.users.getStudents();
     const currentCourse$ = this.modelSvcFactory.courses.get(this.courseId);
+
+    this.groupsTable.loading = true;
+    this.studentsTable.loading = true;
 
     forkJoin(
       studyGroups$.pipe(take(1)),
@@ -102,21 +113,24 @@ export class CourseEditAttendeesComponent implements OnInit {
 
       this.groupList.next(this.currentCourse.groups);
       this.studentList.next(this.currentCourse.students);
+
+      this.groupsTable.loading = false;
+      this.studentsTable.loading = false;
     });
   }
 
-  saveGroup(element: CourseGroup): Promise<CourseGroup> {
+  protected saveGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
     return this.modelSvcFactory.courseRelations.addGroup(element);
   }
 
-  deleteGroup(element: CourseGroup): Promise<CourseGroup> {
+  protected deleteGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
     return this.modelSvcFactory.courseRelations.deleteGroup(element);
   }
 
 
-  saveStudent(element: User): Promise<User> {
+  protected saveStudent(element: User): Promise<User> {
     const value = <CourseStudent>{
       courseId: this.courseId,
       student: element
@@ -125,7 +139,7 @@ export class CourseEditAttendeesComponent implements OnInit {
       .then(cs => cs.student);
   }
 
-  deleteStudent(element: User): Promise<User> {
+  protected deleteStudent(element: User): Promise<User> {
     const value = <CourseStudent>{
       courseId: this.courseId,
       student: element
@@ -133,4 +147,6 @@ export class CourseEditAttendeesComponent implements OnInit {
     return this.modelSvcFactory.courseRelations.deleteStudent(value)
       .then(cs => cs.student);
   }
+
+  ngOnDestroy(): void { }
 }

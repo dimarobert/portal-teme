@@ -15,20 +15,20 @@
             <span>New assignment</span>
         </button>
     </mat-toolbar>
-    <mat-tab-group [backgroundColor]="['primary']" animationDuration="0ms">
+    <mat-tab-group [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
         <mat-tab>
             <ng-template mat-tab-label>
                 <mat-icon class="mr-1">record_voice_over</mat-icon>
                 <span>Assistants</span>
             </ng-template>
-            <app-course-edit-assistants [courseId]="course.id"></app-course-edit-assistants>
+            <app-course-edit-assistants [courseId]="course.id" #assistants></app-course-edit-assistants>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <mat-icon class="mr-1">people</mat-icon>
                 <span>Attendees</span>
             </ng-template>
-            <app-course-edit-attendees [courseId]="course.id"></app-course-edit-attendees>
+            <app-course-edit-attendees [courseId]="course.id" #attendees></app-course-edit-attendees>
         </mat-tab>
     </mat-tab-group>
 
