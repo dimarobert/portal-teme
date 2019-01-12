@@ -1,9 +1,7 @@
-import { CourseAssistant } from './../../../models/course.model';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common'
 
-import { Subscription, Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { Course } from '../../../models/course.model';
@@ -26,7 +24,7 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
   @ViewChild('assistants') assistants: CourseEditAssistantsComponent;
   @ViewChild('attendees') attendees: CourseEditAttendeesComponent;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory, private _location: Location) { }
+  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
 
   ngOnInit() {
 
@@ -42,10 +40,6 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
         });
 
     });
-  }
-
-  backClicked() {
-    this._location.back();
   }
 
   onTabChange(event: MatTabChangeEvent) {

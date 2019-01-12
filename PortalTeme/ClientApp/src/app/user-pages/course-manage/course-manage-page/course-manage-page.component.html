@@ -5,7 +5,7 @@
 <ng-container *ngIf="course">
 
     <mat-toolbar>
-        <button mat-icon-button (click)="backClicked()">
+        <button mat-icon-button [routerLink]="['../']">
             <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
         </button>
         Manage course: {{course?.courseDef?.name}}
@@ -31,7 +31,5 @@
             <app-course-edit-attendees [courseId]="course.id" #attendees></app-course-edit-attendees>
         </mat-tab>
     </mat-tab-group>
-
-    {{course | json}}
 
 </ng-container>
