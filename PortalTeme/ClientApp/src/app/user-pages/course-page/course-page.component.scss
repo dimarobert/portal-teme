@@ -9,11 +9,17 @@ mat-toolbar mat-icon.mat-icon.material-icons {
 .special-need-toolbar {
     white-space: pre-line;
     flex-wrap: wrap;
+    height:auto;
+    min-height:56px;
 }
 
 .center-content {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.mat-button mat-icon{
+    font-size: 22px;
 }
 
