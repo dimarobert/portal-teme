@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 
@@ -21,20 +21,19 @@ export class CourseEditAssistantsComponent implements OnInit {
 
   constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute) { }
 
+  @Input() courseId: string;
+
   columnDefs: DataTableColumns;
 
   data: BehaviorSubject<User[]>;
   modelAccessor: BaseModelAccessor;
   assistants: BehaviorSubject<User[]>;
 
-  private courseId: string;
   private currentCourse: Course;
 
   ngOnInit() {
     this.save = this.save.bind(this);
     this.delete = this.delete.bind(this);
-
-    this.courseId = this.route.parent.snapshot.paramMap.get('id');
 
     this.assistants = new BehaviorSubject([]);
 

@@ -36,9 +36,7 @@ import { StudyGroupsComponent } from './admin/study-groups/study-groups.componen
 import { DataTableComponent } from './components/datatable/datatable.component';
 import { CourseEditBasicComponent } from './admin/courses/course-edit-basic/course-edit-basic.component';
 import { ViewCoursesComponent } from './admin/courses/view-courses/view-courses.component';
-import { CourseEditAssistantsComponent } from './admin/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseCreateComponent } from './admin/courses/course-create/course-create.component';
-import { CourseEditAttendeesComponent } from './admin/courses/course-edit-attendees/course-edit-attendees.component';
 import { CourseEditRouterComponent } from './admin/courses/course-edit-router/course-edit-router.component';
 import { CoursePageComponent } from './user-pages/course-page/course-page.component';
 import { CourseRouterComponent } from './user-pages/course-router/course-router.component';
@@ -46,6 +44,10 @@ import { CourseManagePageComponent } from './user-pages/course-manage/course-man
 import { NewAssignmentComponent } from './user-pages/course-manage/new-assignment/new-assignment.component';
 import { CourseManageRouterComponent } from './user-pages/course-manage/course-manage-router/course-manage-router.component';
 import { ViewAssignmentPageComponent } from './user-pages/view-assignment-page/view-assignment-page.component';
+import { CourseEditAssistantsPageComponent } from './admin/courses/course-edit-assistants-page/course-edit-assistants-page.component';
+import { CourseEditAssistantsComponent } from './components/courses/course-edit-assistants/course-edit-assistants.component';
+import { CourseEditAttendeesPageComponent } from './admin/courses/course-edit-attendees-page/course-edit-attendees-page.component';
+import { CourseEditAttendeesComponent } from './components/courses/course-edit-attendees/course-edit-attendees.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -58,6 +60,9 @@ const httpInterceptorProviders: Provider[] = [
 
     DataTableComponent,
     ExternalUrlDirective,
+
+    CourseEditAssistantsComponent,
+    CourseEditAttendeesComponent,
 
     HomeComponent,
     LoginPageComponent,
@@ -83,8 +88,8 @@ const httpInterceptorProviders: Provider[] = [
     ViewCoursesComponent,
     CourseCreateComponent,
     CourseEditBasicComponent,
-    CourseEditAssistantsComponent,
-    CourseEditAttendeesComponent,
+    CourseEditAssistantsPageComponent,
+    CourseEditAttendeesPageComponent,
 
     CoursePageComponent,
 
@@ -139,8 +144,8 @@ const httpInterceptorProviders: Provider[] = [
               {
                 path: ':id', component: CourseEditRouterComponent, children: [
                   { path: '', component: CourseEditBasicComponent, pathMatch: 'full' },
-                  { path: 'assistants', component: CourseEditAssistantsComponent },
-                  { path: 'attendees', component: CourseEditAttendeesComponent }
+                  { path: 'assistants', component: CourseEditAssistantsPageComponent },
+                  { path: 'attendees', component: CourseEditAttendeesPageComponent }
                 ]
               }
             ]
