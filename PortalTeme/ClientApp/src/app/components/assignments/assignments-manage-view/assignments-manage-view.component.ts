@@ -17,7 +17,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class AssignmentsManageViewComponent implements OnInit {
 
-
   @Input() courseId: string;
 
   columnDefs: DataTableColumns;
@@ -80,6 +79,10 @@ export class AssignmentsManageViewComponent implements OnInit {
 
         this.assignmentsTable.loading = false;
       });
+  }
+
+  update() {
+    this.getData();
   }
 
   protected edit(assignment: Assignment) {
