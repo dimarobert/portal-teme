@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import * as ClassicEditor from '../../../../ckeditor/ckeditor';
 
 import { EditorConfig } from '../../../../typings/index';
 import { FormGroup, AbstractControl, FormControl } from '@angular/forms';
@@ -23,6 +23,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
 
   @Input() courseId: string;
   @Input() assignment: Observable<Assignment>;
+  @Input() submitClick: (assignment: AssignmentEdit) => void;
 
   hasId: BehaviorSubject<boolean>;
   assignSub: Subscription;
@@ -80,7 +81,6 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
   }
 
   protected create() {
-    debugger;
     const newAssignment: AssignmentEdit = {
       name: this.name.value,
       description: this.description.value,
@@ -91,7 +91,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
       endDate: this.endDate.value
     };
 
-    this.modelSvcFactory.assignments.save(newAssignment);
+    this.submitClick(newAssignment);
   }
 
   ngOnDestroy(): void {

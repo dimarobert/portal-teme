@@ -13,6 +13,8 @@ namespace PortalTeme.Data.Models {
         [Required]
         public string Name { get; set; }
 
+        public string Slug { get; set; }
+
         [Required]
         public string Description { get; set; }
 

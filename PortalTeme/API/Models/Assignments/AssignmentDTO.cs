@@ -15,6 +15,8 @@ namespace PortalTeme.API.Models.Assignments {
         [Required]
         public string Name { get; set; }
 
+        public string Slug { get; set; }
+
         [Required]
         public string Description { get; set; }
 
@@ -32,7 +34,6 @@ namespace PortalTeme.API.Models.Assignments {
         public Guid Id { get; set; }
 
         public CourseEditDTO Course { get; set; }
-
     }
 
     public class AssignmentEditDTO : AssignmentBaseDTO {

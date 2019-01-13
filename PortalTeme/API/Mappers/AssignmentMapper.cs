@@ -26,6 +26,7 @@ namespace PortalTeme.API.Mappers {
                 Id = assignment.Id,
                 Course = courseMapper.MapCourseEdit(assignment.Course),
                 Name = assignment.Name,
+                Slug = assignment.Slug,
                 Description = assignment.Description,
 
                 DateAdded = assignment.DateAdded,

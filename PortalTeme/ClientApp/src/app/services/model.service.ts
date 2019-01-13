@@ -39,9 +39,9 @@ export class ModelServiceFactory {
   }
 
 
-  private _coursesService: ModelWithSlugService<Course, CourseEdit> = null;
-  public get courses(): ModelWithSlugService<Course, CourseEdit> {
-    return this._coursesService || (this._coursesService = new ModelWithSlugService<Course, CourseEdit>('Courses', this.http));
+  private _coursesService: CoursesService = null;
+  public get courses(): CoursesService {
+    return this._coursesService || (this._coursesService = new CoursesService('Courses', this.http));
   }
 
   private _courseRelationsService: CourseRelationsService = null;
@@ -70,24 +70,44 @@ export class ModelServiceBase<TModel extends BaseModel> {
 
   public getAll(): Observable<TModel[]> {
     return this.http.get<TModel[]>(this.apiRoot)
+      .pipe(map(model => {
+        model.forEach(m => this.mapResponses(m));
+        return model;
+      }));
   }
 
   public get(modelId: string): Observable<TModel> {
-    return this.http.get<TModel>(`${this.apiRoot}/${modelId}`);
+    return this.http.get<TModel>(`${this.apiRoot}/${modelId}`)
+      .pipe(map(model => {
+        this.mapResponses(model);
+        return model;
+      }));
   }
 
   public delete(modelId: string): Promise<TModel> {
     return this.http.delete<TModel>(`${this.apiRoot}/${modelId}`)
-      .pipe(take(1))
-      .toPromise();
+      .pipe(
+        map(model => {
+          this.mapResponses(model);
+          return model;
+        }),
+        take(1)
+      ).toPromise();
   }
+
+  protected mapResponses(model: TModel): void { }
 }
 
 export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TModel> {
   public save(model: TModel): Promise<TModel> {
     return this.http.post<TModel>(this.apiRoot, model)
-      .pipe(take(1))
-      .toPromise();
+      .pipe(
+        map(model => {
+          this.mapResponses(model);
+          return model;
+        }),
+        take(1)
+      ).toPromise();
   }
 
   public update(model: TModel): Promise<TModel> {
@@ -102,13 +122,22 @@ export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TMo
 export class ComplexModelService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ModelServiceBase<TViewModel>  {
 
   public getAllRef(): Observable<TEditModel[]> {
-    return this.http.get<TEditModel[]>(`${this.apiRoot}/Ref`);
+    return this.http.get<TEditModel[]>(`${this.apiRoot}/Ref`)
+      .pipe(map(models => {
+        models.forEach(m => this.mapEditResponses(m));
+        return models;
+      }));
   }
 
   public save(model: TEditModel): Promise<TEditModel> {
     return this.http.post<TEditModel>(this.apiRoot, model)
-      .pipe(take(1))
-      .toPromise();
+      .pipe(
+        map(model => {
+          this.mapEditResponses(model);
+          return model;
+        }),
+        take(1)
+      ).toPromise();
   }
 
   public update(model: TEditModel): Promise<TEditModel> {
@@ -119,14 +148,26 @@ export class ComplexModelService<TViewModel extends BaseModel, TEditModel extend
       )
       .toPromise();
   }
+
+  protected mapEditResponses(m: TEditModel): void { }
 }
 
 export class ModelWithSlugService<TViewModel extends BaseModel, TEditModel extends EditModel> extends ComplexModelService<TViewModel, TEditModel>{
 
   public getBySlug(slug: string): Observable<TViewModel> {
-    return this.http.get<TViewModel>(`${this.apiRoot}/slug/${slug}`);
+    return this.http.get<TViewModel>(`${this.apiRoot}/slug/${slug}`)
+      .pipe(map(model => {
+        this.mapResponses(model);
+        return model;
+      }));
   }
 
+}
+
+export class CoursesService extends ModelWithSlugService<Course, CourseEdit> {
+  protected mapResponses(course: Course): void {
+    course.assignments.forEach(assign => mapAssignment(assign));
+  }
 }
 
 export class AssignmentsService extends ModelWithSlugService<Assignment, AssignmentEdit> {
@@ -136,9 +177,27 @@ export class AssignmentsService extends ModelWithSlugService<Assignment, Assignm
   }
 
   public getByCourse(courseId: string): Observable<Assignment[]> {
-    return this.http.get<Assignment[]>(`${this.apiRoot}/ForCourse/${courseId}`);
+    return this.http.get<Assignment[]>(`${this.apiRoot}/ForCourse/${courseId}`)
+      .pipe(map(assignments => {
+        assignments.forEach(assign => this.mapResponses(assign));
+        return assignments;
+      }));
   }
 
+  protected mapResponses(assign: Assignment): void {
+    mapAssignment(assign);
+  }
+
+  protected mapEditResponses(assign: AssignmentEdit): void {
+    mapAssignment(assign);
+  }
+}
+
+function mapAssignment(assign: AssignmentEdit): void {
+  assign.dateAdded = new Date(assign.dateAdded);
+  assign.lastUpdated = new Date(assign.lastUpdated);
+  assign.startDate = new Date(assign.startDate);
+  assign.endDate = new Date(assign.endDate);
 }
 
 @Injectable({
