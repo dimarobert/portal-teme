@@ -34,4 +34,9 @@ namespace PortalTeme.API.Models.Courses {
         public List<AssignmentDTO> Assignments { get; set; }
     }
 
+    public class CourseRefDTO {
+
+        [Required]
+        public Guid Id { get; set; }
+    }
 }

@@ -7,6 +7,8 @@ import { DataTableComponent } from '../../datatable/datatable.component';
 import { DataTableColumns } from '../../../models/column-definition.model';
 import { nameof } from '../../../type-guards/nameof.guard';
 import { CustomItemAccessor } from '../../../models/item.accesor';
+import { ModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-assignments-manage-view',
@@ -20,12 +22,15 @@ export class AssignmentsManageViewComponent implements OnInit {
 
   columnDefs: DataTableColumns;
   assignments: BehaviorSubject<Assignment[]>;
+  modelAccessor: ModelAccessor;
 
   @ViewChild('assignmentsTable') assignmentsTable: DataTableComponent;
 
-  constructor(private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory) { }
 
   ngOnInit() {
+    this.modelAccessor = new BaseModelAccessor();
+
     this.assignments = new BehaviorSubject([]);
 
     this.columnDefs = new DataTableColumns([
@@ -34,14 +39,27 @@ export class AssignmentsManageViewComponent implements OnInit {
         title: 'Name'
       }, {
         id: nameof<Assignment>('startDate'),
-        title: 'Start Date'
+        title: 'Start Date',
+        itemAccessor: new CustomItemAccessor<Assignment>(item => {
+          const date = new Date(item.startDate);
+          return date.toLocaleDateString();
+        })
       }, {
         id: nameof<Assignment>('endDate'),
-        title: 'End Date'
+        title: 'End Date',
+        itemAccessor: new CustomItemAccessor<Assignment>(item => {
+          const date = new Date(item.endDate);
+          return date.toLocaleDateString();
+        })
       }, {
         id: 'timestamps',
         title: '',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => `${item.dateAdded} (updated: ${item.lastUpdated})`)
+        itemAccessor: new CustomItemAccessor<Assignment>(item => {
+          const dateAdded = new Date(item.dateAdded);
+          const lastUpdated = new Date(item.lastUpdated);
+
+          return `${dateAdded.toLocaleDateString()} (updated: ${lastUpdated.toLocaleDateString()})`;
+        })
       }
     ]);
 
@@ -65,7 +83,7 @@ export class AssignmentsManageViewComponent implements OnInit {
   }
 
   protected edit(assignment: Assignment) {
-
+    this.router.navigate(['assignment', assignment.id], { relativeTo: this.route });
   }
 
   protected delete(assignment: Assignment): Promise<Assignment> {

@@ -136,7 +136,7 @@ export class AssignmentsService extends ModelWithSlugService<Assignment, Assignm
   }
 
   public getByCourse(courseId: string): Observable<Assignment[]> {
-    return this.http.get<Assignment[]>(`${this.apiRoot}/${courseId}`);
+    return this.http.get<Assignment[]>(`${this.apiRoot}/ForCourse/${courseId}`);
   }
 
 }

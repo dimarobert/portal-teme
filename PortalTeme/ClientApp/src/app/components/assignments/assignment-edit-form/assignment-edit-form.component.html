@@ -1,10 +1,3 @@
-<mat-toolbar>
-    <button mat-icon-button [routerLink]="['../']">
-        <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
-    </button>
-    New Assignment
-</mat-toolbar>
-
 <form [formGroup]="assignmentForm" (submit)="create()">
 
     <mat-form-field>
@@ -29,5 +22,8 @@
         <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
     </div>
 
-    <button mat-raised-button type="submit" color="accent" class="mt-2">Create</button>
+    <button mat-raised-button type="submit" color="accent" class="mt-2">
+        <span *ngIf="!(isEditMode | async)">Create</span>
+        <span *ngIf="isEditMode | async">Update</span>
+    </button>
 </form>
