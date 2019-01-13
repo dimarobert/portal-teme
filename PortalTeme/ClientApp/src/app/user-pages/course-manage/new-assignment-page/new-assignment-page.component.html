@@ -1,0 +1,8 @@
+<mat-toolbar>
+    <button mat-icon-button [routerLink]="['../']">
+        <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
+    </button>
+    <span>New Assignment</span>
+</mat-toolbar>
+
+<app-assignment-edit-form [courseId]="courseId"></app-assignment-edit-form>

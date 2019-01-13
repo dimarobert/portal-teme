@@ -27,10 +27,11 @@ namespace PortalTeme.API.Controllers {
         }
 
         // GET: api/Assignments
-        [HttpGet("{courseId}")]
-        public async Task<ActionResult<IEnumerable<AssignmentDTO>>> GetAssignments(Guid courseId) {
+        [HttpGet("ForCourse/{courseId}")]
+        public async Task<ActionResult<IEnumerable<AssignmentDTO>>> GetAssignmentsForCourse(Guid courseId) {
             var courseAssignments = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
+                .Include(a => a.Course).ThenInclude(c => c.Professor)
                 .Where(assignment => assignment.Course.Id == courseId)
                 .ToListAsync();
 
@@ -53,6 +54,7 @@ namespace PortalTeme.API.Controllers {
         public async Task<ActionResult<AssignmentDTO>> GetAssignment(Guid id) {
             var assignment = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
+                .Include(a => a.Course).ThenInclude(c => c.Professor)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (assignment is null)
@@ -67,14 +69,14 @@ namespace PortalTeme.API.Controllers {
 
         // PUT: api/Assignments/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAssignment(Guid id, AssignmentDTO assignment) {
+        public async Task<IActionResult> PutAssignment(Guid id, AssignmentEditDTO assignment) {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (id != assignment.Id)
                 return BadRequest();
 
-            var dbAssignment = assignmentMapper.MapAssignmentDTO(assignment);
+            var dbAssignment = assignmentMapper.MapAssignmentEditDTO(assignment);
 
             var course = _context.Courses
                 .Include(c => c.Professor)
@@ -103,13 +105,13 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/Assignments
         [HttpPost]
-        public async Task<ActionResult<AssignmentDTO>> PostAssignment(AssignmentDTO assignment) {
+        public async Task<ActionResult<AssignmentDTO>> PostAssignment(AssignmentEditDTO assignment) {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var dbAssignment = assignmentMapper.MapAssignmentDTO(assignment);
+            var dbAssignment = assignmentMapper.MapAssignmentEditDTO(assignment);
 
-            var course = _context.Courses
+            var course = await _context.Courses
                 .Include(c => c.Professor)
                 .Include(c => c.Assistants)
                 .Include(c => c.Groups)

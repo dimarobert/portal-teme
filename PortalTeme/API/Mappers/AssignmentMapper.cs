@@ -9,7 +9,7 @@ namespace PortalTeme.API.Mappers {
 
     public interface IAssignmentMapper {
         AssignmentDTO MapAssignment(Assignment assignment);
-        Assignment MapAssignmentDTO(AssignmentDTO assignment);
+        Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment);
 
         AssignmentEntryDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry);
     }
@@ -35,11 +35,11 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        public Assignment MapAssignmentDTO(AssignmentDTO assignment) {
+        public Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment) {
             return new Assignment {
                 Id = assignment.Id ?? Guid.Empty,
                 Course = new Course {
-                    Id = assignment.Course.Id ?? throw new Exception("No course was set for the assignment.")
+                    Id = assignment.Course.Id
                 },
                 Name = assignment.Name,
                 Description = assignment.Description,
