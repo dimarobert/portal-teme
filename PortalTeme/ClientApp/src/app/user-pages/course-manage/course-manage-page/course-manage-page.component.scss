@@ -11,3 +11,10 @@ button[mat-button] mat-icon {
 .filler {
     flex: 1 1 auto;
 }
+
+.special-need-toolbar {
+    white-space: pre-line;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+}

@@ -2,3 +2,20 @@
 button[mat-button] mat-icon {
     font-size: 22px;
 }
+.full-width{
+    width:100%;
+    padding: 0 10px;
+}
+
+.half-width{
+    width:50%;
+    padding: 0 10px;
+}
+
+.assignment-card{
+    max-width:800px;
+    width:auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
