@@ -58,6 +58,7 @@ namespace PortalTeme.API.Mappers {
             return new AssignmentDTO {
                 Id = assignment.Id,
                 Name = assignment.Name,
+                Slug = assignment.Slug,
                 Description = assignment.Description,
                 DateAdded = assignment.DateAdded,
                 LastUpdated = assignment.LastUpdated,

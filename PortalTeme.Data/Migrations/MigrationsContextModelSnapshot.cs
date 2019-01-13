@@ -258,6 +258,8 @@ namespace PortalTeme.Auth.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("Slug");
+
                     b.Property<DateTime>("StartDate");
 
                     b.HasKey("Id");

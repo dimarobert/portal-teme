@@ -3,11 +3,13 @@ import { CourseRef } from './course.model';
 
 export interface Assignment extends AssignmentEdit {
     id: string;
+
+    slug: string;
 }
 
 export interface AssignmentEdit extends EditModel {
     course: CourseRef;
-    
+
     name: string;
     description: string;
 

@@ -52,6 +52,7 @@ import { AssignmentsManageViewComponent } from './components/assignments/assignm
 import { AssignmentEditPageComponent } from './user-pages/course-manage/assignment-edit-page/assignment-edit-page.component';
 import { NewAssignmentPageComponent } from './user-pages/course-manage/new-assignment-page/new-assignment-page.component';
 import { AssignmentEditFormComponent } from './components/assignments/assignment-edit-form/assignment-edit-form.component';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -77,6 +78,7 @@ const httpInterceptorProviders: Provider[] = [
     AccessDeniedPageComponent,
 
     KeysPipe,
+    SafeHtmlPipe,
 
     CoursesRouterComponent,
     CourseEditRouterComponent,

@@ -4,66 +4,48 @@
 
 <ng-container *ngIf="course">
   <mat-toolbar class="special-need-toolbar">
-      <span>
-        <b class="text-primary">{{course.courseDef.name}}</b>
-        <b>
-          <mat-icon class="ml-2 mr-1">person</mat-icon>Prof. {{course.professor.firstName}}
-          {{course.professor.lastName}}
-        </b>
+    <span>
+      <b class="text-primary">{{course.courseDef.name}}</b>
+      <b>
+        <mat-icon class="ml-2 mr-1">person</mat-icon>Prof. {{course.professor.firstName}}
+        {{course.professor.lastName}}
+      </b>
+    </span>
+    <span *ngIf="course.assistants.length > 0">
+      <span class="pl-1" [innerText]="'| Assistant' + (course.assistants.length > 1 ? 's' : '') + ':'"></span>
+      <span *ngFor="let assistant of course.assistants; let last = last">
+        <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>{{assistant.firstName}}
+        {{assistant.lastName}}
+        <ng-container *ngIf="!last">, </ng-container>
       </span>
-      <span *ngIf="course.assistants.length > 0">
-        <span class="pl-1" [innerText]="'| Assistant' + (course.assistants.length > 1 ? 's' : '') + ':'"></span>
-        <span *ngFor="let assistant of course.assistants; let last = last">
-          <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>{{assistant.firstName}}
-          {{assistant.lastName}}
-          <ng-container *ngIf="!last">, </ng-container>
-        </span>
-      </span>
-      <span class="filler"></span>
-      <button mat-button color="accent" [routerLink]="['manage']"><mat-icon class="mr-1">edit</mat-icon>Manage course</button>
+    </span>
+    <span class="filler"></span>
+    <a mat-button color="accent" [routerLink]="['manage']">
+      <mat-icon class="mr-1">edit</mat-icon>
+      <span>Manage course</span>
+    </a>
   </mat-toolbar>
 
   <mat-card class="assignments-card" *ngFor="let assignment of course.assignments">
     <mat-card-header>
-      <mat-card-title>Assignment: {{assignment.name}}</mat-card-title>
+      <mat-card-title>{{assignment.name}}</mat-card-title>
       <mat-card-subtitle>
-        <div>Added on: {{assignment.dateAdded}} (Last updated: {{assignment.lastUpdated}})</div>
-        <div>Started on: {{assignment.startDate}}</div>
-        <div><b class="text-danger">Deadline: {{assignment.endDate}}</b> </div>
+        <div>Added on: <span [matTooltip]="assignment.dateAdded.toLocaleString()">{{assignment.dateAdded.toLocaleDateString()}}</span>
+          (Last updated:
+          <span [matTooltip]="assignment.lastUpdated.toLocaleString()">{{assignment.lastUpdated.toLocaleDateString()}}</span>)</div>
+        <div>Started on: {{assignment.startDate.toLocaleDateString()}}</div>
+        <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b> </div>
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p>{{assignment.description}}</p>
+      <p [innerHTML]="assignment.description | safeHtml"></p>
     </mat-card-content>
     <mat-card-actions>
       <button mat-button color="basic">UPLOAD<mat-icon class="ml-1">cloud_upload</mat-icon></button>
-      <button mat-button color="accent">SUBMIT<mat-icon class="ml-1">send</mat-icon></button>
+      <a mat-button color="accent" [routerLink]="[assignment.slug]">View</a>
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="assignments-card">
-    <mat-card-header>
-      <mat-card-title>Assignment: [Name Here]</mat-card-title>
-      <mat-card-subtitle>
-          <div>Added on: [Date] (Last updated: [Date])</div>
-          <div>Started on: [Date]</div>
-          <div><b class="text-danger">Deadline: [Date]</b> </div>
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rhoncus diam turpis, eget ullamcorper est interdum
-        ut. Quisque id est semper, posuere libero in, porttitor est. Nullam nec enim ut enim rutrum fringilla. Nam quam
-        purus, commodo vitae aliquam eu, pellentesque at dolor. Vestibulum vestibulum augue in sem interdum fringilla.
-        Cras nec purus ut ante egestas faucibus ut a metus. Nunc sodales nisi vel sem porta ullamcorper. Duis consequat
-        tempor lacinia. Donec gravida dolor tortor, eu blandit dolor imperdiet ac. Sed scelerisque malesuada tortor, ut
-        pharetra nisi efficitur sit amet. Aliquam ultricies enim leo. Pellentesque sit amet neque in odio porttitor
-        molestie.
-      </p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button color="basic">UPLOAD<mat-icon class="ml-1">cloud_upload</mat-icon></button>
-      <button mat-button color="accent">SUBMIT<mat-icon class="ml-1">send</mat-icon></button>
-    </mat-card-actions>
-  </mat-card>
+  <div class="text-center mt-4" *ngIf="course.assignments.length == 0">No assignments are yet published for this course.</div>
+
 </ng-container>
