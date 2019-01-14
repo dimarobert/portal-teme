@@ -17,7 +17,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class AssignmentsManageViewComponent implements OnInit {
 
-
   @Input() courseId: string;
 
   columnDefs: DataTableColumns;
@@ -82,11 +81,15 @@ export class AssignmentsManageViewComponent implements OnInit {
       });
   }
 
-  protected edit(assignment: Assignment) {
+  update() {
+    this.getData();
+  }
+
+  edit(assignment: Assignment) {
     this.router.navigate(['assignment', assignment.id], { relativeTo: this.route });
   }
 
-  protected delete(assignment: Assignment): Promise<Assignment> {
+  delete(assignment: Assignment): Promise<Assignment> {
     return this.modelSvcFactory.assignments.delete(assignment.id);
   }
 }

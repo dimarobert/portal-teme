@@ -9,6 +9,7 @@ import { ModelServiceFactory } from '../../../services/model.service';
 import { MatTabChangeEvent } from '@angular/material';
 import { CourseEditAssistantsComponent } from '../../../components/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseEditAttendeesComponent } from '../../../components/courses/course-edit-attendees/course-edit-attendees.component';
+import { AssignmentsManageViewComponent } from '../../../components/assignments/assignments-manage-view/assignments-manage-view.component';
 
 @Component({
   selector: 'app-course-manage-page',
@@ -23,6 +24,7 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
 
   @ViewChild('assistants') assistants: CourseEditAssistantsComponent;
   @ViewChild('attendees') attendees: CourseEditAttendeesComponent;
+  @ViewChild('assignments') assignments: AssignmentsManageViewComponent;
 
   isAssignmentsTab: boolean;
 
@@ -52,6 +54,7 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
     switch (event.index) {
       case 0:
         this.isAssignmentsTab = true;
+        this.assignments.update();
         break;
 
       case 1:
