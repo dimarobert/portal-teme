@@ -18,15 +18,3 @@
 .icon-button-text {
     margin-left: 5px;
 }
-
-.mat-header-row { //THIS MAKES THE HEADER STICKY
-    position: sticky;
-    position: -webkit-sticky;
-    top: 0;
-    z-index: 1;
-    background-color: inherit;
-}
-.mat-table { //OR WHATEVER YOU CALL THE mat-table
-    overflow: auto;
-    min-width:600px;
-}

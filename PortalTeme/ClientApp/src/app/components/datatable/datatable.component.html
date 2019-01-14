@@ -53,12 +53,12 @@
       <mat-cell *matCellDef="let element">
         <ng-container *ngIf="canAdd">
           <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)" (click)="saveElement(element)">
-            <mat-icon>save</mat-icon>
-            <span class="icon-button-text">Save</span>
+            <mat-icon class="mr-1">save</mat-icon>
+            <span>Save</span>
           </button>
           <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="remove(element)">
-            <mat-icon>cancel_presentation</mat-icon>
-            <span class="icon-button-text">Cancel</span>
+            <mat-icon class="mr-1">cancel_presentation</mat-icon>
+            <span>Cancel</span>
           </button>
         </ng-container>
 
@@ -67,13 +67,13 @@
             (click)="edit(element)">Edit</button>
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
             (click)="saveElement(element)">
-            <mat-icon>update</mat-icon>
-            <span class="icon-button-text">Update</span>
+            <mat-icon class="mr-1">update</mat-icon>
+            <span>Update</span>
           </button>
           <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
             (click)="cancelEdit(element)">
-            <mat-icon>cancel_presentation</mat-icon>
-            <span class="icon-button-text">Cancel</span>
+            <mat-icon class="mr-1">cancel_presentation</mat-icon>
+            <span>Cancel</span>
           </button>
         </ng-container>
         <ng-container *ngIf="customEdit">
@@ -82,8 +82,8 @@
         </ng-container>
         <ng-container *ngIf="canDelete && !isInEditMode(element)">
           <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)" (click)="deleteElement(element)">
-            <mat-icon>delete</mat-icon>
-            <span class="icon-button-text">Delete</span>
+            <mat-icon class="mr-1">delete</mat-icon>
+            <span>Delete</span>
           </button>
         </ng-container>
       </mat-cell>
@@ -98,8 +98,8 @@
 </div>
 
 <button mat-raised-button color="primary" class="grid-add-button" (click)="add()" *ngIf="canAdd">
-  <mat-icon>add_to_photos</mat-icon>
-  <span class="icon-button-text">Add</span>
+  <mat-icon class="mr-1">add_to_photos</mat-icon>
+  <span>Add</span>
 </button>
 
 <mat-list *ngIf="hasAnyError()">
@@ -107,8 +107,8 @@
     <div matLine *ngIf="error.key">{{error.key}}:</div>
     <div matLine *ngFor="let valLine of error.value">
       <div class="value">
-        <mat-icon>warning</mat-icon>
-        <span class="icon-button-text">{{valLine}}</span>
+        <mat-icon class="mr-1">warning</mat-icon>
+        <span>{{valLine}}</span>
       </div>
     </div>
     <mat-divider></mat-divider>
