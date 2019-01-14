@@ -18,3 +18,84 @@
 .icon-button-text {
     margin-left: 5px;
 }
+
+.cell-label{
+    display: none;
+    font-weight: bold;
+}
+
+@media 
+only screen and (max-width: 1024px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+    .cell-label{
+        display: inline-block;
+    }
+
+    .action-label{
+        display:none;
+    }
+
+    .button-cell{
+        display: inline-flex;
+    }
+
+    mat-form-field {
+        width: 100%;
+    }
+
+	/* Force table to not be like tables anymore */
+	mat-table, mat-header-row, mat-row, mat-cell { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	mat-header-row mat-row { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: 1px solid #ccc; }
+	
+	mat-row { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+	}
+    
+    mat-header-cell{
+        display: inline-flex;
+    }
+
+    mat-cell{
+        display: grid;
+    }
+
+	mat-cell:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+    }
+
+    mat-cell, mat-header-cell{
+        padding-left: 24px;
+        padding-right: 24px;
+        white-space: pre-wrap;
+    }
+
+    mat-cell button{
+        width: 150px;
+    }
+
+    mat-footer-row::after, mat-header-row::after, mat-row::after {
+        display: contents;
+    }
+
+}

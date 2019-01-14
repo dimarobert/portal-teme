@@ -3,10 +3,10 @@
   <mat-table #table [dataSource]="dataSource" matSort>
 
     <ng-container *ngFor="let column of columnDefs.columns; first as isFirst" [matColumnDef]="column.id">
-
+ 
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{column.title}}</mat-header-cell>
       <mat-cell *matCellDef="let element">
-        <span *ngIf="!isInEditMode(element)">{{column.itemAccessor.getPropertyText(element, column)}}</span>
+        <span *ngIf="!isInEditMode(element)"><span class="cell-label">{{column.title}}: </span>{{column.itemAccessor.getPropertyText(element, column)}}</span>
         <span *ngIf="isInEditMode(element)">
 
           <!-- ColumnType switch -->
@@ -49,22 +49,25 @@
     </ng-container>
 
     <ng-container matColumnDef="actions" *ngIf="hasActions">
-      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-      <mat-cell *matCellDef="let element">
+      <mat-header-cell *matHeaderCellDef class="action-label">Actions</mat-header-cell>
+      <mat-cell *matCellDef="let element" class="button-cell">
         <ng-container *ngIf="canAdd">
           <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)" (click)="saveElement(element)">
             <mat-icon class="mr-1">save</mat-icon>
             <span>Save</span>
           </button>
           <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="remove(element)">
-            <mat-icon class="mr-1">cancel_presentation</mat-icon>
+            <mat-icon class="mr-1">cancel</mat-icon>
             <span>Cancel</span>
           </button>
         </ng-container>
 
         <ng-container *ngIf="canEdit">
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-            (click)="edit(element)">Edit</button>
+            (click)="edit(element)">
+            <mat-icon class="mr-1">edit</mat-icon>
+            <span>Edit</span>
+          </button>
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
             (click)="saveElement(element)">
             <mat-icon class="mr-1">update</mat-icon>
@@ -72,13 +75,16 @@
           </button>
           <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
             (click)="cancelEdit(element)">
-            <mat-icon class="mr-1">cancel_presentation</mat-icon>
+            <mat-icon class="mr-1">cancel</mat-icon>
             <span>Cancel</span>
           </button>
         </ng-container>
         <ng-container *ngIf="customEdit">
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-            (click)="customEditAction(element)">Edit</button>
+            (click)="customEditAction(element)">
+            <mat-icon class="mr-1">edit</mat-icon>
+            <span>Edit</span>
+          </button>
         </ng-container>
         <ng-container *ngIf="canDelete && !isInEditMode(element)">
           <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)" (click)="deleteElement(element)">
