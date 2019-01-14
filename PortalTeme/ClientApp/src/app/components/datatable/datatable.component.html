@@ -64,7 +64,10 @@
 
         <ng-container *ngIf="canEdit">
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-            (click)="edit(element)">Edit</button>
+            (click)="edit(element)">
+            <mat-icon>edit</mat-icon>
+            <span class="icon-button-text">Edit</span>
+          </button>
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
             (click)="saveElement(element)">
             <mat-icon>update</mat-icon>
@@ -78,7 +81,10 @@
         </ng-container>
         <ng-container *ngIf="customEdit">
           <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-            (click)="customEditAction(element)">Edit</button>
+            (click)="customEditAction(element)">
+            <mat-icon>edit</mat-icon>
+            <span class="icon-button-text">Edit</span>
+          </button>
         </ng-container>
         <ng-container *ngIf="canDelete && !isInEditMode(element)">
           <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)" (click)="deleteElement(element)">
