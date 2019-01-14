@@ -4,7 +4,9 @@
     ViewData["Title"] = "Portal Teme";
 }
 
-<app-root>Loading...</app-root>
+<app-root>
+    <span style="color: white;">@ViewData["LoadingText"]</span>
+</app-root>
 
 @Html.AntiForgeryToken()
 
