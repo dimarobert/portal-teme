@@ -87,7 +87,7 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected save(element: User): Promise<User> {
+  save(element: User): Promise<User> {
     const value = <CourseAssistant>{
       courseId: this.courseId,
       assistant: element
@@ -96,7 +96,7 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
       .then(ca => ca.assistant);
   }
 
-  protected delete(element: User): Promise<User> {
+  delete(element: User): Promise<User> {
     const value = <CourseAssistant>{
       courseId: this.courseId,
       assistant: element

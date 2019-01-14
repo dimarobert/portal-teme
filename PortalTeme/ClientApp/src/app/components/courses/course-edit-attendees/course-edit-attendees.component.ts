@@ -119,18 +119,18 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected saveGroup(element: CourseGroup): Promise<CourseGroup> {
+  saveGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
     return this.modelSvcFactory.courseRelations.addGroup(element);
   }
 
-  protected deleteGroup(element: CourseGroup): Promise<CourseGroup> {
+  deleteGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
     return this.modelSvcFactory.courseRelations.deleteGroup(element);
   }
 
 
-  protected saveStudent(element: User): Promise<User> {
+  saveStudent(element: User): Promise<User> {
     const value = <CourseStudent>{
       courseId: this.courseId,
       student: element
@@ -139,7 +139,7 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
       .then(cs => cs.student);
   }
 
-  protected deleteStudent(element: User): Promise<User> {
+  deleteStudent(element: User): Promise<User> {
     const value = <CourseStudent>{
       courseId: this.courseId,
       student: element

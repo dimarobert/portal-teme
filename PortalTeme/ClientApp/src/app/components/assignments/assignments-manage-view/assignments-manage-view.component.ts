@@ -85,11 +85,11 @@ export class AssignmentsManageViewComponent implements OnInit {
     this.getData();
   }
 
-  protected edit(assignment: Assignment) {
+  edit(assignment: Assignment) {
     this.router.navigate(['assignment', assignment.id], { relativeTo: this.route });
   }
 
-  protected delete(assignment: Assignment): Promise<Assignment> {
+  delete(assignment: Assignment): Promise<Assignment> {
     return this.modelSvcFactory.assignments.delete(assignment.id);
   }
 }

@@ -80,7 +80,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
 
   }
 
-  protected create() {
+  create() {
     const newAssignment: AssignmentEdit = {
       name: this.name.value,
       description: this.description.value,
