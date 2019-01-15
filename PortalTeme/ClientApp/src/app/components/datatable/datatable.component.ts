@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { MatTableDataSource, MatSort } from '@angular/material';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { isHttpErrorResponse } from '../../type-guards/errors.type-guard';
@@ -10,6 +10,8 @@ import { ItemAccessor } from "../../models/item.accesor";
 import { ModelAccessor } from "../../models/model.accessor";
 import { ItemDatasource } from '../../datasources/item-datasource';
 import { isDatasourceColumnDefinition, isEditableColumnDefinition } from '../../type-guards/column-definitions.type-guards';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-data-table',
@@ -20,7 +22,7 @@ export class DataTableComponent implements OnInit {
 
   ColumnType = ColumnType;
 
-  constructor() { }
+  constructor(private breakpointObserver: BreakpointObserver) { }
 
   @Input() modelAccessor: ModelAccessor;
   @Input() columnDefs: DataTableColumns;
@@ -56,6 +58,22 @@ export class DataTableComponent implements OnInit {
 
   activeForms: Map<object, FormGroup> = new Map<object, FormGroup>();
 
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 650px)')
+    .pipe(
+      // mobile first design
+      // this is used as an workaround for https://github.com/angular/material2/issues/13852
+      startWith(<BreakpointState>{ matches: true }),
+      map(result => result.matches)
+    );
+
+  isSmallScreen$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 831px) AND (min-width: 650px)')
+    .pipe(
+      // mobile first design
+      // this is used as an workaround for https://github.com/angular/material2/issues/13852
+      startWith(<BreakpointState>{ matches: true }),
+      map(result => result.matches)
+    );
+
   get hasActions(): boolean {
     return this.canAdd || this.canEdit || this.canDelete;
   }
@@ -90,6 +108,12 @@ export class DataTableComponent implements OnInit {
     this.dataSource = new ObservableDataSource<any>(this.data);
     this.dataSource.sort = this.sort;
     this.sort.sort({ id: 'name', disableClear: false, start: 'asc' });
+  }
+
+  sortBy(column: ColumnDefinition) {
+    const sortable = this.sort.sortables.get(column.id);
+    sortable.disableClear = true;
+    this.sort.sort(sortable);
   }
 
   private validateInput() {
