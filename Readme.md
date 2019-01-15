@@ -9,3 +9,6 @@
 1. Go to both project's Properties screen. In the Debug screen set the **ASPNETCORE_ENVIRONMENT** variable to **Production**.
 2. Build the angular app by using the **npm build --prod** command inside the **ClientApp** folder.
 3. Follow the steps from the development mode.
+
+### Publish the application.
+You will have to publish both applications using Visual Studio by right clicking the project and choosing **Publish...**. For the main project this will also build the Angular App and bundle it with the application. The Angular App will be built in release mode. 
