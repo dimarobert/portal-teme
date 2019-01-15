@@ -2,7 +2,10 @@
   <button mat-icon-button [routerLink]="['../../']">
     <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
   </button>
-  <span>Edit Assignment: <b class="text-primary">{{(assignment | async)?.name}}</b></span>
+  <span>
+    <mat-icon class="mr-1">edit</mat-icon>
+    <b class="text-primary">{{(assignment | async)?.name}}</b>
+  </span>
 </mat-toolbar>
 
 <app-assignment-edit-form [assignment]="assignment" [submitClick]="update"></app-assignment-edit-form>

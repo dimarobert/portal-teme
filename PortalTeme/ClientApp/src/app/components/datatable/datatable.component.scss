@@ -15,87 +15,53 @@
     margin-top: 10px;
 }
 
-.icon-button-text {
-    margin-left: 5px;
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
 }
 
-.cell-label{
+.mobile-label {
     display: none;
-    font-weight: bold;
 }
 
-@media 
-only screen and (max-width: 1024px),
-(min-device-width: 768px) and (max-device-width: 1024px)  {
+// .fill-space {
+//     display: none;
+// }
+.mat-column-actions {
+    padding-left: 2px;
+}
 
-    .cell-label{
-        display: inline-block;
+.mat-header-cell.mat-column-actions {
+    justify-content: flex-end;
+}
+
+.mobile {
+    .fill-space {
+        display: initial;
     }
-
-    .action-label{
-        display:none;
-    }
-
-    .button-cell{
-        display: inline-flex;
-    }
-
-    mat-form-field {
+    .mat-column-actions {
         width: 100%;
+        padding-top: 10px;
     }
-
-	/* Force table to not be like tables anymore */
-	mat-table, mat-header-row, mat-row, mat-cell { 
-		display: block; 
-	}
-	
-	/* Hide table headers (but not display: none;, for accessibility) */
-	mat-header-row mat-row { 
-		position: absolute;
-		top: -9999px;
-		left: -9999px;
-	}
-	
-	tr { border: 1px solid #ccc; }
-	
-	mat-row { 
-		/* Behave  like a "row" */
-		border: none;
-		border-bottom: 1px solid #eee; 
-		position: relative;
-	}
-    
-    mat-header-cell{
-        display: inline-flex;
+    .mobile-label {
+        width: 80px;
+        display: inline-block;
+        font-weight: bold;
+        cursor: pointer;
     }
-
-    mat-cell{
-        display: grid;
+    .mat-header-row {
+        display: none;
     }
-
-	mat-cell:before { 
-		/* Now like a table header */
-		position: absolute;
-		/* Top/left values mimic padding */
-		top: 6px;
-		left: 6px;
-		width: 45%; 
-		padding-right: 10px; 
-		white-space: nowrap;
+    .mat-row {
+        flex-direction: column;
+        align-items: start;
+        padding: 8px 0;
     }
-
-    mat-cell, mat-header-cell{
+    mat-row::after {
+        display: none;
+    }
+    .mat-cell {
         padding-left: 24px;
-        padding-right: 24px;
-        white-space: pre-wrap;
+        min-height: 30px;
     }
-
-    mat-cell button{
-        width: 150px;
-    }
-
-    mat-footer-row::after, mat-header-row::after, mat-row::after {
-        display: contents;
-    }
-
 }

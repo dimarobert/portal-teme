@@ -9,6 +9,7 @@ import { nameof } from '../../../type-guards/nameof.guard';
 import { CustomItemAccessor } from '../../../models/item.accesor';
 import { ModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
 import { Router, ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-assignments-manage-view',
@@ -25,7 +26,7 @@ export class AssignmentsManageViewComponent implements OnInit {
 
   @ViewChild('assignmentsTable') assignmentsTable: DataTableComponent;
 
-  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.modelAccessor = new BaseModelAccessor();
@@ -57,7 +58,7 @@ export class AssignmentsManageViewComponent implements OnInit {
           const dateAdded = new Date(item.dateAdded);
           const lastUpdated = new Date(item.lastUpdated);
 
-          return `${dateAdded.toLocaleDateString()} (updated: ${lastUpdated.toLocaleDateString()})`;
+          return this.sanitizer.bypassSecurityTrustHtml(`${dateAdded.toLocaleDateString()} <span style="white-space: nowrap;">(updated: ${lastUpdated.toLocaleDateString()})</span>`);
         })
       }
     ]);

@@ -1,18 +1,23 @@
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, OnInit, Type, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
 import { CourseEditRouterComponent } from '../courses/course-edit-router/course-edit-router.component';
+import { MatTabChangeEvent, MatTabGroup } from '@angular/material';
+import { map, take } from 'rxjs/operators';
+import { Subscription, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'admin-nav-menu',
   templateUrl: './admin-nav-menu.component.html',
   styleUrls: ['./admin-nav-menu.component.scss']
 })
-export class AdminNavMenuComponent implements OnInit {
+export class AdminNavMenuComponent implements OnInit, OnDestroy {
 
-  adminLinks: NavLink[];
-  editCourseLinks: NavLink[];
+  @ViewChild('tabsGroup') tabsGroup: MatTabGroup;
+
+  private adminLinks: NavLink[];
+  private editCourseLinks: NavLink[];
 
   AdminMenuState = AdminMenuState;
 
@@ -25,6 +30,47 @@ export class AdminNavMenuComponent implements OnInit {
   ngOnInit() {
     this.loadAdminLinks();
     this.loadCourseLinks();
+  }
+
+  ngOnDestroy(): void {
+    (this._menuItemsSub && this._menuItemsSub.unsubscribe());
+  }
+
+  private _menuItems: BehaviorSubject<NavLink[]>;
+  private _menuItemsSub: Subscription;
+  get menuItems() {
+    this._menuItems = this._menuItems || new BehaviorSubject(this.adminLinks);
+    this._menuItemsSub = this.menuState.subscribe(state => {
+      let oldMenu = this._menuItems.value;
+      if (state == AdminMenuState.EditCourseMenu) {
+        this._menuItems.next(this.editCourseLinks);
+      } else if (state == AdminMenuState.AdminMenu) {
+        this._menuItems.next(this.adminLinks);
+      }
+
+      if (oldMenu != this._menuItems.value)
+        this.updateSelectedTab(this._menuItems.value);
+    });
+
+    return this._menuItems;
+  }
+
+  updateSelectedTab(currentMenu: NavLink[]) {
+    const currentLinkIndex = currentMenu.findIndex(link => {
+      const urlTree = this.router.createUrlTree(['/admin', ...this.getAdminRelativeCommands(link)]);
+      return this.router.isActive(urlTree, link.exact);
+    });
+
+    if (currentLinkIndex > -1)
+      this.tabsGroup.selectedIndex = currentLinkIndex;
+  }
+
+  onTabChange(event: MatTabChangeEvent) {
+    if (event.index < 0 || event.index > this.menuItems.value.length)
+      return;
+
+    const link = this.menuItems.value[event.index];
+    this.router.navigate(this.getAdminRelativeCommands(link), { relativeTo: this.route });
   }
 
   private loadAdminLinks() {
@@ -135,7 +181,7 @@ class NavLink implements NavLinkOptions {
     return this.options.action || (() => { });
   }
 
-  get icon(): string{
+  get icon(): string {
     return this.options.icon;
   }
 }

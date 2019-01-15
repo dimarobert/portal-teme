@@ -10,10 +10,14 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-fill-space {
+.fill-space {
     flex: 1 1 auto;
 }
 
 .ck-content {
     background: transparent !important;
+}
+
+mark {
+    padding: 0 0.2em;
 }

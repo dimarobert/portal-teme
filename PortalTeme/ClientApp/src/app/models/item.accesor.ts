@@ -1,8 +1,9 @@
 import { ColumnDefinition } from './column-definition.model';
 import { NamedModel } from './base.model';
 import { isDatasourceColumnDefinition } from '../type-guards/column-definitions.type-guards';
+import { SafeHtml } from '@angular/platform-browser';
 export interface ItemAccessor {
-    getPropertyText(item: any, column: ColumnDefinition): string;
+    getPropertyText(item: any, column: ColumnDefinition): string | SafeHtml;
     getPropertyValue(item: any, column: ColumnDefinition): any;
     setPropertyToItem(item: any, column: ColumnDefinition, value: any): void;
 }
@@ -10,7 +11,7 @@ export interface ItemAccessor {
 
 export class NamedModelItemAccessor implements ItemAccessor {
 
-    getPropertyText(item: NamedModel, column: ColumnDefinition): string {
+    getPropertyText(item: NamedModel, column: ColumnDefinition): string | SafeHtml {
         const value = this.getProperty(item, column.id);
         if (isDatasourceColumnDefinition(column)) {
             return column.datasource.getTitleByValue(value);
@@ -36,11 +37,11 @@ export class NamedModelItemAccessor implements ItemAccessor {
 }
 
 export class CustomItemAccessor<TModel> extends NamedModelItemAccessor {
-    constructor(private getText?: (item: TModel) => string, private getValue?: (item: TModel) => any, private setValue?: (item: TModel, value: any) => void) {
+    constructor(private getText?: (item: TModel) => string | SafeHtml, private getValue?: (item: TModel) => any, private setValue?: (item: TModel, value: any) => void) {
         super();
     }
 
-    getPropertyText(item: any, column: ColumnDefinition): string {
+    getPropertyText(item: any, column: ColumnDefinition): string | SafeHtml {
         if (!this.getText)
             return super.getPropertyText(item, column);
         return this.getText(item);
@@ -64,7 +65,7 @@ export class RelatedItemAccessor<TRelated> extends NamedModelItemAccessor {
         super();
     }
 
-    getPropertyText(item: any, column: ColumnDefinition): string {
+    getPropertyText(item: any, column: ColumnDefinition): string | SafeHtml {
         const related = this.getProperty(item, column.id);
         return this.getText(related);
     }

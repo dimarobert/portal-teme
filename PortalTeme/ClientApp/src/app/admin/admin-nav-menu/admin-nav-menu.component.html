@@ -3,22 +3,14 @@
     <span class="icon-title-text">Admin Dashboard</span>
 </mat-toolbar>
 
-<nav mat-tab-nav-bar [backgroundColor]="['primary']">
-    <ng-container *ngIf="(menuState | async) == AdminMenuState.AdminMenu">
-        <a mat-tab-link *ngFor="let link of adminLinks" [routerLink]="getAdminRelativeCommands(link)" routerLinkActive
-            #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive" (click)="link.action()">
-            <mat-icon>{{link.icon}}</mat-icon>
-            <span class="tab-text">{{link.label}}</span>
-        </a>
-    </ng-container>
-    <ng-container *ngIf="(menuState | async) == AdminMenuState.EditCourseMenu">
-        <a mat-tab-link *ngFor="let link of editCourseLinks" [routerLink]="getAdminRelativeCommands(link)"
-            routerLinkActive #rla="routerLinkActive" [routerLinkActiveOptions]="{ exact: link.exact }" [active]="rla.isActive"
-            (click)="link.action()">
-            <mat-icon>{{link.icon}}</mat-icon>
-            <span class="tab-text">{{link.label}}</span>
-        </a>
-    </ng-container>
-</nav>
+<mat-tab-group #tabsGroup [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+    <mat-tab *ngFor="let link of menuItems | async" (click)="link.action()">
+        <ng-template mat-tab-label>
+            <mat-icon class="mr-1">{{link.icon}}</mat-icon>
+            <span>{{link.label}}</span>
+        </ng-template>
+    </mat-tab>
+
+</mat-tab-group>
 
 <ng-content></ng-content>
