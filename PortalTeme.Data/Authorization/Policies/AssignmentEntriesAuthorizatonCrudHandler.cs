@@ -33,17 +33,26 @@ namespace PortalTeme.Data.Authorization.Policies {
                     return;
                 }
 
-                var isProfessorOrAssistant = await temeContext.Courses
-                    .Where(c => c.Id == resource.CourseId)
-                    .Where(c => c.ProfessorId == currentUser.Id || c.Assistants.Any(assistant => assistant.AssistantId == currentUser.Id))
-                    .AnyAsync();
-
-                if (isProfessorOrAssistant) {
+                if (await IsCourseProfessorOrAssistant(currentUser, resource)) {
+                    context.Succeed(requirement);
+                    return;
+                }
+            } else if (requirement.Name == Operations.EditAssignmentEntries.Name) {
+                var currentUser = await userManager.GetUserAsync(context.User);
+                if (await IsCourseProfessorOrAssistant(currentUser, resource)) {
                     context.Succeed(requirement);
                     return;
                 }
             }
+        }
 
+        private async Task<bool> IsCourseProfessorOrAssistant(User currentUser, AssignmentEntryProjection resource) {
+            var isProfessorOrAssistant = await temeContext.Courses
+                .Where(c => c.Id == resource.CourseId)
+                .Where(c => c.ProfessorId == currentUser.Id || c.Assistants.Any(assistant => assistant.AssistantId == currentUser.Id))
+                .AnyAsync();
+
+            return isProfessorOrAssistant;
         }
     }
 }

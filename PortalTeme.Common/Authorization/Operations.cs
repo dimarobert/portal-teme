@@ -28,6 +28,8 @@ namespace PortalTeme.Common.Authorization {
 
         public static OperationAuthorizationRequirement ViewAssignmentEntries =
             new OperationAuthorizationRequirement { Name = nameof(ViewAssignmentEntries) };
+        public static OperationAuthorizationRequirement EditAssignmentEntries =
+            new OperationAuthorizationRequirement { Name = nameof(EditAssignmentEntries) };
     };
 }
 

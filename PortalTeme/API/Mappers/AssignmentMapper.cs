@@ -12,6 +12,7 @@ namespace PortalTeme.API.Mappers {
         Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment);
 
         AssignmentEntryDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry);
+        AssignmentEntry MapAssignmentEntryProjectionDTO(AssignmentEntryDTO assignmentEntryDto);
     }
 
     public class AssignmentMapper : IAssignmentMapper {
@@ -64,6 +65,21 @@ namespace PortalTeme.API.Mappers {
             };
 
         }
+
+        public AssignmentEntry MapAssignmentEntryProjectionDTO(AssignmentEntryDTO assignmentEntryDto) {
+            return new AssignmentEntry {
+                Id = assignmentEntryDto.Id ?? Guid.Empty,
+                Assignment = new Assignment {
+                    Id = assignmentEntryDto.AssignmentId
+                },
+                Student = new StudentInfo {
+                    UserId = assignmentEntryDto.StudentId
+                },
+                Grading = assignmentEntryDto.Grading,
+                State = assignmentEntryDto.State
+            };
+        }
+
 
         private AssignmentEntryVersionDTO MapAssignmentEntryVersion(AssignmentEntryVersion entryVersion) {
             return new AssignmentEntryVersionDTO {

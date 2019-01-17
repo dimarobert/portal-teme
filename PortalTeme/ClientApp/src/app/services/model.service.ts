@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, AssignmentEntry, AssignmentEntryEdit } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +57,11 @@ export class ModelServiceFactory {
   private _assignmentsService: AssignmentsService = null;
   public get assignments(): AssignmentsService {
     return this._assignmentsService || (this._assignmentsService = new AssignmentsService('Assignments', this.http));
+  }
+
+  private _assignmentEntriesService: AssignmentEntriesService = null;
+  public get assignmentEntries(): AssignmentEntriesService {
+    return this._assignmentEntriesService || (this._assignmentEntriesService = new AssignmentEntriesService('AssignmentEntries', this.http));
   }
 }
 
@@ -193,12 +198,30 @@ export class AssignmentsService extends ModelWithSlugService<Assignment, Assignm
   }
 }
 
+
 function mapAssignment(assign: AssignmentEdit): void {
   assign.dateAdded = new Date(assign.dateAdded);
   assign.lastUpdated = new Date(assign.lastUpdated);
   assign.startDate = new Date(assign.startDate);
   assign.endDate = new Date(assign.endDate);
 }
+
+export class AssignmentEntriesService extends ModelWithSlugService<AssignmentEntry, AssignmentEntryEdit> {
+
+  public getAll(): Observable<AssignmentEntry[]> {
+    throw new Error('Invalid operation. GetAll is not supported for assignment entries. Use the getByAssignment(assignmentId) method instead.');
+  }
+
+  public getByAssignment(assignmentId: string): Observable<AssignmentEntry[]> {
+    return this.http.get<AssignmentEntry[]>(`${this.apiRoot}/ForAssignment/${assignmentId}`)
+      .pipe(map(assignments => {
+        assignments.forEach(assign => this.mapResponses(assign));
+        return assignments;
+      }));
+  }
+
+}
+
 
 @Injectable({
   providedIn: 'root'
