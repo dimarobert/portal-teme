@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PortalTeme.Data.Identity;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,6 +18,11 @@ namespace PortalTeme.Data.Models {
         public string Slug { get; set; }
 
         [Required]
+        public AssignmentType Type { get; set; }
+
+        public int NumberOfDuplicates { get; set; }
+
+        [Required]
         public string Description { get; set; }
 
         public DateTime DateAdded { get; set; }
@@ -26,5 +33,32 @@ namespace PortalTeme.Data.Models {
 
         public DateTime EndDate { get; set; }
 
+        public List<AssignmentVariant> AssignmentVariants { get; set; }
+
+    }
+
+    public enum AssignmentType {
+        SingleHomework,
+        SingleChoiceList,
+        MultipleChoiceList,
+        CustomAssignedHomework
+    }
+
+    public class AssignmentVariant {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+
+        [Required]
+        public Assignment Assignment { get; set; }
+        public string AssignmentId { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        public User Student { get; set; }
+        public string StudentId { get; set; }
     }
 }

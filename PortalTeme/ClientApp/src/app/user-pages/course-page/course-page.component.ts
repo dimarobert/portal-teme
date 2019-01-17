@@ -26,6 +26,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe(courseResult => {
           this.course = courseResult;
+          this.course.assignments = this.course.assignments.sort((first, second) => first.endDate.valueOf() - second.endDate.valueOf());
         });
 
     });

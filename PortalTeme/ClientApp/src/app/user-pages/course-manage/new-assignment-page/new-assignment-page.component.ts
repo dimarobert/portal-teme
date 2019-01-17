@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { take } from 'rxjs/operators';
@@ -16,7 +16,7 @@ export class NewAssignmentPageComponent implements OnInit, OnDestroy {
   routeSub: Subscription;
   courseId: string;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory) { }
 
   ngOnInit() {
     this.save = this.save.bind(this);
@@ -34,7 +34,10 @@ export class NewAssignmentPageComponent implements OnInit, OnDestroy {
   }
 
   save(assignment: AssignmentEdit) {
-    this.modelSvcFactory.assignments.save(assignment);
+    this.modelSvcFactory.assignments.save(assignment)
+      .then(newAssign => {
+        this.router.navigate(['../', 'assignment', newAssign.id], { relativeTo: this.route });
+      });
   }
 
   ngOnDestroy(): void {
