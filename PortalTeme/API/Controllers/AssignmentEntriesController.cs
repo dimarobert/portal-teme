@@ -55,22 +55,46 @@ namespace PortalTeme.API.Controllers {
             return results;
         }
 
-        // GET: api/AssignmentEntries/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AssignmentEntry>> GetAssignmentEntry(Guid id) {
-            var assignmentEntry = await _context.AssignmentEntries.FindAsync(id);
+        // GET: api/AssignmentEntries/Entry/5
+        [HttpGet("Entry/{id}")]
+        public async Task<ActionResult<AssignmentEntryDTO>> GetAssignmentEntry(Guid id) {
+            var assignmentEntry = await _context.AssignmentEntries
+                .Where(ae => ae.Id == id)
+                .Select(ae => new AssignmentEntryProjection {
+                    Id = ae.Id,
+                    AssignmentId = ae.Assignment.Id,
+                    CourseId = ae.Assignment.Course.Id,
+                    StudentId = ae.Student.UserId,
+                    State = ae.State,
+                    Grading = ae.Grading,
+                    Versions = ae.Versions
+                })
+                .FirstOrDefaultAsync();
 
             if (assignmentEntry is null)
                 return NotFound();
 
-            return assignmentEntry;
+            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
+            return assignmentMapper.MapAssignmentEntryProjection(assignmentEntry);
         }
 
         // PUT: api/AssignmentEntries/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAssignmentEntry(Guid id, AssignmentEntry assignmentEntry) {
-            if (id != assignmentEntry.Id)
+        public async Task<IActionResult> PutAssignmentEntry(Guid id, AssignmentEntryDTO assignmentEntryDto) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id != assignmentEntryDto.Id)
                 return BadRequest();
+
+            var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
 
             _context.Entry(assignmentEntry).State = EntityState.Modified;
 
@@ -88,24 +112,63 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/AssignmentEntries
         [HttpPost]
-        public async Task<ActionResult<AssignmentEntry>> PostAssignmentEntry(AssignmentEntry assignmentEntry) {
+        public async Task<ActionResult<AssignmentEntryDTO>> PostAssignmentEntry(AssignmentEntryDTO assignmentEntryDto) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
+
+            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
             _context.AssignmentEntries.Add(assignmentEntry);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAssignmentEntry", new { id = assignmentEntry.Id }, assignmentEntry);
+            var entry = await _context.AssignmentEntries
+                .Where(ae => ae.Id == assignmentEntry.Id)
+                .Select(ae => new AssignmentEntryProjection {
+                    Id = ae.Id,
+                    AssignmentId = ae.Assignment.Id,
+                    CourseId = ae.Assignment.Course.Id,
+                    StudentId = ae.Student.UserId,
+                    State = ae.State,
+                    Grading = ae.Grading,
+                    Versions = ae.Versions
+                })
+                .FirstOrDefaultAsync();
+
+            return CreatedAtAction("GetAssignmentEntry", new { id = entry.Id }, assignmentMapper.MapAssignmentEntryProjection(entry));
         }
 
         // DELETE: api/AssignmentEntries/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AssignmentEntry>> DeleteAssignmentEntry(Guid id) {
+        public async Task<ActionResult<AssignmentEntryDTO>> DeleteAssignmentEntry(Guid id) {
             var assignmentEntry = await _context.AssignmentEntries.FindAsync(id);
             if (assignmentEntry is null)
                 return NotFound();
 
+            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
+            var projection = await _context.AssignmentEntries
+                  .Where(ae => ae.Id == assignmentEntry.Id)
+                  .Select(ae => new AssignmentEntryProjection {
+                      Id = ae.Id,
+                      AssignmentId = ae.Assignment.Id,
+                      CourseId = ae.Assignment.Course.Id,
+                      StudentId = ae.Student.UserId,
+                      State = ae.State,
+                      Grading = ae.Grading,
+                      Versions = ae.Versions
+                  })
+                  .FirstOrDefaultAsync();
+
             _context.AssignmentEntries.Remove(assignmentEntry);
             await _context.SaveChangesAsync();
 
-            return assignmentEntry;
+            return assignmentMapper.MapAssignmentEntryProjection(projection);
         }
 
         private bool AssignmentEntryExists(Guid id) {

@@ -308,6 +308,7 @@ namespace PortalTeme {
             AddCoursePolicies(options);
             AddGroupsPolicies(options);
             AddStudyDomainsPolicies(options);
+            AddAssignmentEntriesPolicies(options);
         }
 
         private void AddCoursePolicies(AuthorizationOptions options) {
@@ -367,6 +368,20 @@ namespace PortalTeme {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
                 policy.AddRequirements(Common.Authorization.Operations.EditDomains);
+            });
+        }
+
+        private void AddAssignmentEntriesPolicies(AuthorizationOptions options) {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewAssignmentEntriesPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.ViewAssignmentEntries);
+            });
+
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditAssignmentEntriesPolicy, policy => {
+                policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
+
+                policy.AddRequirements(Common.Authorization.Operations.EditAssignmentEntries);
             });
         }
 
