@@ -183,6 +183,11 @@ namespace PortalTeme.API.Controllers {
             _context.Assignments.Add(dbAssignment);
             await _context.SaveChangesAsync();
 
+            dbAssignment = await _context.Assignments
+                .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
+                .Include(a => a.Course).ThenInclude(c => c.Professor)
+                .FirstOrDefaultAsync(a => a.Id == dbAssignment.Id);
+
             return CreatedAtAction("GetAssignment", new { id = dbAssignment.Id }, assignmentMapper.MapAssignment(dbAssignment));
         }
 
