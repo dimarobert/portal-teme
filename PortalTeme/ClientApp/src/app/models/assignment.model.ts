@@ -19,3 +19,26 @@ export interface AssignmentEdit extends EditModel {
     dateAdded?: Date;
     lastUpdated?: Date;
 }
+
+export interface AssignmentEntry extends AssignmentEntryEdit {
+    id: string;
+}
+
+export interface AssignmentEntryEdit extends EditModel {
+    courseId: string;
+
+    assignmentId: string;
+
+    studentId: string;
+
+    state: AssignmentEntryState;
+
+    grading?: number;
+}
+
+export enum AssignmentEntryState {
+    Submitted,
+    Reviewed,
+    Graded
+}
+

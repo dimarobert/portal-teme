@@ -29,8 +29,8 @@ namespace PortalTeme.API.Controllers {
             this.authorizationService = authorizationService;
         }
 
-        // GET: api/AssignmentEntries/5
-        [HttpGet("{assignmentId}")]
+        // GET: api/AssignmentEntries/ForAssignment/5
+        [HttpGet("ForAssignment/{assignmentId}")]
         public async Task<ActionResult<IEnumerable<AssignmentEntryDTO>>> GetAssignmentEntries(Guid assignmentId) {
             var entries = await _context.AssignmentEntries
                 .Where(ae => ae.Assignment.Id == assignmentId)
@@ -55,8 +55,8 @@ namespace PortalTeme.API.Controllers {
             return results;
         }
 
-        // GET: api/AssignmentEntries/Entry/5
-        [HttpGet("Entry/{id}")]
+        // GET: api/AssignmentEntries/5
+        [HttpGet("{id}")]
         public async Task<ActionResult<AssignmentEntryDTO>> GetAssignmentEntry(Guid id) {
             var assignmentEntry = await _context.AssignmentEntries
                 .Where(ae => ae.Id == id)

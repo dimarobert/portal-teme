@@ -1,3 +1,18 @@
-<p>
-  view-assignment-page works!
-</p>
+<div class="center-content" *ngIf="!assignment">
+  <mat-spinner></mat-spinner>
+</div>
+
+
+<ng-container *ngIf="assignment">
+  <div>Added on: <span [matTooltip]="assignment.dateAdded.toLocaleString()">{{assignment.dateAdded.toLocaleDateString()}}</span>
+    (Last updated:
+    <span [matTooltip]="assignment.lastUpdated.toLocaleString()">{{assignment.lastUpdated.toLocaleDateString()}}</span>)</div>
+  <div>Started on: {{assignment.startDate.toLocaleDateString()}}</div>
+  <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b></div>
+
+  <hr />
+
+  <p [innerHTML]="assignment.description | safeHtml"></p>
+
+  <pre>{{assignment | json}}</pre>
+</ng-container>
