@@ -76,8 +76,8 @@
             "scripts": [],
             "styles": [
               "node_modules/@angular/material/prebuilt-themes/purple-green.css",
-              "src/styles.css",
-              "src/sass/bootstrap-material-indigo.scss"
+              "src/sass/bootstrap-material-indigo.scss",
+              "src/styles.css"
             ],
             "assets": [
               "src/assets"
