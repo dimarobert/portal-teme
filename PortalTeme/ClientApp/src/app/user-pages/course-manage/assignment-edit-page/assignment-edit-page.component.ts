@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { take } from 'rxjs/operators';
 import { Assignment, AssignmentEdit } from '../../../models/assignment.model';
-import { assertDataInRange } from '@angular/core/src/render3/state';
 
 @Component({
   selector: 'app-assignment-edit-page',
@@ -38,7 +37,7 @@ export class AssignmentEditPageComponent implements OnInit, OnDestroy {
 
   update(assignment: AssignmentEdit) {
     assignment.id = this.assignmentSnapshoot.id;
-    this.modelSvcFactory.assignments.update(assignment);
+    return this.modelSvcFactory.assignments.update(assignment);
   }
 
   ngOnDestroy(): void {

@@ -33,6 +33,22 @@ export enum AssignmentType {
     CustomAssignedHomework
 }
 
+const AssignmentTypeText = {
+    SingleHomework: "Single task",
+    SingleHomeworkText: "A single exercise/task will be defined for the entire class to solve.",
+
+    SingleChoiceList: "List of tasks - single choice",
+    SingleChoiceListText: "A list of exercises/tasks will be defined, each student will have to chose his own task. A task can only be chosen by a single student.",
+
+    MultipleChoiceList: "List of tasks - multiple choice",
+    MultipleChoiceListText: "A list of exercises/tasks will be defined, each student will have to chose his own task. A task can be chosen by the specified number of students.",
+
+    CustomAssignedHomework: "Individually assigned tasks",
+    CustomAssignedHomeworkText: "Each task will be manually assigned to each student."
+}
+
+export default AssignmentTypeText;
+
 export interface AssignmentVariant extends BaseModel {
     assignmentId: string;
 

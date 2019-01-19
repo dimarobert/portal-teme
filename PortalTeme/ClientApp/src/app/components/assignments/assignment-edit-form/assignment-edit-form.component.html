@@ -1,37 +1,76 @@
 <mat-card class="assignment-card">
     <mat-card-header>
-      <mat-card-title>Assignment Details</mat-card-title>
-      <mat-card-subtitle>Manage Assignment Details Below</mat-card-subtitle>
+        <mat-card-title>Assignment Details</mat-card-title>
+        <mat-card-subtitle>Manage Assignment Details Below</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-        <form [formGroup]="assignmentForm" (submit)="create()">
-            <p>
-                <mat-form-field class="full-width">
-                    <input matInput type="text" placeholder="Assignment Name" [formControl]="name" />
-                </mat-form-field>
+        <form [formGroup]="assignmentForm" #form (submit)="create()">
+
+            <!-- name -->
+            <mat-form-field class="full-width">
+                <input matInput type="text" placeholder="Assignment Name" [formControl]="name" required />
+                <mat-error *ngIf="name.hasError('required')">The assignment name is required.</mat-error>
+            </mat-form-field>
+
+            <!-- type -->
+            <mat-form-field class="half-width">
+                <mat-select [formControl]="assignmentType" placeholder="Assignment type" required>
+                    <mat-option *ngFor="let assignType of AssignmentTypes | enumKeys" [value]="assignType.key">
+                        {{getAssignmentTypeText(assignType.value)}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="assignmentType.hasError('required')">The assignment type is required.</mat-error>
+            </mat-form-field>
+
+            <!-- number of duplicates -->
+            <mat-form-field *ngIf="showNumberOfDuplicates | async" class="half-width">
+                <input matInput type="number" placeholder="No. of times" [min]="2" [formControl]="numberOfDuplicates"
+                    required />
+                <mat-error *ngIf="numberOfDuplicates.hasError('required')">You need to specify how many times a task
+                    can be chosen.</mat-error>
+                <mat-error *ngIf="numberOfDuplicates.hasError('min')">The value must be at least 2.</mat-error>
+            </mat-form-field>
+
+            <!-- assignment type information -->
+            <p class="full-width">
+                <ng-container *ngIf="currentAssignmentTypeDetails">
+                    <span class="text-info">Details: </span>
+                    <span [class.text-muted]="!currentAssignmentTypeDetails" [innerText]="currentAssignmentTypeDetails"></span>
+                </ng-container>
             </p>
-        
-            <p>
-                <mat-form-field class="half-width">
-                    <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate">
-                    <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
-                    <mat-datepicker #startDatepicker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field class="half-width">
-                    <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate">
-                    <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
-                    <mat-datepicker #endDatepicker></mat-datepicker>
-                </mat-form-field>
-            </p>
-                <div>
-                    <label>Assignment details:</label>
-                    <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
-                </div>
-        
-            <button mat-raised-button type="submit" color="accent" class="mt-2">
+
+            <!-- start date -->
+            <mat-form-field class="half-width">
+                <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate"
+                    autocomplete="off" (focus)="startDatepicker.open()">
+                <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatepicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- end date -->
+            <mat-form-field class="half-width">
+                <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate"
+                    autocomplete="off" (focus)="endDatepicker.open()">
+                <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
+                <mat-datepicker #endDatepicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- description -->
+            <div class="full-width">
+                <label>Assignment details:</label>
+                <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
+            </div>
+
+            <!-- form button -->
+            <button mat-raised-button type="submit" color="accent" class="mt-2" *ngIf="!(saved | async)" [disabled]="invalid | async">
                 <span *ngIf="!(isEditMode | async)">Create</span>
                 <span *ngIf="isEditMode | async">Update</span>
             </button>
+            <button mat-stroked-button type="submit" color="accent" class="mt-2" *ngIf="saved | async" [disabled]="invalid | async">
+                <span *ngIf="!(isEditMode | async)">Create</span>
+                <span *ngIf="isEditMode | async">Update</span>
+            </button>
+            <p class="text-danger" *ngIf="invalid | async">Some of the fields are invalid.</p>
         </form>
     </mat-card-content>
-  </mat-card>
+</mat-card>

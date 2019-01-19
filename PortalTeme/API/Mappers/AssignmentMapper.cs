@@ -28,6 +28,10 @@ namespace PortalTeme.API.Mappers {
                 Course = courseMapper.MapCourseEdit(assignment.Course),
                 Name = assignment.Name,
                 Slug = assignment.Slug,
+
+                Type = assignment.Type,
+                NumberOfDuplicates = assignment.NumberOfDuplicates,
+
                 Description = assignment.Description,
 
                 DateAdded = assignment.DateAdded,
@@ -44,6 +48,10 @@ namespace PortalTeme.API.Mappers {
                     Id = assignment.Course.Id
                 },
                 Name = assignment.Name,
+
+                Type = assignment.Type,
+                NumberOfDuplicates = assignment.NumberOfDuplicates ?? 1,
+
                 Description = assignment.Description,
 
                 DateAdded = assignment.DateAdded,
