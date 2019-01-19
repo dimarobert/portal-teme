@@ -41,14 +41,16 @@
 
             <!-- start date -->
             <mat-form-field class="half-width">
-                <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate">
+                <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate"
+                    autocomplete="off" (focus)="startDatepicker.open()">
                 <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
                 <mat-datepicker #startDatepicker></mat-datepicker>
             </mat-form-field>
 
             <!-- end date -->
             <mat-form-field class="half-width">
-                <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate">
+                <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate"
+                    autocomplete="off" (focus)="endDatepicker.open()">
                 <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
                 <mat-datepicker #endDatepicker></mat-datepicker>
             </mat-form-field>
@@ -60,7 +62,11 @@
             </div>
 
             <!-- form button -->
-            <button mat-raised-button type="submit" color="accent" class="mt-2" [disabled]="invalid | async">
+            <button mat-raised-button type="submit" color="accent" class="mt-2" *ngIf="!(saved | async)" [disabled]="invalid | async">
+                <span *ngIf="!(isEditMode | async)">Create</span>
+                <span *ngIf="isEditMode | async">Update</span>
+            </button>
+            <button mat-stroked-button type="submit" color="accent" class="mt-2" *ngIf="saved | async" [disabled]="invalid | async">
                 <span *ngIf="!(isEditMode | async)">Create</span>
                 <span *ngIf="isEditMode | async">Update</span>
             </button>

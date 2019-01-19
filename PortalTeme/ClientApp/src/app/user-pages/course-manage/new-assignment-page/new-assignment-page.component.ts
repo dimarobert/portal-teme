@@ -34,7 +34,7 @@ export class NewAssignmentPageComponent implements OnInit, OnDestroy {
   }
 
   save(assignment: AssignmentEdit) {
-    this.modelSvcFactory.assignments.save(assignment)
+    return this.modelSvcFactory.assignments.save(assignment)
       .then(newAssign => {
         this.router.navigate(['../', 'assignment', newAssign.id], { relativeTo: this.route });
       });

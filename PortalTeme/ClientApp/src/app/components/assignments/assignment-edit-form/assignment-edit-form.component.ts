@@ -25,13 +25,14 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
 
   @Input() courseId: string;
   @Input() assignment: Observable<Assignment>;
-  @Input() submitClick: (assignment: AssignmentEdit) => void;
+  @Input() submitClick: (assignment: AssignmentEdit) => Promise<void>;
 
   hasId: BehaviorSubject<boolean>;
   assignSub: Subscription;
 
   showNumberOfDuplicates: BehaviorSubject<boolean>;
   invalid: BehaviorSubject<boolean>;
+  saved: BehaviorSubject<boolean>;
 
   constructor() { }
 
@@ -65,6 +66,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.hasId = new BehaviorSubject(false);
+    this.saved = new BehaviorSubject(true);
 
     this.initializeForm();
     this.watchFormChanges();
@@ -82,10 +84,12 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
     this.assignmentForm = new FormGroup({});
     this.assignmentForm.addControl(nameof<Assignment>('name'), new FormControl());
     this.assignmentForm.addControl(nameof<Assignment>('type'), new FormControl('0'));
-    this.assignmentForm.addControl(nameof<Assignment>('numberOfDuplicates'), new FormControl(1, Validators.min(2)));
+    this.assignmentForm.addControl(nameof<Assignment>('numberOfDuplicates'), new FormControl(2, Validators.min(2)));
     this.assignmentForm.addControl(nameof<Assignment>('description'), new FormControl());
     this.assignmentForm.addControl(nameof<Assignment>('startDate'), new FormControl());
     this.assignmentForm.addControl(nameof<Assignment>('endDate'), new FormControl());
+
+    this.numberOfDuplicates.disable();
   }
 
   private watchAssignmentInputChanges() {
@@ -102,12 +106,17 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
         this.startDate.setValue(assign.startDate);
         this.endDate.setValue(assign.endDate);
         Object.keys(this.assignmentForm.controls).forEach(ctrl => this.assignmentForm.get(ctrl).markAsTouched());
+        this.saved.next(true);
       });
   }
 
   private watchFormChanges() {
-    this.showNumberOfDuplicates = new BehaviorSubject(true);
+    this.showNumberOfDuplicates = new BehaviorSubject(false);
     this.invalid = new BehaviorSubject(false);
+
+    this.assignmentForm.valueChanges.subscribe(val => {
+      this.saved.next(false);
+    });
 
     this.assignmentType.valueChanges.subscribe((val: AssignmentType) => {
       const shouldShow = val == AssignmentType.MultipleChoiceList;
@@ -155,7 +164,10 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
       endDate: this.endDate.value
     };
 
-    this.submitClick(newAssignment);
+    this.submitClick(newAssignment)
+      .then(_ => {
+        this.saved.next(true);
+      });
   }
 
   ngOnDestroy(): void {
