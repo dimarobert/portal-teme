@@ -18,5 +18,7 @@ namespace PortalTeme.API.Models.Courses {
         [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
+        [Required(AllowEmptyStrings =false)]
+        public string Acronym { get; set; }
     }
 }

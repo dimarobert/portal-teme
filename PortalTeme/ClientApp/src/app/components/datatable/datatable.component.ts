@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';
@@ -41,6 +41,8 @@ export class DataTableComponent implements OnInit {
   @Input() customEditAction: (element: any) => void;
 
   @Input() loading: boolean;
+
+  @Input() initialSorting: { columnId: string, startDirection?: 'asc' | 'desc' };
 
   get displayedColumns(): string[] {
     var cols = this.columnDefs.columns.map(c => c.id);
@@ -107,10 +109,15 @@ export class DataTableComponent implements OnInit {
 
     this.dataSource = new ObservableDataSource<any>(this.data);
     this.dataSource.sort = this.sort;
-    this.sort.sort({ id: 'name', disableClear: false, start: 'asc' });
+    const initialSort: MatSortable = { id: 'name', disableClear: false, start: 'asc' };
+    if (this.initialSorting) {
+      initialSort.id = this.initialSorting.columnId;
+      initialSort.start = this.initialSorting.startDirection || 'asc';
+    }
+    this.sort.sort(initialSort);
   }
 
-  sortBy(column: ColumnDefinition) {
+  protected sortBy(column: ColumnDefinition) {
     const sortable = this.sort.sortables.get(column.id);
     sortable.disableClear = true;
     this.sort.sort(sortable);

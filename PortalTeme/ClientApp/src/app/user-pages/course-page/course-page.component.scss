@@ -1,9 +1,28 @@
-mat-toolbar mat-icon.mat-icon.material-icons {
-    vertical-align: sub;
+.course-details {
+    mat-card {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    overflow-y: hidden;
+}
+
+.center-text-icon {
+    align-items: center;
+    display: inline-flex;
+    height: 32px;
+}
+
+.assistants-list mat-list-item {
+    height: 40px;
 }
 
 .assignments-card {
     margin: 10px 10px 0 10px;
+    width: 300px;
+}
+
+.assignments-card:hover {
+    filter: brightness(90%)
 }
 
 .special-need-toolbar {
@@ -21,8 +40,4 @@ mat-toolbar mat-icon.mat-icon.material-icons {
 
 button[mat-button] mat-icon {
     font-size: 22px;
-}
-
-.filler {
-    flex: 1 1 auto;
 }

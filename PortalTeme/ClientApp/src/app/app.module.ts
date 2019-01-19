@@ -5,13 +5,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
+import { LayoutModule } from '@angular/cdk/layout';
+import { FlexLayoutModule } from '@angular/flex-layout'
+
 import { MaterialComponentsModule } from './modules/AngularMaterialImports/material-components.module';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './components/nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { LayoutModule } from '@angular/cdk/layout';
 import { LoginPageComponent } from './authentication/login-page/login-page.component';
 
 import { NotFoundPageComponent } from './error-pages/not-found-page/not-found-page.component';
@@ -118,6 +120,7 @@ const httpInterceptorProviders: Provider[] = [
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
+    FlexLayoutModule,
 
     CKEditorModule,
 

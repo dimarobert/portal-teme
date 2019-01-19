@@ -42,7 +42,7 @@
             <!-- start date -->
             <mat-form-field class="half-width">
                 <input matInput [matDatepicker]="startDatepicker" placeholder="Start Date" [formControl]="startDate"
-                    autocomplete="off" (focus)="startDatepicker.open()">
+                    autocomplete="off" (focus)="startDatepicker.open()" required>
                 <mat-datepicker-toggle matSuffix [for]="startDatepicker"></mat-datepicker-toggle>
                 <mat-datepicker #startDatepicker></mat-datepicker>
             </mat-form-field>
@@ -50,7 +50,7 @@
             <!-- end date -->
             <mat-form-field class="half-width">
                 <input matInput [matDatepicker]="endDatepicker" placeholder="End Date" [formControl]="endDate"
-                    autocomplete="off" (focus)="endDatepicker.open()">
+                    autocomplete="off" (focus)="endDatepicker.open()" required>
                 <mat-datepicker-toggle matSuffix [for]="endDatepicker"></mat-datepicker-toggle>
                 <mat-datepicker #endDatepicker></mat-datepicker>
             </mat-form-field>

@@ -16,6 +16,9 @@ namespace PortalTeme.Data.Models {
         [Required]
         public string Name { get; set; }
 
+        [Required]
+        public string Acronym { get; set; }
+
         public string Slug { get; set; }
     }
 

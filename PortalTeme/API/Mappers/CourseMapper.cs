@@ -100,6 +100,7 @@ namespace PortalTeme.API.Mappers {
             return new CourseDefinitionRefDTO {
                 Id = courseDef.Id,
                 Name = courseDef.Name,
+                Acronym = courseDef.Acronym,
                 Slug = courseDef.Slug
             };
         }
@@ -137,7 +138,8 @@ namespace PortalTeme.API.Mappers {
                 Id = model.Id,
                 Year = model.Year.Id,
                 Semester = model.Semester,
-                Name = model.Name
+                Name = model.Name,
+                Acronym = model.Acronym
             };
         }
 
@@ -149,7 +151,8 @@ namespace PortalTeme.API.Mappers {
                 Id = dto.Id ?? Guid.Empty,
                 Year = year,
                 Semester = dto.Semester,
-                Name = dto.Name
+                Name = dto.Name,
+                Acronym = dto.Acronym
             };
         }
 
