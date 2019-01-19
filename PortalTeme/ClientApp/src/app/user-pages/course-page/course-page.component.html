@@ -3,41 +3,59 @@
 </div>
 
 <ng-container *ngIf="course">
-  <mat-toolbar class="special-need-toolbar">
-    <span>
-      <b class="text-primary">{{course.courseDef.name}}</b>
-      <b>
-        <mat-icon class="ml-2 mr-1">person</mat-icon>Prof. {{course.professor.firstName}}
-        {{course.professor.lastName}}
-      </b>
-    </span>
-    <span *ngIf="course.assistants.length > 0">
-      <span class="pl-1" [innerText]="'| Assistant' + (course.assistants.length > 1 ? 's' : '') + ':'"></span>
-      <span *ngFor="let assistant of course.assistants; let last = last">
-        <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>{{assistant.firstName}}
-        {{assistant.lastName}}
-        <ng-container *ngIf="!last">, </ng-container>
-      </span>
-    </span>
-    <span class="filler"></span>
-    <a mat-button color="accent" [routerLink]="['manage']">
-      <mat-icon class="mr-1">edit</mat-icon>
-      <span>Manage course</span>
-    </a>
-  </mat-toolbar>
 
-  <mat-card class="assignments-card" *ngFor="let assignment of course.assignments">
-    <mat-card-header>
-      <mat-card-title>{{assignment.name}}</mat-card-title>
-      <mat-card-subtitle>
-        <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b></div>
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content></mat-card-content>
-    <mat-card-actions>
-      <a mat-button color="accent" [routerLink]="[assignment.slug]">View</a>
-    </mat-card-actions>
-  </mat-card>
+
+  <mat-toolbar>
+    <b class="text-primary fill-space">{{course.courseDef.name}}</b>
+    <a mat-icon-button [routerLink]="['manage']">
+      <mat-icon>settings</mat-icon>
+    </a>
+    <button mat-icon-button (click)="toggleShowCourseDetails()">
+      <mat-icon [@openCloseArrowIcon]="showCourseDetails ? 'open' : 'closed'">keyboard_arrow_down</mat-icon>
+    </button>
+  </mat-toolbar>
+  <div class="course-details" [@openClose]="showCourseDetails ? 'open' : 'closed'">
+    <mat-card>
+      <mat-card-header>
+        <div mat-card-avatar>
+          <mat-icon class="ml-2 mr-1">person</mat-icon>
+        </div>
+        <mat-card-title>
+          <span [innerText]="professorText"></span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span *ngIf="course.assistants.length == 1" class="center-text-icon">
+          <span>Assistant:</span>
+          <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>
+          <span [innerText]="getAssistantText(course.assistants[0])"></span>
+        </span>
+        <mat-list class="assistants-list" *ngIf="course.assistants.length > 1">
+          <h3 mat-subheader>Assistants</h3>
+          <mat-list-item *ngFor="let assistant of course.assistants">
+            <mat-icon mat-list-icon>record_voice_over</mat-icon>
+            <h4 mat-line [innerText]="getAssistantText(assistant)"></h4>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+
+  <div fxLayout="row wrap" fxLayoutAlign="center">
+    <mat-card class="assignments-card" *ngFor="let assignment of course.assignments">
+      <mat-card-header>
+        <mat-card-title>{{assignment.name}}</mat-card-title>
+        <mat-card-subtitle>
+          <b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content></mat-card-content>
+      <mat-card-actions>
+        <a mat-button color="accent" [routerLink]="[assignment.slug]">View</a>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 
   <div class="text-center mt-4" *ngIf="course.assignments.length == 0">No assignments are yet published for this
     course.</div>

@@ -1,28 +1,29 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon>people</mat-icon>
-      <span class="icon-title-text">Groups</span>
-    </mat-card-title>
-    <mat-card-subtitle>Add or delete study groups.</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-    <app-data-table #groupsTable [columnDefs]="groupColumnDefs" [data]="groupList" [emptyDataMessage]="'No groups are added to this course'"
-      [modelAccessor]="groupsModelAccessor" [canAdd]="true" [save]="saveGroup" [canDelete]="true" [delete]="deleteGroup">
-    </app-data-table>
-  </mat-card-content>
-</mat-card>
-<mat-divider class="divider"></mat-divider>
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon>person</mat-icon> Students
-    </mat-card-title>
-    <mat-card-subtitle>individual students can be added or delete.</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-    <app-data-table #studentsTable [columnDefs]="studentColumnDefs" [data]="studentList" [emptyDataMessage]="'No students are added to this course'"
-      [modelAccessor]="studentsModelAccessor" [canAdd]="true" [save]="saveStudent" [canDelete]="true" [delete]="deleteStudent">
-    </app-data-table>
-  </mat-card-content>
-</mat-card>
+<div fxLayout="column" fxLayoutAlign="stretch" class="page-content" ngClass.gt-xs="not-mobile">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>people</mat-icon>
+        <span class="icon-title-text">Groups</span>
+      </mat-card-title>
+      <mat-card-subtitle>Add or delete study groups.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <app-data-table #groupsTable [columnDefs]="groupColumnDefs" [data]="groupList" [emptyDataMessage]="'No groups are added to this course'"
+        [modelAccessor]="groupsModelAccessor" [canAdd]="true" [save]="saveGroup" [canDelete]="true" [delete]="deleteGroup">
+      </app-data-table>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>person</mat-icon> Students
+      </mat-card-title>
+      <mat-card-subtitle>individual students can be added or delete.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <app-data-table #studentsTable [columnDefs]="studentColumnDefs" [data]="studentList" [emptyDataMessage]="'No students are added to this course'"
+        [modelAccessor]="studentsModelAccessor" [canAdd]="true" [save]="saveStudent" [canDelete]="true" [delete]="deleteStudent">
+      </app-data-table>
+    </mat-card-content>
+  </mat-card>
+</div>

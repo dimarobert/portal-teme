@@ -17,16 +17,13 @@
 
 .mat-table {
     overflow: auto;
-    max-height: 500px;
+    // max-height: 500px;
 }
 
 .mobile-label {
     display: none;
 }
 
-// .fill-space {
-//     display: none;
-// }
 .mat-column-actions {
     padding-left: 2px;
 }
@@ -44,7 +41,7 @@
         padding-top: 10px;
     }
     .mobile-label {
-        width: 80px;
+        width: 100px;
         display: inline-block;
         font-weight: bold;
         cursor: pointer;

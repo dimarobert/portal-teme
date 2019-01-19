@@ -24,12 +24,18 @@ export class AssignmentsManageViewComponent implements OnInit {
   assignments: BehaviorSubject<Assignment[]>;
   modelAccessor: ModelAccessor;
 
+  initialSorting: { columnId: string };
+
   @ViewChild('assignmentsTable') assignmentsTable: DataTableComponent;
 
   constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.modelAccessor = new BaseModelAccessor();
+
+    this.initialSorting = {
+      columnId: nameof<Assignment>('startDate')
+    }
 
     this.assignments = new BehaviorSubject([]);
 
@@ -52,14 +58,13 @@ export class AssignmentsManageViewComponent implements OnInit {
           return date.toLocaleDateString();
         })
       }, {
-        id: 'timestamps',
-        title: '',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => {
-          const dateAdded = new Date(item.dateAdded);
-          const lastUpdated = new Date(item.lastUpdated);
-
-          return this.sanitizer.bypassSecurityTrustHtml(`${dateAdded.toLocaleDateString()} <span style="white-space: nowrap;">(updated: ${lastUpdated.toLocaleDateString()})</span>`);
-        })
+        id: 'createdOn',
+        title: 'Created on',
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.dateAdded.toLocaleDateString())
+      }, {
+        id: 'lastUpdate',
+        title: 'Last updated',
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.lastUpdated.toLocaleDateString())
       }
     ]);
 

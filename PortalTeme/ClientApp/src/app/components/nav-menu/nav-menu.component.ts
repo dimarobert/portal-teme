@@ -26,6 +26,15 @@ import { CdkAccordionItem } from '@angular/cdk/accordion';
       state('expanded', style({ height: '*', display: 'block' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4,0.0,0.2,1)')),
     ]),
+    trigger('openCloseArrowIcon', [
+      state('closed', style({})),
+      state('open', style({
+        transform: 'rotate(180deg)'
+      })),
+      transition('open <=> closed', [
+        animate('.2s')
+      ])
+    ])
   ]
 })
 export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {

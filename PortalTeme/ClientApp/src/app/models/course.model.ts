@@ -24,6 +24,7 @@ export interface CourseRef extends EditModel {
 
 export interface CourseDefinitionRef extends BaseModel {
     name?: string;
+    acronym?: string;
     slug?: string;
 }
 

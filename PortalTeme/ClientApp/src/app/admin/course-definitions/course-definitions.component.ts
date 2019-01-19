@@ -43,6 +43,11 @@ export class CourseDefinitionsComponent implements OnInit {
         id: nameof<CourseDefinition>('name'),
         title: 'Name',
         type: ColumnType.Textbox
+      },
+      {
+        id: nameof<CourseDefinition>('acronym'),
+        title: 'Acronym',
+        type: ColumnType.Textbox
       }, <DatasourceColumnDefinition<Year>>{
         id: nameof<CourseDefinition>('year'),
         title: 'Year',
