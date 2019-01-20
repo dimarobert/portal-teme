@@ -4,15 +4,32 @@
 
 
 <ng-container *ngIf="assignment">
-  <div>Added on: <span [matTooltip]="assignment.dateAdded.toLocaleString()">{{assignment.dateAdded.toLocaleDateString()}}</span>
-    (Last updated:
-    <span [matTooltip]="assignment.lastUpdated.toLocaleString()">{{assignment.lastUpdated.toLocaleDateString()}}</span>)</div>
-  <div>Started on: {{assignment.startDate.toLocaleDateString()}}</div>
-  <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b></div>
+  <mat-toolbar>
+    <a mat-icon-button [routerLink]="['../']">
+      <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
+    </a>
+    <b class="text-primary fill-space">{{assignment.name}}</b>
+    <!-- <a mat-icon-button [routerLink]="['manage']">
+          <mat-icon>settings</mat-icon>
+        </a> -->
+  </mat-toolbar>
+  <div class="assignment-content">
 
-  <hr />
+    <div>Added on: <span [matTooltip]="assignment.dateAdded.toLocaleString()">{{assignment.dateAdded.toLocaleDateString()}}</span>
+      (Last updated:
+      <span [matTooltip]="assignment.lastUpdated.toLocaleString()">{{assignment.lastUpdated.toLocaleDateString()}}</span>)</div>
+    <div>Starts on: {{assignment.startDate.toLocaleDateString()}}</div>
+    <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b></div>
 
-  <p [innerHTML]="assignment.description | safeHtml"></p>
+    <hr />
 
-  <pre>{{assignment | json}}</pre>
+    <p [innerHTML]="assignment.description | safeHtml"></p>
+
+
+    <ng-container *ngIf="showTasksList"></ng-container>
+
+    <ng-container *ngIf="showUserSubmissions"></ng-container>
+
+  </div>
+
 </ng-container>

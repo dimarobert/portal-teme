@@ -24,7 +24,7 @@ namespace PortalTeme.Data.Migrations {
 
         public DbSet<Assignment> Assignments { get; set; }
 
-        public DbSet<AssignmentEntry> AssignmentEntries { get; set; }
+        public DbSet<TaskSubmission> TaskSubmissions { get; set; }
 
         public DbSet<AssignmentExtensionRequest> AssignmentExtensionRequests { get; set; }
 
@@ -62,11 +62,7 @@ namespace PortalTeme.Data.Migrations {
             AddCourseAssistant_ManyToMany(builder);
             AddCourseGroup_ManyToMany(builder);
             AddCourseStudent_ManyToMany(builder);
-
-            builder.Entity<AssignmentEntry>()
-                .HasOne(ae => ae.Student)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+            AddStudentTask_ManyToMany(builder);
 
         }
 
@@ -112,5 +108,18 @@ namespace PortalTeme.Data.Migrations {
                 .HasForeignKey(cs => cs.StudentId);
         }
 
+        private void AddStudentTask_ManyToMany(ModelBuilder builder) {
+            builder.Entity<StudentAssignedTask>()
+                .HasKey(sat => new { sat.TaskId, sat.StudentId });
+            builder.Entity<StudentAssignedTask>()
+                .HasOne(sat => sat.Task)
+                .WithMany(task => task.StudentsAssigned)
+                .HasForeignKey(sat => sat.TaskId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<StudentAssignedTask>()
+                .HasOne(sat => sat.Student)
+                .WithMany()
+                .HasForeignKey(sat => sat.StudentId);
+        }
     }
 }

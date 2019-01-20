@@ -70,6 +70,9 @@
                 <span *ngIf="!(isEditMode | async)">Create</span>
                 <span *ngIf="isEditMode | async">Update</span>
             </button>
+            <span class="ml-3">
+                <mat-spinner *ngIf="saving | async" [diameter]="30" [style.display]="'inline-block'" [style.top.px]="11"></mat-spinner>
+            </span>
             <p class="text-danger" *ngIf="invalid | async">Some of the fields are invalid.</p>
         </form>
     </mat-card-content>

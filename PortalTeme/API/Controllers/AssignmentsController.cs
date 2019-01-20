@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models.Assignments;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
@@ -18,12 +20,14 @@ namespace PortalTeme.API.Controllers {
     [Authorize]
     public class AssignmentsController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly UserManager<User> userManager;
         private readonly IAuthorizationService authorizationService;
         private readonly IAssignmentMapper assignmentMapper;
         private readonly IUrlSlugService slugService;
 
-        public AssignmentsController(PortalTemeContext context, IAuthorizationService authorizationService, IAssignmentMapper assignmentMapper, IUrlSlugService slugService) {
+        public AssignmentsController(PortalTemeContext context, UserManager<User> userManager, IAuthorizationService authorizationService, IAssignmentMapper assignmentMapper, IUrlSlugService slugService) {
             _context = context;
+            this.userManager = userManager;
             this.authorizationService = authorizationService;
             this.assignmentMapper = assignmentMapper;
             this.slugService = slugService;
@@ -35,6 +39,7 @@ namespace PortalTeme.API.Controllers {
             var courseAssignments = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .Include(a => a.Course).ThenInclude(c => c.Professor)
+                .Include(a => a.AssignmentTasks)
                 .Where(assignment => assignment.Course.Id == courseId)
                 .ToListAsync();
 
@@ -58,6 +63,7 @@ namespace PortalTeme.API.Controllers {
             var assignment = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .Include(a => a.Course).ThenInclude(c => c.Professor)
+                .Include(a => a.AssignmentTasks)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (assignment is null)
@@ -70,9 +76,9 @@ namespace PortalTeme.API.Controllers {
             return assignmentMapper.MapAssignment(assignment);
         }
 
-        // GET: api/Assignments/slug/assgnment-1
-        [HttpGet("slug/{slug}")]
-        public async Task<ActionResult<AssignmentDTO>> GetAssignmentBySlug(string slug) {
+        // GET: api/Assignments/course-slug-1/slug/assgnment-1
+        [HttpGet("{courseSlug}/slug/{slug}")]
+        public async Task<ActionResult<StudentAssignmentDTO>> GetAssignmentBySlug(string courseSlug, string slug) {
             if (string.IsNullOrWhiteSpace(slug)) {
                 ModelState.AddModelError(string.Empty, "The 'slug' path parameter cannot be null, empty or whitespace.");
                 return BadRequest(ModelState);
@@ -81,7 +87,8 @@ namespace PortalTeme.API.Controllers {
             var assignment = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .Include(a => a.Course).ThenInclude(c => c.Professor)
-                .FirstOrDefaultAsync(a => a.Slug == slug);
+                .Include(a => a.AssignmentTasks)
+                .FirstOrDefaultAsync(a => a.Course.CourseInfo.Slug == courseSlug && a.Slug == slug);
 
             if (assignment is null)
                 return NotFound();
@@ -90,7 +97,9 @@ namespace PortalTeme.API.Controllers {
             if (!authorization.Succeeded)
                 return Forbid();
 
-            return assignmentMapper.MapAssignment(assignment);
+            var user = await userManager.GetUserAsync(User);
+
+            return assignmentMapper.MapStudentAssignment(assignment, user);
         }
 
         // PUT: api/Assignments/5
@@ -186,6 +195,7 @@ namespace PortalTeme.API.Controllers {
             dbAssignment = await _context.Assignments
                 .Include(a => a.Course).ThenInclude(c => c.CourseInfo)
                 .Include(a => a.Course).ThenInclude(c => c.Professor)
+                .Include(a => a.AssignmentTasks)
                 .FirstOrDefaultAsync(a => a.Id == dbAssignment.Id);
 
             return CreatedAtAction("GetAssignment", new { id = dbAssignment.Id }, assignmentMapper.MapAssignment(dbAssignment));

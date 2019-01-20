@@ -40,6 +40,7 @@ namespace PortalTeme.API.Models.Assignments {
 
         public CourseEditDTO Course { get; set; }
 
+        public List<AssignmentTaskDTO> Tasks { get; set; }
     }
 
     public class AssignmentEditDTO : AssignmentBaseDTO {
@@ -48,24 +49,50 @@ namespace PortalTeme.API.Models.Assignments {
         public CourseRefDTO Course { get; set; }
     }
 
-    public class AssignmentEntryDTO : AssignmentEntryProjectionBase {
-        public List<AssignmentEntryVersionDTO> Versions { get; set; }
+    public class StudentAssignmentDTO : AssignmentDTO {
+        public StudentAssignedTaskDTO AssignedTask { get; set; }
     }
 
-    public class AssignmentEntryVersionDTO {
+    public class AssignmentTaskBaseDTO {
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+    }
+
+    public class AssignmentTaskEditDTO : AssignmentTaskBaseDTO {
+        public Guid? Id { get; set; }
+    }
+
+    public class AssignmentTaskDTO : AssignmentTaskBaseDTO {
+        public Guid Id { get; set; }
+    }
+
+    public class StudentAssignedTaskDTO {
+
+        public AssignmentTaskDTO Task { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string StudentId { get; set; }
+
+        public List<TaskSubmissionDTO> Submissions { get; set; }
+    }
+
+    public class TaskSubmissionDTO {
 
         public Guid? Id { get; set; }
 
         public DateTime DateAdded { get; set; }
 
-        public List<AssignmentEntryFileDTO> Files { get; set; }
+        public List<TaskSubmissionFileDTO> Files { get; set; }
     }
 
-    public class AssignmentEntryFileDTO {
+    public class TaskSubmissionFileDTO {
 
         public Guid? Id { get; set; }
 
-        public AssignmentEntryFileType FileType { get; set; }
+        public TaskSubmissionFileType FileType { get; set; }
 
         public string Name { get; set; }
 

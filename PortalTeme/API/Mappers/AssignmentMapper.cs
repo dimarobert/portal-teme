@@ -1,4 +1,5 @@
 ﻿using PortalTeme.API.Models.Assignments;
+using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using PortalTeme.Data.Models.Assignments.Projections;
 using System;
@@ -9,36 +10,54 @@ namespace PortalTeme.API.Mappers {
 
     public interface IAssignmentMapper {
         AssignmentDTO MapAssignment(Assignment assignment);
-        Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment);
+        StudentAssignmentDTO MapStudentAssignment(Assignment assignment, User user);
 
-        AssignmentEntryDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry);
-        AssignmentEntry MapAssignmentEntryProjectionDTO(AssignmentEntryDTO assignmentEntryDto);
+        Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment);
     }
 
     public class AssignmentMapper : IAssignmentMapper {
         private readonly ICourseMapper courseMapper;
+        private readonly ITaskMapper taskMapper;
 
-        public AssignmentMapper(ICourseMapper courseMapper) {
+        public AssignmentMapper(ICourseMapper courseMapper, ITaskMapper taskMapper) {
             this.courseMapper = courseMapper;
+            this.taskMapper = taskMapper;
         }
 
         public AssignmentDTO MapAssignment(Assignment assignment) {
-            return new AssignmentDTO {
-                Id = assignment.Id,
-                Course = courseMapper.MapCourseEdit(assignment.Course),
-                Name = assignment.Name,
-                Slug = assignment.Slug,
+            var dto = new AssignmentDTO();
+            MapAssignmentInternal(dto, assignment);
+            return dto;
+        }
 
-                Type = assignment.Type,
-                NumberOfDuplicates = assignment.NumberOfDuplicates,
+        public StudentAssignmentDTO MapStudentAssignment(Assignment assignment, User user) {
+            var dto = new StudentAssignmentDTO();
+            MapAssignmentInternal(dto, assignment);
 
-                Description = assignment.Description,
+            //var assignedTask = assignment.AssignmentTasks.FirstOrDefault(v => v.StudentId == user.Id);
+            //if (!(assignedTask is null))
+            //    dto.AssignedVariant = MapTask(assignedTask);
 
-                DateAdded = assignment.DateAdded,
-                StartDate = assignment.StartDate,
-                LastUpdated = assignment.LastUpdated,
-                EndDate = assignment.EndDate,
-            };
+            return dto;
+        }
+
+        private void MapAssignmentInternal(AssignmentDTO dto, Assignment assignment) {
+            dto.Id = assignment.Id;
+            dto.Course = courseMapper.MapCourseEdit(assignment.Course);
+            dto.Name = assignment.Name;
+            dto.Slug = assignment.Slug;
+
+            dto.Type = assignment.Type;
+            dto.NumberOfDuplicates = assignment.NumberOfDuplicates;
+
+            dto.Description = assignment.Description;
+
+            dto.DateAdded = assignment.DateAdded;
+            dto.StartDate = assignment.StartDate;
+            dto.LastUpdated = assignment.LastUpdated;
+            dto.EndDate = assignment.EndDate;
+
+            dto.Tasks = assignment.AssignmentTasks.Select(variant => taskMapper.MapTask(variant)).ToList();
         }
 
         public Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment) {
@@ -61,49 +80,5 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        public AssignmentEntryDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry) {
-            return new AssignmentEntryDTO {
-                Id = entry.Id,
-                AssignmentId = entry.AssignmentId,
-                CourseId = entry.CourseId,
-                StudentId = entry.StudentId,
-                State = entry.State,
-                Grading = entry.Grading,
-                Versions = entry.Versions.Select(version => MapAssignmentEntryVersion(version)).ToList()
-            };
-
-        }
-
-        public AssignmentEntry MapAssignmentEntryProjectionDTO(AssignmentEntryDTO assignmentEntryDto) {
-            return new AssignmentEntry {
-                Id = assignmentEntryDto.Id ?? Guid.Empty,
-                Assignment = new Assignment {
-                    Id = assignmentEntryDto.AssignmentId
-                },
-                Student = new StudentInfo {
-                    UserId = assignmentEntryDto.StudentId
-                },
-                Grading = assignmentEntryDto.Grading,
-                State = assignmentEntryDto.State
-            };
-        }
-
-
-        private AssignmentEntryVersionDTO MapAssignmentEntryVersion(AssignmentEntryVersion entryVersion) {
-            return new AssignmentEntryVersionDTO {
-                Id = entryVersion.Id,
-                DateAdded = entryVersion.DateAdded,
-                Files = entryVersion.Files.Select(file => MapAssignmentEntryFile(file)).ToList()
-            };
-        }
-
-        private AssignmentEntryFileDTO MapAssignmentEntryFile(AssignmentEntryFile file) {
-            return new AssignmentEntryFileDTO {
-                Id = file.Id,
-                Name = file.Name,
-                Description = file.Description,
-                FileType = file.FileType
-            };
-        }
     }
 }

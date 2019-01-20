@@ -71,6 +71,7 @@ namespace PortalTeme {
 
             services.AddScoped<ICourseMapper, CourseMapper>();
             services.AddScoped<IAssignmentMapper, AssignmentMapper>();
+            services.AddScoped<ITaskMapper, TaskMapper>();
 
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();
@@ -96,7 +97,7 @@ namespace PortalTeme {
             services.AddScoped<IAuthorizationHandler, AdminAuthorizatonHandler>();
             services.AddScoped<IAuthorizationHandler, CourseAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, AssignmentAuthorizatonCrudHandler>();
-            services.AddScoped<IAuthorizationHandler, AssignmentEntriesAuthorizatonCrudHandler>();
+            services.AddScoped<IAuthorizationHandler, StudentTasksAuthorizatonCrudHandler>();
             services.AddScoped<IAuthorizationHandler, GroupsAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, StudyDomainsAuthorizationHandler>();
 
@@ -308,7 +309,7 @@ namespace PortalTeme {
             AddCoursePolicies(options);
             AddGroupsPolicies(options);
             AddStudyDomainsPolicies(options);
-            AddAssignmentEntriesPolicies(options);
+            AddStudentTasksPolicies(options);
         }
 
         private void AddCoursePolicies(AuthorizationOptions options) {
@@ -371,17 +372,17 @@ namespace PortalTeme {
             });
         }
 
-        private void AddAssignmentEntriesPolicies(AuthorizationOptions options) {
-            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewAssignmentEntriesPolicy, policy => {
+        private void AddStudentTasksPolicies(AuthorizationOptions options) {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanViewStudentTaskPolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
-                policy.AddRequirements(Common.Authorization.Operations.ViewAssignmentEntries);
+                policy.AddRequirements(Common.Authorization.Operations.ViewStudentTask);
             });
 
-            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditAssignmentEntriesPolicy, policy => {
+            options.AddPolicy(Common.Authorization.AuthorizationConstants.CanEditStudentTaskPolicy, policy => {
                 policy.AuthenticationSchemes.Add(IdentityServerAuthenticationDefaults.AuthenticationScheme);
 
-                policy.AddRequirements(Common.Authorization.Operations.EditAssignmentEntries);
+                policy.AddRequirements(Common.Authorization.Operations.EditStudentTask);
             });
         }
 

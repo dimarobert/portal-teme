@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, AssignmentEntry, AssignmentEntryEdit } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, AssignmentEntry, AssignmentEntryEdit, UserAssignment } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -175,7 +175,7 @@ export class CoursesService extends ModelWithSlugService<Course, CourseEdit> {
   }
 }
 
-export class AssignmentsService extends ModelWithSlugService<Assignment, AssignmentEdit> {
+export class AssignmentsService extends ComplexModelService<Assignment, AssignmentEdit> {
 
   public getAll(): Observable<Assignment[]> {
     throw new Error('Invalid operation. GetAll is not supported for assignments. Use the getByCourse(courseId) method instead.');
@@ -186,6 +186,14 @@ export class AssignmentsService extends ModelWithSlugService<Assignment, Assignm
       .pipe(map(assignments => {
         assignments.forEach(assign => this.mapResponses(assign));
         return assignments;
+      }));
+  }
+
+  public getBySlug(courseSlug: string, assignmentSlug: string): Observable<UserAssignment> {
+    return this.http.get<UserAssignment>(`${this.apiRoot}/${courseSlug}/slug/${assignmentSlug}`)
+      .pipe(map(model => {
+        this.mapResponses(model);
+        return model;
       }));
   }
 

@@ -8,7 +8,7 @@ namespace PortalTeme.Data.Models {
         public Guid Id { get; set; }
 
         [Required]
-        public AssignmentEntry AssignmentEntry { get; set; }
+        public TaskSubmission TaskSubmission { get; set; }
 
         [Required]
         public DateTime DateCreated { get; set; }

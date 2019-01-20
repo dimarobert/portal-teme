@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take } from 'rxjs/operators';
-import { Assignment } from '../../models/assignment.model';
+import { Assignment, AssignmentType, UserAssignment } from '../../models/assignment.model';
+import { SettingsProvider } from '../../services/settings.provider';
 
 @Component({
   selector: 'app-view-assignment-page',
@@ -12,27 +13,43 @@ import { Assignment } from '../../models/assignment.model';
 })
 export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
-  routeSub: Subscription;
-  assignmentSlug: string;
-  assignment: Assignment;
+  AssignmentType = AssignmentType;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
+  routeSub: Subscription;
+  assignment: UserAssignment;
+
+  constructor(private route: ActivatedRoute, private settingsProvider: SettingsProvider, private modelSvcFactory: ModelServiceFactory) { }
 
   ngOnInit() {
 
-    this.routeSub = this.route.paramMap
-      .subscribe(params => {
-        this.assignmentSlug = params.get('assigSlug');
+    this.routeSub = combineLatest(
+      this.route.parent.paramMap,
+      this.route.paramMap
+    ).subscribe(([course, assignment]) => {
+      const courseSlug = course.get('slug');
+      const assignmentSlug = assignment.get('assigSlug');
 
-        this.modelSvcFactory.assignments.getBySlug(this.assignmentSlug)
-          .pipe(take(1))
-          .subscribe(assignmentResult => {
-            this.assignment = assignmentResult;
-          });
-      });
+      this.modelSvcFactory.assignments.getBySlug(courseSlug, assignmentSlug)
+        .pipe(take(1))
+        .subscribe(assignmentResult => {
+          this.assignment = assignmentResult;
+        });
+    });
 
   }
 
+  get hasTasksList(): boolean {
+    return this.assignment.type != AssignmentType.SingleTask
+      && this.assignment.type != AssignmentType.CustomAssignedTasks;
+  }
+
+  get showTasksList(): boolean {
+    return this.hasTasksList && this.assignment.assignedTask == null;
+  }
+
+  get showUserSubmissions(): boolean {
+    return this.assignment.assignedTask != null;
+  }
   ngOnDestroy(): void {
     this.routeSub.unsubscribe();
   }

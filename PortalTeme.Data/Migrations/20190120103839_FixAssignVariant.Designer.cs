@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortalTeme.Data.Migrations;
 
-namespace PortalTeme.Auth.Migrations
+namespace PortalTeme.Data.Migrations
 {
     [DbContext(typeof(MigrationsContext))]
-    partial class MigrationsContextModelSnapshot : ModelSnapshot
+    [Migration("20190120103839_FixAssignVariant")]
+    partial class FixAssignVariant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,12 +275,74 @@ namespace PortalTeme.Auth.Migrations
                     b.ToTable("Assignments");
                 });
 
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AssignmentId");
+
+                    b.Property<int?>("Grading");
+
+                    b.Property<int>("State");
+
+                    b.Property<string>("StudentUserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("StudentUserId");
+
+                    b.ToTable("AssignmentEntries");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntryFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("AssignmentVersionId");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("FileType");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentVersionId");
+
+                    b.ToTable("AssignmentEntryFile");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntryVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AssignmentEntryId");
+
+                    b.Property<DateTime>("DateAdded");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentEntryId");
+
+                    b.ToTable("AssignmentEntryVersion");
+                });
+
             modelBuilder.Entity("PortalTeme.Data.Models.AssignmentExtensionRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Approved");
+
+                    b.Property<Guid>("AssignmentEntryId");
 
                     b.Property<DateTime>("DateApproved");
 
@@ -289,16 +353,14 @@ namespace PortalTeme.Auth.Migrations
                     b.Property<string>("Reason")
                         .IsRequired();
 
-                    b.Property<Guid>("TaskSubmissionId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskSubmissionId");
+                    b.HasIndex("AssignmentEntryId");
 
                     b.ToTable("AssignmentExtensionRequests");
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentTask", b =>
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentVariant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -311,11 +373,15 @@ namespace PortalTeme.Auth.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("StudentId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssignmentId");
 
-                    b.ToTable("AssignmentTask");
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("AssignmentVariant");
                 });
 
             modelBuilder.Entity("PortalTeme.Data.Models.Course", b =>
@@ -421,23 +487,6 @@ namespace PortalTeme.Auth.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.Models.StudentAssignedTask", b =>
-                {
-                    b.Property<Guid>("TaskId");
-
-                    b.Property<string>("StudentId");
-
-                    b.Property<int?>("Grading");
-
-                    b.Property<int>("State");
-
-                    b.HasKey("TaskId", "StudentId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentAssignedTask");
-                });
-
             modelBuilder.Entity("PortalTeme.Data.Models.StudentInfo", b =>
                 {
                     b.Property<string>("UserId");
@@ -464,46 +513,6 @@ namespace PortalTeme.Auth.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StudyDomains");
-                });
-
-            modelBuilder.Entity("PortalTeme.Data.Models.TaskSubmission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("DateAdded");
-
-                    b.Property<Guid>("TaskId");
-
-                    b.Property<string>("TaskStudentId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId", "TaskStudentId");
-
-                    b.ToTable("TaskSubmissions");
-                });
-
-            modelBuilder.Entity("PortalTeme.Data.Models.TaskSubmissionFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<int>("FileType");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<Guid?>("TaskSubmissionId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskSubmissionId");
-
-                    b.ToTable("TaskSubmissionFile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -559,20 +568,52 @@ namespace PortalTeme.Auth.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentExtensionRequest", b =>
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntry", b =>
                 {
-                    b.HasOne("PortalTeme.Data.Models.TaskSubmission", "TaskSubmission")
+                    b.HasOne("PortalTeme.Data.Models.Assignment", "Assignment")
                         .WithMany()
-                        .HasForeignKey("TaskSubmissionId")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PortalTeme.Data.Models.StudentInfo", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntryFile", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.AssignmentEntryVersion", "AssignmentVersion")
+                        .WithMany("Files")
+                        .HasForeignKey("AssignmentVersionId");
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentEntryVersion", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.AssignmentEntry", "AssignmentEntry")
+                        .WithMany("Versions")
+                        .HasForeignKey("AssignmentEntryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentTask", b =>
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentExtensionRequest", b =>
+                {
+                    b.HasOne("PortalTeme.Data.Models.AssignmentEntry", "AssignmentEntry")
+                        .WithMany()
+                        .HasForeignKey("AssignmentEntryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PortalTeme.Data.Models.AssignmentVariant", b =>
                 {
                     b.HasOne("PortalTeme.Data.Models.Assignment", "Assignment")
-                        .WithMany("AssignmentTasks")
+                        .WithMany("AssignmentVariants")
                         .HasForeignKey("AssignmentId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PortalTeme.Data.Identity.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
                 });
 
             modelBuilder.Entity("PortalTeme.Data.Models.Course", b =>
@@ -648,19 +689,6 @@ namespace PortalTeme.Auth.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PortalTeme.Data.Models.StudentAssignedTask", b =>
-                {
-                    b.HasOne("PortalTeme.Data.Models.StudentInfo", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PortalTeme.Data.Models.AssignmentTask", "Task")
-                        .WithMany("StudentsAssigned")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("PortalTeme.Data.Models.StudentInfo", b =>
                 {
                     b.HasOne("PortalTeme.Data.Models.Group", "Group")
@@ -672,21 +700,6 @@ namespace PortalTeme.Auth.Migrations
                         .WithOne()
                         .HasForeignKey("PortalTeme.Data.Models.StudentInfo", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PortalTeme.Data.Models.TaskSubmission", b =>
-                {
-                    b.HasOne("PortalTeme.Data.Models.StudentAssignedTask", "Task")
-                        .WithMany("Versions")
-                        .HasForeignKey("TaskId", "TaskStudentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PortalTeme.Data.Models.TaskSubmissionFile", b =>
-                {
-                    b.HasOne("PortalTeme.Data.Models.TaskSubmission", "TaskSubmission")
-                        .WithMany("Files")
-                        .HasForeignKey("TaskSubmissionId");
                 });
 #pragma warning restore 612, 618
         }
