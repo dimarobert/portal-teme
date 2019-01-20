@@ -1,67 +1,67 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav class="sidenav" fixedInViewport="true" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
-    <mat-toolbar>
-      <span *ngIf="isHandset$ | async">Portal Teme</span>
-      <span *ngIf="!(isHandset$ | async)">Meniu</span>
-    </mat-toolbar>
-    <mat-nav-list>
-      <a mat-list-item [routerLink]="['/']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact: true}"
-        (click)="toggleSidenav()">Home</a>
+<div class="site-container" [class.is-mobile]="isHandset$ | async">
+  <!-- App top bar -->
+  <mat-toolbar color="primary" class="app-toolbar mat-elevation-z8">
+    <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isHandset$ | async">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <h1 class="app-name">Portal Teme</h1>
 
-      <ng-container *ngIf="(isAuthenticated$ | async)">
-        <mat-divider></mat-divider>
-        <button cdkAccordionItem #panelCourses="cdkAccordionItem" (click)="panelCourses.toggle()" [attr.aria-controls]="'panel-courses'"
-          [attr.aria-expanded]="panelCourses.expanded">
-          <span>My Courses</span>
-          <mat-icon [@openCloseArrowIcon]="panelCourses.expanded ? 'open' : 'closed'">keyboard_arrow_down</mat-icon>
-        </button>
-        <ul [@bodyExpansion]="panelCourses.expanded ? 'expanded' : 'collapsed'" id="panel-courses">
-          <li *ngFor="let course of courses | async">
-            <a mat-list-item [routerLink]="['/course', course.courseDef.slug]" routerLinkActive="active" (click)="toggleSidenav()">
-              {{course.courseDef.acronym}}
-            </a>
-          </li>
-        </ul>
+    <span class="fill-space"></span>
+
+    <mat-menu #userProfile="matMenu">
+      <ng-container *ngIf="!(isAuthenticated$ | async)">
+        <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
       </ng-container>
-
-      <ng-container *ngIf="isAdmin$ | async">
-        <mat-divider></mat-divider>
-        <a mat-list-item class="admin-button" [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
-        <mat-divider></mat-divider>
+      <ng-container *ngIf="isAuthenticated$ | async">
+        <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
+        <a mat-menu-item (click)="logout()">Logout</a>
       </ng-container>
-    </mat-nav-list>
+    </mat-menu>
+    <button mat-icon-button [matMenuTriggerFor]="userProfile" [matTooltip]="userDisplayName$ | async"
+      matTooltipPosition="left" [matTooltipDisabled]="isHandset$ | async">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </mat-toolbar>
 
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary" class="mat-elevation-z8">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isHandset$ | async">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <h1>Portal Teme</h1>
-      <span class="filler"></span>
-      <span class="auth-controls">
+  <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="(isHandset$ | async) ? 56 : 0">
+    <!-- sidenav -->
+    <mat-sidenav #sidenav class="sidenav" [fixedInViewport]="(isHandset$ | async)" [fixedTopGap]="56" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
 
-      </span>
+      <mat-nav-list>
+        <a mat-list-item [routerLink]="['/']" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact: true}"
+          (click)="toggleSidenav()">Home</a>
 
-      <mat-menu #userProfile="matMenu">
-
-        <ng-container *ngIf="!(isAuthenticated$ | async)">
-          <button mat-menu-item [routerLink]="['/login']" [queryParams]="{ returnUrl: returnUrl }">Login</button>
+        <ng-container *ngIf="(isAuthenticated$ | async)">
+          <mat-divider></mat-divider>
+          <button class="accordion-button" cdkAccordionItem #panelCourses="cdkAccordionItem" (click)="panelCourses.toggle()"
+            [attr.aria-controls]="'panel-courses'" [attr.aria-expanded]="panelCourses.expanded">
+            <span>My Courses</span>
+            <mat-icon [@openCloseArrowIcon]="panelCourses.expanded ? 'open' : 'closed'">keyboard_arrow_down</mat-icon>
+          </button>
+          <ul [@bodyExpansion]="panelCourses.expanded ? 'expanded' : 'collapsed'" id="panel-courses">
+            <li *ngFor="let course of courses | async">
+              <a mat-list-item [routerLink]="['/course', course.courseDef.slug]" routerLinkActive="active" (click)="toggleSidenav()">
+                {{course.courseDef.acronym}}
+              </a>
+            </li>
+          </ul>
         </ng-container>
-        <ng-container *ngIf="isAuthenticated$ | async">
-          <button mat-menu-item *ngIf="isHandset$ | async" disabled>{{userDisplayName$ | async}}</button>
-          <a mat-menu-item (click)="logout()">Logout</a>
-        </ng-container>
-      </mat-menu>
-      <button mat-icon-button [matMenuTriggerFor]="userProfile" [matTooltip]="userDisplayName$ | async"
-        matTooltipPosition="left" [matTooltipDisabled]="isHandset$ | async">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-    </mat-toolbar>
 
-    <div class="site-content" ngClass.gt-xs="not-mobile">
-      <ng-content></ng-content>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+        <ng-container *ngIf="isAdmin$ | async">
+          <mat-divider></mat-divider>
+          <a mat-list-item class="admin-button" [routerLink]="['/admin']" [routerLinkActive]="['active']" (click)="toggleSidenav()">Admin</a>
+          <mat-divider></mat-divider>
+        </ng-container>
+      </mat-nav-list>
+
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <!-- site content -->
+      <div class="site-content" ngClass.gt-xs="not-mobile">
+        <ng-content></ng-content>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+</div>

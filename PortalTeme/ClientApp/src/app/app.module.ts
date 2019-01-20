@@ -56,6 +56,7 @@ import { NewAssignmentPageComponent } from './user-pages/course-manage/new-assig
 import { AssignmentEditFormComponent } from './components/assignments/assignment-edit-form/assignment-edit-form.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { EnumKeysPipe } from './pipes/enum-keys.pipe';
+import { AssignmentCardComponent } from './components/assignments/assignment-card/assignment-card.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -109,7 +110,8 @@ const httpInterceptorProviders: Provider[] = [
     NewAssignmentPageComponent,
     ViewAssignmentPageComponent,
     AssignmentsManageViewComponent,
-    AssignmentEditPageComponent
+    AssignmentEditPageComponent,
+    AssignmentCardComponent
 
   ],
   imports: [
