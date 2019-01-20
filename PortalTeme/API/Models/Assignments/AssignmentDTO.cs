@@ -55,6 +55,8 @@ namespace PortalTeme.API.Models.Assignments {
 
     public class AssignmentTaskBaseDTO {
 
+        public Guid AssignmentId { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -76,12 +78,18 @@ namespace PortalTeme.API.Models.Assignments {
         [Required(AllowEmptyStrings = false)]
         public string StudentId { get; set; }
 
+        public StudentAssignedTaskState State { get; set; }
+
+        public int? Grading { get; set; }
+
         public List<TaskSubmissionDTO> Submissions { get; set; }
     }
 
     public class TaskSubmissionDTO {
 
         public Guid? Id { get; set; }
+
+        public Guid StudentTaskId { get; set; }
 
         public DateTime DateAdded { get; set; }
 
