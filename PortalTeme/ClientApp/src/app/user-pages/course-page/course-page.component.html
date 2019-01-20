@@ -43,18 +43,9 @@
 
 
   <div fxLayout="row wrap" fxLayoutAlign="center">
-    <mat-card class="assignments-card" *ngFor="let assignment of course.assignments">
-      <mat-card-header>
-        <mat-card-title>{{assignment.name}}</mat-card-title>
-        <mat-card-subtitle>
-          <b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content></mat-card-content>
-      <mat-card-actions>
-        <a mat-button color="accent" [routerLink]="[assignment.slug]">View</a>
-      </mat-card-actions>
-    </mat-card>
+    <ng-container *ngFor="let assignment of course.assignments">
+      <app-assignment-card [assignment]="assignment"></app-assignment-card>
+    </ng-container>
   </div>
 
   <div class="text-center mt-4" *ngIf="course.assignments.length == 0">No assignments are yet published for this

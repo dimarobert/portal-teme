@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Assignment } from '../../models/assignment.model';
 
 @Component({
   selector: 'app-course-page',
