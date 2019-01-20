@@ -85,10 +85,10 @@ namespace PortalTeme.API.Models.Assignments {
 
         public DateTime DateAdded { get; set; }
 
-        public List<AssignmentEntryFileDTO> Files { get; set; }
+        public List<TaskSubmissionFileDTO> Files { get; set; }
     }
 
-    public class AssignmentEntryFileDTO {
+    public class TaskSubmissionFileDTO {
 
         public Guid? Id { get; set; }
 

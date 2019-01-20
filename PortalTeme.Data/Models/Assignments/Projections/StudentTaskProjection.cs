@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace PortalTeme.Data.Models.Assignments.Projections {
-    public class AssignmentEntryProjectionBase {
-        public Guid? Id { get; set; }
+    public class StudentTaskProjectionBase {
 
         public Guid CourseId { get; set; }
 
-        public Guid AssignmentTaskId { get; set; }
+        public AssignmentTask Task { get; set; }
 
         public string StudentId { get; set; }
 
@@ -18,7 +17,7 @@ namespace PortalTeme.Data.Models.Assignments.Projections {
 
     }
 
-    public class AssignmentEntryProjection : AssignmentEntryProjectionBase {
-        public List<TaskSubmission> Versions { get; set; }
+    public class StudentTaskProjection : StudentTaskProjectionBase {
+        public List<TaskSubmission> Submissions { get; set; }
     }
 }

@@ -26,10 +26,10 @@ namespace PortalTeme.Common.Authorization {
         public static OperationAuthorizationRequirement EditDomains =
             new OperationAuthorizationRequirement { Name = nameof(EditDomains) };
 
-        public static OperationAuthorizationRequirement ViewAssignmentEntries =
-            new OperationAuthorizationRequirement { Name = nameof(ViewAssignmentEntries) };
-        public static OperationAuthorizationRequirement EditAssignmentEntries =
-            new OperationAuthorizationRequirement { Name = nameof(EditAssignmentEntries) };
+        public static OperationAuthorizationRequirement ViewStudentTask =
+            new OperationAuthorizationRequirement { Name = nameof(ViewStudentTask) };
+        public static OperationAuthorizationRequirement EditStudentTask =
+            new OperationAuthorizationRequirement { Name = nameof(EditStudentTask) };
     };
 }
 

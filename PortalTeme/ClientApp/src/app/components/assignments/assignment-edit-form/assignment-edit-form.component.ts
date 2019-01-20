@@ -33,6 +33,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
   showNumberOfDuplicates: BehaviorSubject<boolean>;
   invalid: BehaviorSubject<boolean>;
   saved: BehaviorSubject<boolean>;
+  saving: BehaviorSubject<boolean>;
 
   constructor() { }
 
@@ -67,6 +68,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.hasId = new BehaviorSubject(false);
     this.saved = new BehaviorSubject(true);
+    this.saving = new BehaviorSubject(false);
 
     this.initializeForm();
     this.watchFormChanges();
@@ -164,9 +166,11 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
       endDate: this.endDate.value
     };
 
+    this.saving.next(true);
     this.submitClick(newAssignment)
       .then(_ => {
         this.saved.next(true);
+        this.saving.next(false);
       });
   }
 

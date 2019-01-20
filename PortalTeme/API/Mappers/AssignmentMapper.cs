@@ -13,16 +13,15 @@ namespace PortalTeme.API.Mappers {
         StudentAssignmentDTO MapStudentAssignment(Assignment assignment, User user);
 
         Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment);
-
-        //StudentAssignedTaskDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry);
-        //StudentAssignedTask MapStudentAssignedTaskProjectionDTO(StudentAssignedTaskDTO studentAssignedTaskDto);
     }
 
     public class AssignmentMapper : IAssignmentMapper {
         private readonly ICourseMapper courseMapper;
+        private readonly ITaskMapper taskMapper;
 
-        public AssignmentMapper(ICourseMapper courseMapper) {
+        public AssignmentMapper(ICourseMapper courseMapper, ITaskMapper taskMapper) {
             this.courseMapper = courseMapper;
+            this.taskMapper = taskMapper;
         }
 
         public AssignmentDTO MapAssignment(Assignment assignment) {
@@ -58,16 +57,7 @@ namespace PortalTeme.API.Mappers {
             dto.LastUpdated = assignment.LastUpdated;
             dto.EndDate = assignment.EndDate;
 
-            dto.Tasks = assignment.AssignmentTasks.Select(variant => MapTask(variant)).ToList();
-        }
-
-        private AssignmentTaskDTO MapTask(AssignmentTask variant) {
-            return new AssignmentTaskDTO {
-                Id = variant.Id,
-                Name = variant.Name,
-                Description = variant.Description,
-                //StudentId = variant.StudentId
-            };
+            dto.Tasks = assignment.AssignmentTasks.Select(variant => taskMapper.MapTask(variant)).ToList();
         }
 
         public Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment) {
@@ -90,45 +80,5 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        //public StudentAssignedTaskDTO MapAssignmentEntryProjection(AssignmentEntryProjection entry) {
-        //    return new StudentAssignedTaskDTO {
-        //        Id = entry.Id ?? Guid.Empty,
-        //        AssignmentTaskId = entry.AssignmentTaskId,
-        //        CourseId = entry.CourseId,
-        //        StudentId = entry.StudentId,
-        //        State = entry.State,
-        //        Grading = entry.Grading,
-        //        Submissions = entry.Versions.Select(version => MapAssignmentEntryVersion(version)).ToList()
-        //    };
-
-        //}
-
-        //public StudentAssignedTask MapStudentAssignedTaskProjectionDTO(StudentAssignedTaskDTO assignmentEntryDto) {
-        //    return new StudentAssignedTask {
-        //        //Id = assignmentEntryDto.Id ?? Guid.Empty,
-        //        TaskId = assignmentEntryDto.AssignmentTaskId,
-        //        StudentId = assignmentEntryDto.StudentId,
-        //        Grading = assignmentEntryDto.Grading,
-        //        State = assignmentEntryDto.State
-        //    };
-        //}
-
-
-        private TaskSubmissionDTO MapAssignmentEntryVersion(TaskSubmission entryVersion) {
-            return new TaskSubmissionDTO {
-                Id = entryVersion.Id,
-                DateAdded = entryVersion.DateAdded,
-                Files = entryVersion.Files.Select(file => MapAssignmentEntryFile(file)).ToList()
-            };
-        }
-
-        private AssignmentEntryFileDTO MapAssignmentEntryFile(TaskSubmissionFile file) {
-            return new AssignmentEntryFileDTO {
-                Id = file.Id,
-                Name = file.Name,
-                Description = file.Description,
-                FileType = file.FileType
-            };
-        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models.Assignments;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using PortalTeme.Data.Models.Assignments.Projections;
 using System;
@@ -18,14 +20,16 @@ namespace PortalTeme.API.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
-    public class AssignmentEntriesController : ControllerBase {
+    public class StudentAssignedTasksController : ControllerBase {
         private readonly PortalTemeContext _context;
-        private readonly IAssignmentMapper assignmentMapper;
+        private readonly UserManager<User> userManager;
+        private readonly ITaskMapper taskMapper;
         private readonly IAuthorizationService authorizationService;
 
-        public AssignmentEntriesController(PortalTemeContext context, IAssignmentMapper assignmentMapper, IAuthorizationService authorizationService) {
+        public StudentAssignedTasksController(PortalTemeContext context, UserManager<User> userManager, ITaskMapper taskMapper, IAuthorizationService authorizationService) {
             _context = context;
-            this.assignmentMapper = assignmentMapper;
+            this.userManager = userManager;
+            this.taskMapper = taskMapper;
             this.authorizationService = authorizationService;
         }
 
@@ -55,31 +59,36 @@ namespace PortalTeme.API.Controllers {
         //    return results;
         //}
 
-        //// GET: api/AssignmentEntries/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<AssignmentEntryDTO>> GetAssignmentEntry(Guid id) {
-        //    var assignmentEntry = await _context.AssignmentEntries
-        //        .Where(ae => ae.Id == id)
-        //        .Select(ae => new AssignmentEntryProjection {
-        //            Id = ae.Id,
-        //            AssignmentTaskId = ae.AssignedTask.Id,
-        //            CourseId = ae.AssignedTask.Assignment.Course.Id,
-        //            StudentId = ae.Student.UserId,
-        //            State = ae.State,
-        //            Grading = ae.Grading,
-        //            Versions = ae.Versions
-        //        })
-        //        .FirstOrDefaultAsync();
+        // GET: api/StudentAssignedTasks/5
+        [HttpGet("{assignmentId}")]
+        public async Task<ActionResult<StudentAssignedTaskDTO>> GetStudentAssignedTask(Guid assignmentId) {
 
-        //    if (assignmentEntry is null)
-        //        return NotFound();
+            if (!User.Identity.IsAuthenticated)
+                return Challenge();
 
-        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
-        //    if (!authorization.Succeeded)
-        //        return Forbid();
+            var student = await userManager.GetUserAsync(User);
 
-        //    return assignmentMapper.MapAssignmentEntryProjection(assignmentEntry);
-        //}
+            var studentTask = await _context.StudentAssignedTasks
+                .Where(sat => sat.StudentId == student.Id && sat.Task.AssignmentId == assignmentId)
+                .Select(sat => new StudentTaskProjection {
+                    Task = sat.Task,
+                    StudentId = sat.StudentId,
+                    CourseId = sat.Task.Assignment.Course.Id,
+                    State = sat.State,
+                    Grading = sat.Grading,
+                    Submissions = sat.Submissions
+                })
+                .FirstOrDefaultAsync();
+
+            if (studentTask is null)
+                return NotFound();
+
+            var authorization = await authorizationService.AuthorizeAsync(User, studentTask, AuthorizationConstants.CanViewStudentTaskPolicy);
+            if (!authorization.Succeeded)
+                return Forbid();
+
+            return taskMapper.MapStudentAssignedTask(studentTask);
+        }
 
         //// PUT: api/AssignmentEntries/5
         //[HttpPut("{id}")]

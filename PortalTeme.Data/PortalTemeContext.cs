@@ -35,6 +35,9 @@ namespace PortalTeme.Data {
 
         public DbSet<AssignmentTask> AssignmentTasks { get; set; }
 
+        public DbSet<StudentAssignedTask> StudentAssignedTasks { get; set; }
+
+
         public DbSet<TaskSubmission> TaskSubmissions { get; set; }
 
         public DbSet<AssignmentExtensionRequest> AssignmentExtensionRequests { get; set; }
@@ -48,6 +51,7 @@ namespace PortalTeme.Data {
             modelBuilder.Entity<CourseAssistant>().ToTable("CourseAssistant");
             modelBuilder.Entity<CourseStudent>().ToTable("CourseStudent");
             modelBuilder.Entity<AssignmentTask>().ToTable("AssignmentTask");
+            modelBuilder.Entity<StudentAssignedTask>().ToTable("StudentAssignedTask");
 
             modelBuilder.Entity<Assignment>().Property(a => a.DateAdded).HasConversion(new DateTimeValueConverter());
             modelBuilder.Entity<Assignment>().Property(a => a.LastUpdated).HasConversion(new DateTimeValueConverter());
