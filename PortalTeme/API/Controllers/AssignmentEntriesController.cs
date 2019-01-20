@@ -29,150 +29,150 @@ namespace PortalTeme.API.Controllers {
             this.authorizationService = authorizationService;
         }
 
-        // GET: api/AssignmentEntries/ForAssignment/5
-        [HttpGet("ForAssignment/{assignmentId}")]
-        public async Task<ActionResult<IEnumerable<AssignmentEntryDTO>>> GetAssignmentEntries(Guid assignmentId) {
-            var entries = await _context.AssignmentEntries
-                .Where(ae => ae.Assignment.Id == assignmentId)
-                .Select(ae => new AssignmentEntryProjection {
-                    Id = ae.Id,
-                    AssignmentId = ae.Assignment.Id,
-                    CourseId = ae.Assignment.Course.Id,
-                    StudentId = ae.Student.UserId,
-                    State = ae.State,
-                    Grading = ae.Grading,
-                    Versions = ae.Versions
-                })
-                .ToListAsync();
+        //// GET: api/AssignmentEntries/ForAssignment/5
+        //[HttpGet("ForAssignment/{assignmentId}")]
+        //public async Task<ActionResult<IEnumerable<AssignmentEntryDTO>>> GetAssignmentEntries(Guid assignmentId) {
+        //    var entries = await _context.AssignmentEntries
+        //        .Where(ae => ae.AssignedTask.AssignmentId == assignmentId)
+        //        .Select(ae => new AssignmentEntryProjection {
+        //            Id = ae.Id,
+        //            AssignmentTaskId = ae.AssignmentTask.Id,
+        //            CourseId = ae.AssignmentTask.Assignment.Course.Id,
+        //            StudentId = ae.Student.UserId,
+        //            State = ae.State,
+        //            Grading = ae.Grading,
+        //            Versions = ae.Versions
+        //        })
+        //        .ToListAsync();
 
-            var results = new List<AssignmentEntryDTO>();
-            foreach (var entry in entries) {
-                var authorization = await authorizationService.AuthorizeAsync(User, entry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
-                if (!authorization.Succeeded)
-                    results.Add(assignmentMapper.MapAssignmentEntryProjection(entry));
-            }
+        //    var results = new List<AssignmentEntryDTO>();
+        //    foreach (var entry in entries) {
+        //        var authorization = await authorizationService.AuthorizeAsync(User, entry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
+        //        if (!authorization.Succeeded)
+        //            results.Add(assignmentMapper.MapAssignmentEntryProjection(entry));
+        //    }
 
-            return results;
-        }
+        //    return results;
+        //}
 
-        // GET: api/AssignmentEntries/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AssignmentEntryDTO>> GetAssignmentEntry(Guid id) {
-            var assignmentEntry = await _context.AssignmentEntries
-                .Where(ae => ae.Id == id)
-                .Select(ae => new AssignmentEntryProjection {
-                    Id = ae.Id,
-                    AssignmentId = ae.Assignment.Id,
-                    CourseId = ae.Assignment.Course.Id,
-                    StudentId = ae.Student.UserId,
-                    State = ae.State,
-                    Grading = ae.Grading,
-                    Versions = ae.Versions
-                })
-                .FirstOrDefaultAsync();
+        //// GET: api/AssignmentEntries/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<AssignmentEntryDTO>> GetAssignmentEntry(Guid id) {
+        //    var assignmentEntry = await _context.AssignmentEntries
+        //        .Where(ae => ae.Id == id)
+        //        .Select(ae => new AssignmentEntryProjection {
+        //            Id = ae.Id,
+        //            AssignmentTaskId = ae.AssignedTask.Id,
+        //            CourseId = ae.AssignedTask.Assignment.Course.Id,
+        //            StudentId = ae.Student.UserId,
+        //            State = ae.State,
+        //            Grading = ae.Grading,
+        //            Versions = ae.Versions
+        //        })
+        //        .FirstOrDefaultAsync();
 
-            if (assignmentEntry is null)
-                return NotFound();
+        //    if (assignmentEntry is null)
+        //        return NotFound();
 
-            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
-            if (!authorization.Succeeded)
-                return Forbid();
+        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
+        //    if (!authorization.Succeeded)
+        //        return Forbid();
 
-            return assignmentMapper.MapAssignmentEntryProjection(assignmentEntry);
-        }
+        //    return assignmentMapper.MapAssignmentEntryProjection(assignmentEntry);
+        //}
 
-        // PUT: api/AssignmentEntries/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAssignmentEntry(Guid id, AssignmentEntryDTO assignmentEntryDto) {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //// PUT: api/AssignmentEntries/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutAssignmentEntry(Guid id, AssignmentEntryDTO assignmentEntryDto) {
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            if (id != assignmentEntryDto.Id)
-                return BadRequest();
+        //    if (id != assignmentEntryDto.Id)
+        //        return BadRequest();
 
-            var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
+        //    var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
 
-            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-            if (!authorization.Succeeded)
-                return Forbid();
+        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+        //    if (!authorization.Succeeded)
+        //        return Forbid();
 
-            _context.Entry(assignmentEntry).State = EntityState.Modified;
+        //    _context.Entry(assignmentEntry).State = EntityState.Modified;
 
-            try {
-                await _context.SaveChangesAsync();
-            } catch (DbUpdateConcurrencyException) {
-                if (!AssignmentEntryExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+        //    try {
+        //        await _context.SaveChangesAsync();
+        //    } catch (DbUpdateConcurrencyException) {
+        //        if (!AssignmentEntryExists(id))
+        //            return NotFound();
+        //        else
+        //            throw;
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
-        // POST: api/AssignmentEntries
-        [HttpPost]
-        public async Task<ActionResult<AssignmentEntryDTO>> PostAssignmentEntry(AssignmentEntryDTO assignmentEntryDto) {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //// POST: api/AssignmentEntries
+        //[HttpPost]
+        //public async Task<ActionResult<AssignmentEntryDTO>> PostAssignmentEntry(AssignmentEntryDTO assignmentEntryDto) {
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
+        //    var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
 
-            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-            if (!authorization.Succeeded)
-                return Forbid();
+        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+        //    if (!authorization.Succeeded)
+        //        return Forbid();
 
-            _context.AssignmentEntries.Add(assignmentEntry);
-            await _context.SaveChangesAsync();
+        //    _context.AssignmentEntries.Add(assignmentEntry);
+        //    await _context.SaveChangesAsync();
 
-            var entry = await _context.AssignmentEntries
-                .Where(ae => ae.Id == assignmentEntry.Id)
-                .Select(ae => new AssignmentEntryProjection {
-                    Id = ae.Id,
-                    AssignmentId = ae.Assignment.Id,
-                    CourseId = ae.Assignment.Course.Id,
-                    StudentId = ae.Student.UserId,
-                    State = ae.State,
-                    Grading = ae.Grading,
-                    Versions = ae.Versions
-                })
-                .FirstOrDefaultAsync();
+        //    var entry = await _context.AssignmentEntries
+        //        .Where(ae => ae.Id == assignmentEntry.Id)
+        //        .Select(ae => new AssignmentEntryProjection {
+        //            Id = ae.Id,
+        //            AssignmentTaskId = ae.AssignedTask.Id,
+        //            CourseId = ae.AssignedTask.Assignment.Course.Id,
+        //            StudentId = ae.Student.UserId,
+        //            State = ae.State,
+        //            Grading = ae.Grading,
+        //            Versions = ae.Versions
+        //        })
+        //        .FirstOrDefaultAsync();
 
-            return CreatedAtAction("GetAssignmentEntry", new { id = entry.Id }, assignmentMapper.MapAssignmentEntryProjection(entry));
-        }
+        //    return CreatedAtAction("GetAssignmentEntry", new { id = entry.Id }, assignmentMapper.MapAssignmentEntryProjection(entry));
+        //}
 
-        // DELETE: api/AssignmentEntries/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<AssignmentEntryDTO>> DeleteAssignmentEntry(Guid id) {
-            var assignmentEntry = await _context.AssignmentEntries.FindAsync(id);
-            if (assignmentEntry is null)
-                return NotFound();
+        //// DELETE: api/AssignmentEntries/5
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<AssignmentEntryDTO>> DeleteAssignmentEntry(Guid id) {
+        //    var assignmentEntry = await _context.AssignmentEntries.FindAsync(id);
+        //    if (assignmentEntry is null)
+        //        return NotFound();
 
-            var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-            if (!authorization.Succeeded)
-                return Forbid();
+        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+        //    if (!authorization.Succeeded)
+        //        return Forbid();
 
-            var projection = await _context.AssignmentEntries
-                  .Where(ae => ae.Id == assignmentEntry.Id)
-                  .Select(ae => new AssignmentEntryProjection {
-                      Id = ae.Id,
-                      AssignmentId = ae.Assignment.Id,
-                      CourseId = ae.Assignment.Course.Id,
-                      StudentId = ae.Student.UserId,
-                      State = ae.State,
-                      Grading = ae.Grading,
-                      Versions = ae.Versions
-                  })
-                  .FirstOrDefaultAsync();
+        //    var projection = await _context.AssignmentEntries
+        //          .Where(ae => ae.Id == assignmentEntry.Id)
+        //          .Select(ae => new AssignmentEntryProjection {
+        //              Id = ae.Id,
+        //              AssignmentTaskId = ae.AssignedTask.Id,
+        //              CourseId = ae.AssignedTask.Assignment.Course.Id,
+        //              StudentId = ae.Student.UserId,
+        //              State = ae.State,
+        //              Grading = ae.Grading,
+        //              Versions = ae.Versions
+        //          })
+        //          .FirstOrDefaultAsync();
 
-            _context.AssignmentEntries.Remove(assignmentEntry);
-            await _context.SaveChangesAsync();
+        //    _context.AssignmentEntries.Remove(assignmentEntry);
+        //    await _context.SaveChangesAsync();
 
-            return assignmentMapper.MapAssignmentEntryProjection(projection);
-        }
+        //    return assignmentMapper.MapAssignmentEntryProjection(projection);
+        //}
 
-        private bool AssignmentEntryExists(Guid id) {
-            return _context.AssignmentEntries.Any(e => e.Id == id);
-        }
+        //private bool AssignmentEntryExists(Guid id) {
+        //    return _context.AssignmentEntries.Any(e => e.Id == id);
+        //}
     }
 }

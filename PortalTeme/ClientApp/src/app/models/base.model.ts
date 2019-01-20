@@ -3,9 +3,13 @@ export interface BaseModel {
 }
 
 export interface EditModel {
-    id?: string;    
+    id?: string;
 }
 
 export interface NamedModel extends BaseModel {
     name: string;
+}
+
+export interface Deserializable {
+    deserialize(data: any): this;
 }

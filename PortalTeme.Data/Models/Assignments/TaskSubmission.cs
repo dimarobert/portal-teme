@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PortalTeme.Data.Models {
-    public class AssignmentEntryVersion {
+    public class TaskSubmission {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
         [Required]
-        public AssignmentEntry AssignmentEntry { get; set; }
+        public StudentAssignedTask Task { get; set; }
 
-        public List<AssignmentEntryFile> Files { get; set; }
+        public List<TaskSubmissionFile> Files { get; set; }
 
         public DateTime DateAdded { get; set; }
     }

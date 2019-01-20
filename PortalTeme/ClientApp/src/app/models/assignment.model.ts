@@ -1,5 +1,9 @@
 import { EditModel, BaseModel } from './base.model';
-import { CourseRef, User } from './course.model';
+import { CourseRef } from './course.model';
+
+export interface UserAssignment extends Assignment {
+    assignedTask: AssignmentVariant;
+}
 
 export interface Assignment extends AssignmentEdit {
     id: string;
@@ -27,15 +31,15 @@ export interface AssignmentEdit extends EditModel {
 }
 
 export enum AssignmentType {
-    SingleHomework,
+    SingleTask,
     SingleChoiceList,
     MultipleChoiceList,
-    CustomAssignedHomework
+    CustomAssignedTasks
 }
 
 const AssignmentTypeText = {
-    SingleHomework: "Single task",
-    SingleHomeworkText: "A single exercise/task will be defined for the entire class to solve.",
+    SingleTask: "Single task",
+    SingleTaskText: "A single exercise/task will be defined for the entire class to solve.",
 
     SingleChoiceList: "List of tasks - single choice",
     SingleChoiceListText: "A list of exercises/tasks will be defined, each student will have to chose his own task. A task can only be chosen by a single student.",
@@ -43,8 +47,8 @@ const AssignmentTypeText = {
     MultipleChoiceList: "List of tasks - multiple choice",
     MultipleChoiceListText: "A list of exercises/tasks will be defined, each student will have to chose his own task. A task can be chosen by the specified number of students.",
 
-    CustomAssignedHomework: "Individually assigned tasks",
-    CustomAssignedHomeworkText: "Each task will be manually assigned to each student."
+    CustomAssignedTasks: "Individually assigned tasks",
+    CustomAssignedTasksText: "Each task will be manually assigned to each student."
 }
 
 export default AssignmentTypeText;

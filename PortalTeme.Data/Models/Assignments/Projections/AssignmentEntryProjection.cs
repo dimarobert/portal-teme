@@ -8,17 +8,17 @@ namespace PortalTeme.Data.Models.Assignments.Projections {
 
         public Guid CourseId { get; set; }
 
-        public Guid AssignmentId { get; set; }
+        public Guid AssignmentTaskId { get; set; }
 
         public string StudentId { get; set; }
 
-        public AssignmentEntryState State { get; set; }
+        public StudentAssignedTaskState State { get; set; }
 
         public int? Grading { get; set; }
 
     }
 
     public class AssignmentEntryProjection : AssignmentEntryProjectionBase {
-        public List<AssignmentEntryVersion> Versions { get; set; }
+        public List<TaskSubmission> Versions { get; set; }
     }
 }

@@ -5,9 +5,9 @@
 <ng-container *ngIf="course">
 
     <mat-toolbar class="special-need-toolbar">
-        <button mat-icon-button [routerLink]="['../']">
+        <a mat-icon-button [routerLink]="['../']">
             <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
-        </button>
+        </a>
         Manage course: {{course?.courseDef?.name}}
         <span class="filler"></span>
         <button mat-button color="accent" [routerLink]="['new-assignment']" *ngIf="isAssignmentsTab">
