@@ -21,6 +21,8 @@ namespace PortalTeme.API.Mappers {
             return new StudentAssignedTaskDTO {
                 StudentId = studentTask.StudentId,
                 Task = MapTask(studentTask.Task),
+                Grading = studentTask.Grading,
+                State = studentTask.State,
                 Submissions = studentTask.Submissions.Select(sub => MapSubmission(sub)).ToList()
             };
         }
@@ -28,6 +30,7 @@ namespace PortalTeme.API.Mappers {
         public AssignmentTaskDTO MapTask(AssignmentTask task) {
             return new AssignmentTaskDTO {
                 Id = task.Id,
+                AssignmentId = task.AssignmentId,
                 Name = task.Name,
                 Description = task.Description
             };
@@ -36,6 +39,7 @@ namespace PortalTeme.API.Mappers {
         private TaskSubmissionDTO MapSubmission(TaskSubmission submission) {
             return new TaskSubmissionDTO {
                 Id = submission.Id,
+                StudentTaskId = submission.AssignedTask.Id,
                 DateAdded = submission.DateAdded,
                 Files = submission.Files.Select(file => MapSubmissionFile(file)).ToList()
             };
@@ -49,6 +53,6 @@ namespace PortalTeme.API.Mappers {
                 FileType = file.FileType
             };
         }
-        
+
     }
 }

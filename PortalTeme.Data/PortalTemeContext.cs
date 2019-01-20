@@ -62,11 +62,11 @@ namespace PortalTeme.Data {
 
             modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateCreated).HasConversion(new DateTimeValueConverter());
             modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateApproved).HasConversion(new DateTimeValueConverter());
+            modelBuilder.Entity<AssignmentExtensionRequest>().Property(a => a.DateExtended).HasConversion(new DateTimeValueConverter());
 
             modelBuilder.Entity<CourseAssistant>().HasKey(ca => new { ca.CourseId, ca.AssistantId });
             modelBuilder.Entity<CourseGroup>().HasKey(ca => new { ca.CourseId, ca.GroupId });
             modelBuilder.Entity<CourseStudent>().HasKey(ca => new { ca.CourseId, ca.StudentId });
-            modelBuilder.Entity<StudentAssignedTask>().HasKey(sat => new { sat.TaskId, sat.StudentId });
         }
 
     }

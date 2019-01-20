@@ -9,7 +9,7 @@ namespace PortalTeme.Data.Models {
         public Guid Id { get; set; }
 
         [Required]
-        public StudentAssignedTask Task { get; set; }
+        public StudentAssignedTask AssignedTask { get; set; }
 
         public List<TaskSubmissionFile> Files { get; set; }
 

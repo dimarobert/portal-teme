@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, AssignmentEntry, AssignmentEntryEdit, UserAssignment } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, StudentAssignedTaskEdit, UserAssignment } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -59,9 +59,9 @@ export class ModelServiceFactory {
     return this._assignmentsService || (this._assignmentsService = new AssignmentsService('Assignments', this.http));
   }
 
-  private _assignmentEntriesService: AssignmentEntriesService = null;
-  public get assignmentEntries(): AssignmentEntriesService {
-    return this._assignmentEntriesService || (this._assignmentEntriesService = new AssignmentEntriesService('AssignmentEntries', this.http));
+  private _studentAssignedTasksService: StudentAssignedTasksService = null;
+  public get studentAssignedTasks(): StudentAssignedTasksService {
+    return this._studentAssignedTasksService || (this._studentAssignedTasksService = new StudentAssignedTasksService('StudentAssignedTasks', this.http));
   }
 }
 
@@ -214,18 +214,39 @@ function mapAssignment(assign: AssignmentEdit): void {
   assign.endDate = new Date(assign.endDate);
 }
 
-export class AssignmentEntriesService extends ModelWithSlugService<AssignmentEntry, AssignmentEntryEdit> {
+export class StudentAssignedTasksService extends ModelWithSlugService<StudentAssignedTask, StudentAssignedTaskEdit> {
 
-  public getAll(): Observable<AssignmentEntry[]> {
-    throw new Error('Invalid operation. GetAll is not supported for assignment entries. Use the getByAssignment(assignmentId) method instead.');
+  public getAll(): Observable<StudentAssignedTask[]> {
+    throw new Error('Invalid operation. GetAll is not supported for StudentAssignedTasks. Use the getByAssignment(assignmentId) method instead.');
   }
 
-  public getByAssignment(assignmentId: string): Observable<AssignmentEntry[]> {
-    return this.http.get<AssignmentEntry[]>(`${this.apiRoot}/ForAssignment/${assignmentId}`)
-      .pipe(map(assignments => {
-        assignments.forEach(assign => this.mapResponses(assign));
-        return assignments;
-      }));
+  public get(): Observable<StudentAssignedTask> {
+    throw new Error('Invalid operation. Get is not supported for StudentAssignedTasks. Use the getAssignedTask(assignmentId) method instead.');
+  }
+
+/**
+ * This will return the task assigned to the current user for the provided assignmentId.
+ * @param assignmentId 
+ */
+  public getAssignedTask(assignmentId: string): Observable<StudentAssignedTask> {
+    return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`)
+    .pipe(map(model => {
+      this.mapResponses(model);
+      return model;
+    }));
+  }
+
+  /**
+   * Use this to retrieve all assigned tasks when viewing the assignment page as a Professor.
+   * This will allow him to review assignments submitted by the students.
+   * @param assignmentId 
+   */
+  public getAllAssignedTasks(assignmentId: string):  Observable<StudentAssignedTask[]>{
+    return this.http.get<StudentAssignedTask[]>(`${this.apiRoot}/${assignmentId}/all`)
+    .pipe(map(model => {
+      model.forEach(m => this.mapResponses(m));
+      return model;
+    }));
   }
 
 }

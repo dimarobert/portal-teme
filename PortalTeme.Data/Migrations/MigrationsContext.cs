@@ -110,7 +110,7 @@ namespace PortalTeme.Data.Migrations {
 
         private void AddStudentTask_ManyToMany(ModelBuilder builder) {
             builder.Entity<StudentAssignedTask>()
-                .HasKey(sat => new { sat.TaskId, sat.StudentId });
+                .HasKey(sat => new { sat.Id });
             builder.Entity<StudentAssignedTask>()
                 .HasOne(sat => sat.Task)
                 .WithMany(task => task.StudentsAssigned)

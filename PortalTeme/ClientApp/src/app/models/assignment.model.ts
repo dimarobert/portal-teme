@@ -2,7 +2,7 @@ import { EditModel, BaseModel } from './base.model';
 import { CourseRef } from './course.model';
 
 export interface UserAssignment extends Assignment {
-    assignedTask: AssignmentVariant;
+    assignedTask: AssignmentTask;
 }
 
 export interface Assignment extends AssignmentEdit {
@@ -10,7 +10,7 @@ export interface Assignment extends AssignmentEdit {
 
     slug: string;
 
-    assignmentVariants: AssignmentVariant[];
+    assignmentVariants: AssignmentTask[];
 }
 
 export interface AssignmentEdit extends EditModel {
@@ -53,34 +53,50 @@ const AssignmentTypeText = {
 
 export default AssignmentTypeText;
 
-export interface AssignmentVariant extends BaseModel {
+export interface AssignmentTask extends BaseModel {
     assignmentId: string;
 
     name: string;
     description: string;
 
-    studentId?: string;
 }
 
-export interface AssignmentEntry extends AssignmentEntryEdit {
+export interface StudentAssignedTask extends StudentAssignedTaskEdit {
     id: string;
 }
 
-export interface AssignmentEntryEdit extends EditModel {
-    courseId: string;
+export interface StudentAssignedTaskEdit extends EditModel {
 
-    assignmentId: string;
+    task: AssignmentTask;
 
     studentId: string;
 
-    state: AssignmentEntryState;
+    state: StudentAssignedTaskState;
 
     grading?: number;
 }
 
-export enum AssignmentEntryState {
+export enum StudentAssignedTaskState {
+    Assigned,
     Submitted,
     Reviewed,
     Graded
 }
 
+export interface TaskSubmission extends EditModel {
+    studentTaskId: string;
+    dateAdded: Date;
+    files: TaskSubmissionFile[];
+}
+
+export interface TaskSubmissionFile extends EditModel {
+    name: string;
+    description: string;
+    fileType: TaskSubmissionFileType;
+}
+
+export enum TaskSubmissionFileType {
+    SourceCode,
+    Project,
+    Essay
+}
