@@ -6,8 +6,10 @@
 <mat-tab-group #tabsGroup [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
     <mat-tab *ngFor="let link of menuItems | async" (click)="link.action()">
         <ng-template mat-tab-label>
-            <mat-icon class="mr-1">{{link.icon}}</mat-icon>
-            <span>{{link.label}}</span>
+            <span class="noselect">
+                <mat-icon class="mr-1">{{link.icon}}</mat-icon>
+                <span>{{link.label}}</span>
+            </span>
         </ng-template>
     </mat-tab>
 
