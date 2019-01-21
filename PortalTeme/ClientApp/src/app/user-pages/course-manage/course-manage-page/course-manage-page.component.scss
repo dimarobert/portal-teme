@@ -18,3 +18,10 @@ button[mat-button] mat-icon {
     height: auto;
     min-height: 56px;
 }
+
+.noselect {
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

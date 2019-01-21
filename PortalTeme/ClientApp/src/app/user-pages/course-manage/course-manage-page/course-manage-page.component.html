@@ -18,22 +18,28 @@
     <mat-tab-group #assignTabs [backgroundColor]="['primary']" animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon class="mr-1">assignment</mat-icon>
-                <span>Assignments</span>
+                <span class="noselect">
+                    <mat-icon class="mr-1">assignment</mat-icon>
+                    <span>Assignments</span>
+                </span>
             </ng-template>
             <app-assignments-manage-view [courseId]="course.id" #assignments></app-assignments-manage-view>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon class="mr-1">record_voice_over</mat-icon>
-                <span>Assistants</span>
+                <span class="noselect">
+                    <mat-icon class="mr-1">record_voice_over</mat-icon>
+                    <span>Assistants</span>
+                </span>
             </ng-template>
             <app-course-edit-assistants [courseId]="course.id" #assistants></app-course-edit-assistants>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon class="mr-1">people</mat-icon>
-                <span>Attendees</span>
+                <span class="noselect">
+                    <mat-icon class="mr-1">people</mat-icon>
+                    <span>Attendees</span>
+                </span>
             </ng-template>
             <app-course-edit-attendees [courseId]="course.id" #attendees></app-course-edit-attendees>
         </mat-tab>
