@@ -4,7 +4,6 @@
 
 <ng-container *ngIf="course">
 
-
   <mat-toolbar>
     <b class="text-primary fill-space">{{course.courseDef.name}}</b>
     <a mat-icon-button [routerLink]="['manage']">
@@ -42,9 +41,10 @@
   </div>
 
 
-  <div fxLayout="row wrap" fxLayoutAlign="center">
+  <div fxLayout="row wrap" fxLayoutAlign="flex-start">
     <ng-container *ngFor="let assignment of course.assignments">
-      <app-assignment-card [assignment]="assignment"></app-assignment-card>
+      <app-assignment-card fxFlex="1 1 20%" fxFlex.lg="1 1 25%" fxFlex.md="1 1 33.3%" fxFlex.sm="1 1 50%" fxFlex.lt-sm="100%"
+        [assignment]="assignment"></app-assignment-card>
     </ng-container>
   </div>
 

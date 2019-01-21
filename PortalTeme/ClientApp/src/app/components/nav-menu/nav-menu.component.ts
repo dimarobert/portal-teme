@@ -29,7 +29,7 @@ import { CdkAccordionItem } from '@angular/cdk/accordion';
     trigger('openCloseArrowIcon', [
       state('closed', style({})),
       state('open', style({
-        transform: 'rotate(180deg)'
+        transform: 'rotate(-180deg)'
       })),
       transition('open <=> closed', [
         animate('.2s')

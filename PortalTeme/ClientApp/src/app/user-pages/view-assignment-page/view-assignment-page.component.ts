@@ -5,11 +5,13 @@ import { ModelServiceFactory } from '../../services/model.service';
 import { take } from 'rxjs/operators';
 import { Assignment, AssignmentType, UserAssignment } from '../../models/assignment.model';
 import { SettingsProvider } from '../../services/settings.provider';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-view-assignment-page',
   templateUrl: './view-assignment-page.component.html',
-  styleUrls: ['./view-assignment-page.component.scss']
+  styleUrls: ['./view-assignment-page.component.scss'],
+  animations: []
 })
 export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
@@ -17,6 +19,8 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   routeSub: Subscription;
   assignment: UserAssignment;
+
+  datesShown: boolean = false;
 
   constructor(private route: ActivatedRoute, private settingsProvider: SettingsProvider, private modelSvcFactory: ModelServiceFactory) { }
 
@@ -38,6 +42,14 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   }
 
+  get submissionsStarted(): boolean {
+    return this.compareToNow(this.assignment.startDate) < 0;
+  }
+
+  get submissionsEnded(): boolean {
+    return this.compareToNow(this.assignment.endDate) < 0;
+  }
+
   get hasTasksList(): boolean {
     return this.assignment.type != AssignmentType.SingleTask
       && this.assignment.type != AssignmentType.CustomAssignedTasks;
@@ -50,6 +62,15 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
   get showUserSubmissions(): boolean {
     return this.assignment.assignedTask != null;
   }
+
+  compareDates(date1: Date | number, date2: Date | number): number {
+    return date1.valueOf() - date2.valueOf();
+  }
+
+  compareToNow(date: Date): number {
+    return this.compareDates(date, Date.now());
+  }
+
   ngOnDestroy(): void {
     this.routeSub.unsubscribe();
   }

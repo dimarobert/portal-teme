@@ -6,4 +6,21 @@
 
 .assignment-content {
     padding: 15px 15px 0;
+
+    display: flex;
+    flex-direction: column;
+    place-content: stretch center;
+    align-items: center;
+
+    .assignment-description {
+        max-width: 900px;
+    }
+}
+
+.title-card {
+    mat-card-title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
 }
