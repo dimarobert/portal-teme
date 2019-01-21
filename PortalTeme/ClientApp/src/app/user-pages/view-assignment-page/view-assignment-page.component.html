@@ -1,30 +1,29 @@
 <div class="center-content" *ngIf="!assignment">
-  <mat-spinner></mat-spinner>
+    <mat-spinner></mat-spinner>
 </div>
 
 
 <ng-container *ngIf="assignment">
-  <mat-toolbar>
-    <a mat-icon-button [routerLink]="['../']">
-      <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
-    </a>
-    <b class="text-primary fill-space">{{assignment.name}}</b>
-    <!-- <a mat-icon-button [routerLink]="['manage']">
-          <mat-icon>settings</mat-icon>
-        </a> -->
-  </mat-toolbar>
+
+  <mat-card class="title-card">
+    <mat-card-header>
+      <mat-card-title>
+        <a mat-icon-button [routerLink]="['../']">
+          <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
+        </a>
+        <span class="text-primary fill-space">{{assignment.name}}</span>
+      </mat-card-title>
+      <mat-card-subtitle>
+          <span *ngIf="!submissionsStarted">Submissions will start on {{assignment.startDate.toLocaleDateString()}}</span>
+        <span *ngIf="submissionsStarted && !submissionsEnded">Submissions period: {{assignment.startDate.toLocaleDateString()}} -
+          {{assignment.endDate.toLocaleDateString()}}</span>
+          <span *ngIf="submissionsEnded">Submissions deadline was {{assignment.endDate.toLocaleDateString()}}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
   <div class="assignment-content">
 
-    <div>Added on: <span [matTooltip]="assignment.dateAdded.toLocaleString()">{{assignment.dateAdded.toLocaleDateString()}}</span>
-      (Last updated:
-      <span [matTooltip]="assignment.lastUpdated.toLocaleString()">{{assignment.lastUpdated.toLocaleDateString()}}</span>)</div>
-    <div>Starts on: {{assignment.startDate.toLocaleDateString()}}</div>
-    <div><b class="text-danger">Deadline: {{assignment.endDate.toLocaleDateString()}}</b></div>
-
-    <hr />
-
-    <p [innerHTML]="assignment.description | safeHtml"></p>
-
+    <div class="assignment-description" [innerHTML]="assignment.description | safeHtml"></div>
 
     <ng-container *ngIf="showTasksList"></ng-container>
 

@@ -57,6 +57,7 @@ import { AssignmentEditFormComponent } from './components/assignments/assignment
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { EnumKeysPipe } from './pipes/enum-keys.pipe';
 import { AssignmentCardComponent } from './components/assignments/assignment-card/assignment-card.component';
+import { MAT_HAMMER_OPTIONS } from '@angular/material';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -186,7 +187,11 @@ const httpInterceptorProviders: Provider[] = [
     SettingsProvider,
     { provide: APP_INITIALIZER, useFactory: settingsProviderFactory, deps: [SettingsProvider], multi: true },
     ...httpInterceptorProviders,
-    { provide: externalUrlProvider, useValue: externalUrlRedirect }
+    { provide: externalUrlProvider, useValue: externalUrlRedirect },
+    {
+      provide: MAT_HAMMER_OPTIONS,
+      useValue: { cssProps: { userSelect: true } },
+    }
   ],
   bootstrap: [AppComponent]
 })

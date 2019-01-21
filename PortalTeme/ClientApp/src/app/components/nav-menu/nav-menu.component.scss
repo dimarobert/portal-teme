@@ -29,7 +29,6 @@
 
 .sidenav {
     min-width: 200px;
-    
     mat-nav-list {
         .accordion-button {
             color: #fff;
@@ -80,20 +79,23 @@
             text-decoration: none;
         }
     }
-}
-
-a.admin-button {
-    border-right: 2px solid #fff;
-    transition: border-width .1s ease-in;
-    &:hover {
-        border-right: 4px solid #fff;
+    a.admin-button {
+        border-right: 2px solid #fff;
+        transition: border-width .1s ease-in;
+        &:hover {
+            border-right: 4px solid #fff;
+        }
+    }
+    .active[mat-list-item] {
+        background-color: rgba(0, 0, 0, .08);
     }
 }
 
-.active[mat-list-item] {
-    background-color: rgba(0, 0, 0, .08);
+.sidenav-content {
+    display: flex;
 }
 
 .site-content {
     padding-bottom: 30px;
+    flex: 1;
 }
