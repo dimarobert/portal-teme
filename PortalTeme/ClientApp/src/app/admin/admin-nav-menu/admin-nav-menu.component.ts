@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AdminMenuService, AdminMenuState } from '../services/admin-menu.service';
 import { CourseEditRouterComponent } from '../courses/course-edit-router/course-edit-router.component';
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material';
-import { map, take } from 'rxjs/operators';
 import { Subscription, BehaviorSubject } from 'rxjs';
 
 @Component({

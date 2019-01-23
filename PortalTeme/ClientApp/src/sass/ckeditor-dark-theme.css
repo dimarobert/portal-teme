@@ -34,6 +34,8 @@
     --ck-color-button-action-text: var(--ck-custom-white);
     --ck-color-button-save: hsl(120, 100%, 46%);
     --ck-color-button-cancel: hsl(15, 100%, 56%);
+    /* Overrides split button hover color */
+    --ck-color-split-button-hover-background: hsl(270, 1%, 25%);
     /* -- Overrides the default .ck-dropdown class colors. -------------------------------------- */
     --ck-color-dropdown-panel-background: var(--ck-custom-background);
     --ck-color-dropdown-panel-border: var(--ck-custom-foreground);

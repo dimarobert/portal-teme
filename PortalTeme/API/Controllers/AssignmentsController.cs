@@ -8,6 +8,7 @@ using PortalTeme.API.Models.Assignments;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Identity;
+using PortalTeme.Data.Models;
 using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
@@ -23,13 +24,15 @@ namespace PortalTeme.API.Controllers {
         private readonly UserManager<User> userManager;
         private readonly IAuthorizationService authorizationService;
         private readonly IAssignmentMapper assignmentMapper;
+        private readonly ITaskMapper taskMapper;
         private readonly IUrlSlugService slugService;
 
-        public AssignmentsController(PortalTemeContext context, UserManager<User> userManager, IAuthorizationService authorizationService, IAssignmentMapper assignmentMapper, IUrlSlugService slugService) {
+        public AssignmentsController(PortalTemeContext context, UserManager<User> userManager, IAuthorizationService authorizationService, IAssignmentMapper assignmentMapper, ITaskMapper taskMapper, IUrlSlugService slugService) {
             _context = context;
             this.userManager = userManager;
             this.authorizationService = authorizationService;
             this.assignmentMapper = assignmentMapper;
+            this.taskMapper = taskMapper;
             this.slugService = slugService;
         }
 
@@ -229,8 +232,62 @@ namespace PortalTeme.API.Controllers {
             return assignmentMapper.MapAssignment(assignment);
         }
 
+
+        [HttpPost("{assignmentId}/task")]
+        public async Task<ActionResult<AssignmentTaskDTO>> PostTask(AssignmentTaskEditDTO task) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var assignmentTask = taskMapper.MapTaskEditDTO(task);
+
+            _context.AssignmentTasks.Add(assignmentTask);
+            await _context.SaveChangesAsync();
+
+            return taskMapper.MapTask(assignmentTask);
+        }
+
+        [HttpPut("{assignmentId}/task/{id}")]
+        public async Task<IActionResult> PutTask(Guid id, AssignmentTaskDTO task) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id != task.Id)
+                return BadRequest();
+
+            var assignmentTask = taskMapper.MapTaskDTO(task);
+
+            _context.Entry(assignmentTask).State = EntityState.Modified;
+
+            try {
+                await _context.SaveChangesAsync();
+            } catch (DbUpdateConcurrencyException) {
+                if (!TaskExists(id))
+                    return NotFound();
+                else
+                    throw;
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{assignmentId}/task/{id}")]
+        public async Task<ActionResult<AssignmentTaskDTO>> DeleteTask(Guid id) {
+            var task = await _context.AssignmentTasks
+                 .FirstOrDefaultAsync(t => t.Id == id);
+
+            _context.AssignmentTasks.Remove(task);
+            await _context.SaveChangesAsync();
+
+            return taskMapper.MapTask(task);
+        }
+
+
         private bool AssignmentExists(Guid id) {
             return _context.Assignments.Any(e => e.Id == id);
+        }
+
+        private bool TaskExists(Guid id) {
+            return _context.AssignmentTasks.Any(e => e.Id == id);
         }
     }
 }

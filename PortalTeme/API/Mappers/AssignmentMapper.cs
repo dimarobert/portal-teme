@@ -57,7 +57,7 @@ namespace PortalTeme.API.Mappers {
             dto.LastUpdated = assignment.LastUpdated;
             dto.EndDate = assignment.EndDate;
 
-            dto.Tasks = assignment.AssignmentTasks.Select(variant => taskMapper.MapTask(variant)).ToList();
+            dto.Tasks = assignment.AssignmentTasks.Select(task => taskMapper.MapTask(task)).ToList();
         }
 
         public Assignment MapAssignmentEditDTO(AssignmentEditDTO assignment) {

@@ -5,7 +5,7 @@
 <ng-container *ngIf="assignment | async">
 
   <mat-toolbar>
-    <button mat-icon-button [routerLink]="['../../']">
+    <button mat-icon-button [routerLink]="['../../../']">
       <mat-icon aria-label="back" color="accent">arrow_back_ios</mat-icon>
     </button>
     <span>
@@ -14,7 +14,8 @@
     </span>
   </mat-toolbar>
 
-  <app-tabbed-menu *ngIf="hasTaskList | async" [menuItems]="menuItems"></app-tabbed-menu>
-  <app-assignment-edit-form [assignment]="assignment" [submitClick]="update"></app-assignment-edit-form>
+  <app-tabbed-menu [menuItems]="menuItems"></app-tabbed-menu>
+  <app-assignment-tasks-edit [tasks]="tasks" [assignmentId]="(assignment | async).id" [create]="create()" [update]="update()"
+    [delete]="delete()" #tasksComp></app-assignment-tasks-edit>
 
 </ng-container>
