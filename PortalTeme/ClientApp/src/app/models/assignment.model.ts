@@ -10,7 +10,7 @@ export interface Assignment extends AssignmentEdit {
 
     slug: string;
 
-    assignmentVariants: AssignmentTask[];
+    tasks: AssignmentTask[];
 }
 
 export interface AssignmentEdit extends EditModel {
@@ -53,12 +53,15 @@ const AssignmentTypeText = {
 
 export default AssignmentTypeText;
 
-export interface AssignmentTask extends BaseModel {
+export interface AssignmentTask extends AssignmentTaskEdit {
+    id: string;
+}
+
+export interface AssignmentTaskEdit extends EditModel {
     assignmentId: string;
 
     name: string;
     description: string;
-
 }
 
 export interface StudentAssignedTask extends StudentAssignedTaskEdit {

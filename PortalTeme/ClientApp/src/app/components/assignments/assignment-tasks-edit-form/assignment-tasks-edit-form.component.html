@@ -1,0 +1,29 @@
+<form [formGroup]="taskForm" #form (submit)="create()">
+
+  <!-- name -->
+  <mat-form-field class="full-width">
+    <input matInput type="text" placeholder="Task Name" [formControl]="name" required />
+    <mat-error *ngIf="name.hasError('required')">The assignment name is required.</mat-error>
+  </mat-form-field>
+
+  <!-- description -->
+  <div class="full-width">
+    <label>Assignment details:</label>
+    <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
+  </div>
+
+  <!-- form button -->
+  <button mat-raised-button type="submit" color="accent" class="mt-2" *ngIf="!(saved | async)" [disabled]="invalid | async">
+    <span *ngIf="!isEditMode">Create</span>
+    <span *ngIf="isEditMode">Update</span>
+  </button>
+  <button mat-stroked-button type="submit" color="accent" class="mt-2" *ngIf="saved | async" [disabled]="invalid | async">
+    <span *ngIf="!isEditMode">Create</span>
+    <span *ngIf="isEditMode">Update</span>
+  </button>
+  <button mat-raised-button color="warn" type="button" (click)="delete()">Delete</button>
+  <span class="ml-3">
+    <mat-spinner *ngIf="saving | async" [diameter]="30" [style.display]="'inline-block'" [style.top.px]="11"></mat-spinner>
+  </span>
+  <p class="text-danger" *ngIf="invalid | async">Some of the fields are invalid.</p>
+</form>

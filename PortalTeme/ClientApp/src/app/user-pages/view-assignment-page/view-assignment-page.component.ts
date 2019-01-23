@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, combineLatest } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take } from 'rxjs/operators';
-import { Assignment, AssignmentType, UserAssignment } from '../../models/assignment.model';
+import { Assignment, AssignmentType, UserAssignment, AssignmentTask } from '../../models/assignment.model';
 import { SettingsProvider } from '../../services/settings.provider';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
@@ -42,6 +42,10 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   }
 
+  chooseTask(task: AssignmentTask) {
+    
+  }
+
   get submissionsStarted(): boolean {
     return this.compareToNow(this.assignment.startDate) < 0;
   }
@@ -59,7 +63,7 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
     return this.hasTasksList && this.assignment.assignedTask == null;
   }
 
-  get showUserSubmissions(): boolean {
+  get userHasChosenTask(): boolean {
     return this.assignment.assignedTask != null;
   }
 

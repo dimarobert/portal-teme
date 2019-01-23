@@ -1,5 +1,5 @@
 <div class="center-content" *ngIf="!assignment">
-    <mat-spinner></mat-spinner>
+  <mat-spinner></mat-spinner>
 </div>
 
 
@@ -14,10 +14,11 @@
         <span class="text-primary fill-space">{{assignment.name}}</span>
       </mat-card-title>
       <mat-card-subtitle>
-          <span *ngIf="!submissionsStarted">Submissions will start on {{assignment.startDate.toLocaleDateString()}}</span>
-        <span *ngIf="submissionsStarted && !submissionsEnded">Submissions period: {{assignment.startDate.toLocaleDateString()}} -
+        <span *ngIf="!submissionsStarted">Submissions will start on {{assignment.startDate.toLocaleDateString()}}</span>
+        <span *ngIf="submissionsStarted && !submissionsEnded">Submissions period:
+          {{assignment.startDate.toLocaleDateString()}} -
           {{assignment.endDate.toLocaleDateString()}}</span>
-          <span *ngIf="submissionsEnded">Submissions deadline was {{assignment.endDate.toLocaleDateString()}}</span>
+        <span *ngIf="submissionsEnded">Submissions deadline was {{assignment.endDate.toLocaleDateString()}}</span>
       </mat-card-subtitle>
     </mat-card-header>
   </mat-card>
@@ -25,9 +26,26 @@
 
     <div class="assignment-description" [innerHTML]="assignment.description | safeHtml"></div>
 
-    <ng-container *ngIf="showTasksList"></ng-container>
+    <ng-container *ngIf="showTasksList">
+      <p *ngIf="submissionsStarted && !submissionsEnded">You did not choose a task for this assignment yet. You can
+        choose one from below.</p>
+      <mat-accordion [style.width]="'100%'">
+        <mat-expansion-panel *ngFor="let task of assignment.tasks">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{task.name}}</mat-panel-title>
+          </mat-expansion-panel-header>
 
-    <ng-container *ngIf="showUserSubmissions"></ng-container>
+          <div [innerHTML]="task.description | safeHtml"></div>
+          
+          <button mat-button color="accent" *ngIf="!userHasChosenTask && !submissionsEnded" (click)="chooseTask(task)">Choose this task</button>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+    </ng-container>
+
+    <ng-container *ngIf="userHasChosenTask">
+
+    </ng-container>
 
   </div>
 

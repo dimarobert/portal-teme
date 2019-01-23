@@ -1,0 +1,12 @@
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let task of tasksList | async" [expanded]="!task.id">
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{task.name}}</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-assignment-tasks-edit-form [task]="task" [assignmentId]="assignmentId" [submitClick]="submitClick()" [deleteTask]="deleteTask()"></app-assignment-tasks-edit-form>
+
+  </mat-expansion-panel>
+</mat-accordion>
+
+<button mat-raised-button (click)="add()" color="primary" class="mt-2">Add</button>

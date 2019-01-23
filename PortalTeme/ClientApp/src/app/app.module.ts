@@ -58,6 +58,10 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { EnumKeysPipe } from './pipes/enum-keys.pipe';
 import { AssignmentCardComponent } from './components/assignments/assignment-card/assignment-card.component';
 import { MAT_HAMMER_OPTIONS } from '@angular/material';
+import { TabbedMenuComponent } from './components/tabbed-menu/tabbed-menu.component';
+import { AssignmentEditTasksPageComponent } from './user-pages/course-manage/assignment-edit-tasks-page/assignment-edit-tasks-page.component';
+import { AssignmentTasksEditComponent } from './components/assignments/assignment-tasks-edit/assignment-tasks-edit.component';
+import { AssignmentTasksEditFormComponent } from './components/assignments/assignment-tasks-edit-form/assignment-tasks-edit-form.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -67,6 +71,7 @@ const httpInterceptorProviders: Provider[] = [
   declarations: [
     AppComponent,
     NavMenuComponent,
+    TabbedMenuComponent,
 
     DataTableComponent,
     ExternalUrlDirective,
@@ -112,7 +117,10 @@ const httpInterceptorProviders: Provider[] = [
     ViewAssignmentPageComponent,
     AssignmentsManageViewComponent,
     AssignmentEditPageComponent,
-    AssignmentCardComponent
+    AssignmentCardComponent,
+    AssignmentEditTasksPageComponent,
+    AssignmentTasksEditComponent,
+    AssignmentTasksEditFormComponent
 
   ],
   imports: [
@@ -143,7 +151,8 @@ const httpInterceptorProviders: Provider[] = [
             children: [
               { path: '', component: CourseManagePageComponent, pathMatch: 'full' },
               { path: 'new-assignment', component: NewAssignmentPageComponent },
-              { path: 'assignment/:assignmentId', component: AssignmentEditPageComponent }
+              { path: 'assignment/:assignmentId', component: AssignmentEditPageComponent },
+              { path: 'assignment/:assignmentId/tasks', component: AssignmentEditTasksPageComponent }
             ]
           },
           { path: ':assigSlug', component: ViewAssignmentPageComponent }

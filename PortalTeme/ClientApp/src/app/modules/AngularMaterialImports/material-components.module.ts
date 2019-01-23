@@ -24,7 +24,8 @@ import {
   MatProgressSpinnerModule,
   MatProgressBarModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatNativeDateModule,
+  MatExpansionModule
 } from '@angular/material';
 
 const importedMaterialComponents = [
@@ -44,6 +45,7 @@ const importedMaterialComponents = [
   MatTabsModule,
 
   MatCardModule,
+  MatExpansionModule,
 
   MatInputModule,
   MatSelectModule,

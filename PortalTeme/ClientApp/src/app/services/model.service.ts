@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, StudentAssignedTask, StudentAssignedTaskEdit, UserAssignment } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, StudentAssignedTaskEdit, UserAssignment, AssignmentTaskEdit, AssignmentTask } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -197,6 +197,30 @@ export class AssignmentsService extends ComplexModelService<Assignment, Assignme
       }));
   }
 
+  public createTask(task: AssignmentTaskEdit): Promise<AssignmentTask> {
+    return this.http.post<AssignmentTask>(`${this.apiRoot}/${task.assignmentId}/task`, task)
+      .pipe(
+        take(1)
+      )
+      .toPromise();
+  }
+
+  public updateTask(task: AssignmentTask): Promise<void> {
+    return this.http.put<void>(`${this.apiRoot}/${task.assignmentId}/task/${task.id}`, task)
+      .pipe(
+        take(1)
+      )
+      .toPromise();;
+  }
+
+  public deleteTask(task: AssignmentTask): Promise<void> {
+    return this.http.delete<void>(`${this.apiRoot}/${task.assignmentId}/task/${task.id}`)
+      .pipe(
+        take(1)
+      )
+      .toPromise();;
+  }
+
   protected mapResponses(assign: Assignment): void {
     mapAssignment(assign);
   }
@@ -224,16 +248,16 @@ export class StudentAssignedTasksService extends ModelWithSlugService<StudentAss
     throw new Error('Invalid operation. Get is not supported for StudentAssignedTasks. Use the getAssignedTask(assignmentId) method instead.');
   }
 
-/**
- * This will return the task assigned to the current user for the provided assignmentId.
- * @param assignmentId 
- */
+  /**
+   * This will return the task assigned to the current user for the provided assignmentId.
+   * @param assignmentId 
+   */
   public getAssignedTask(assignmentId: string): Observable<StudentAssignedTask> {
     return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`)
-    .pipe(map(model => {
-      this.mapResponses(model);
-      return model;
-    }));
+      .pipe(map(model => {
+        this.mapResponses(model);
+        return model;
+      }));
   }
 
   /**
@@ -241,12 +265,12 @@ export class StudentAssignedTasksService extends ModelWithSlugService<StudentAss
    * This will allow him to review assignments submitted by the students.
    * @param assignmentId 
    */
-  public getAllAssignedTasks(assignmentId: string):  Observable<StudentAssignedTask[]>{
+  public getAllAssignedTasks(assignmentId: string): Observable<StudentAssignedTask[]> {
     return this.http.get<StudentAssignedTask[]>(`${this.apiRoot}/${assignmentId}/all`)
-    .pipe(map(model => {
-      model.forEach(m => this.mapResponses(m));
-      return model;
-    }));
+      .pipe(map(model => {
+        model.forEach(m => this.mapResponses(m));
+        return model;
+      }));
   }
 
 }
