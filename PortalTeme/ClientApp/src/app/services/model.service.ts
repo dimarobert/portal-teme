@@ -65,13 +65,16 @@ export class ModelServiceFactory {
   }
 }
 
-export class ModelServiceBase<TModel extends BaseModel> {
+class AbstractModelService {
 
-  constructor(private apiController: string, protected http: HttpClient) { }
+  constructor(protected apiController: string, protected http: HttpClient) { }
 
   protected get apiRoot(): string {
     return `/api/${this.apiController}`;
   }
+}
+
+export class ModelServiceBase<TModel extends BaseModel> extends AbstractModelService {
 
   public getAll(): Observable<TModel[]> {
     return this.http.get<TModel[]>(this.apiRoot)
@@ -238,26 +241,22 @@ function mapAssignment(assign: AssignmentEdit): void {
   assign.endDate = new Date(assign.endDate);
 }
 
-export class StudentAssignedTasksService extends ModelWithSlugService<StudentAssignedTask, StudentAssignedTaskEdit> {
+export class StudentAssignedTasksService extends AbstractModelService {
 
-  public getAll(): Observable<StudentAssignedTask[]> {
-    throw new Error('Invalid operation. GetAll is not supported for StudentAssignedTasks. Use the getByAssignment(assignmentId) method instead.');
-  }
+  // public getAll(): Observable<StudentAssignedTask[]> {
+  //   throw new Error('Invalid operation. GetAll is not supported for StudentAssignedTasks. Use the getByAssignment(assignmentId) method instead.');
+  // }
 
-  public get(): Observable<StudentAssignedTask> {
-    throw new Error('Invalid operation. Get is not supported for StudentAssignedTasks. Use the getAssignedTask(assignmentId) method instead.');
-  }
+  // public get(): Observable<StudentAssignedTask> {
+  //   throw new Error('Invalid operation. Get is not supported for StudentAssignedTasks. Use the getAssignedTask(assignmentId) method instead.');
+  // }
 
   /**
    * This will return the task assigned to the current user for the provided assignmentId.
    * @param assignmentId 
    */
   public getAssignedTask(assignmentId: string): Observable<StudentAssignedTask> {
-    return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`)
-      .pipe(map(model => {
-        this.mapResponses(model);
-        return model;
-      }));
+    return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`);
   }
 
   /**
@@ -266,11 +265,7 @@ export class StudentAssignedTasksService extends ModelWithSlugService<StudentAss
    * @param assignmentId 
    */
   public getAllAssignedTasks(assignmentId: string): Observable<StudentAssignedTask[]> {
-    return this.http.get<StudentAssignedTask[]>(`${this.apiRoot}/${assignmentId}/all`)
-      .pipe(map(model => {
-        model.forEach(m => this.mapResponses(m));
-        return model;
-      }));
+    return this.http.get<StudentAssignedTask[]>(`${this.apiRoot}/${assignmentId}/all`);
   }
 
   public assignTaskToSelf(taskId: string): Promise<StudentAssignedTask> {
