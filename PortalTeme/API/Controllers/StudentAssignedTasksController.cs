@@ -66,10 +66,10 @@ namespace PortalTeme.API.Controllers {
             if (!User.Identity.IsAuthenticated)
                 return Challenge();
 
-            var student = await userManager.GetUserAsync(User);
+            var studentId = userManager.GetUserId(User);
 
             var studentTask = await _context.StudentAssignedTasks
-                .Where(sat => sat.StudentId == student.Id && sat.Task.AssignmentId == assignmentId)
+                .Where(sat => sat.StudentId == studentId && sat.Task.AssignmentId == assignmentId)
                 .Select(sat => new StudentTaskProjection {
                     Task = sat.Task,
                     StudentId = sat.StudentId,
@@ -119,36 +119,74 @@ namespace PortalTeme.API.Controllers {
         //    return NoContent();
         //}
 
-        //// POST: api/AssignmentEntries
-        //[HttpPost]
-        //public async Task<ActionResult<AssignmentEntryDTO>> PostAssignmentEntry(AssignmentEntryDTO assignmentEntryDto) {
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
+        // POST: api/StudentAssignedTasks/5/Assign
+        [HttpPost("{taskId}/Assign")]
+        public async Task<ActionResult<StudentAssignedTaskDTO>> PostStudentAssignedTask(Guid taskId) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        //    var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
+            var task = await _context.AssignmentTasks
+                .Include(t => t.Assignment)
+                .Include(t => t.StudentsAssigned)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
 
-        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-        //    if (!authorization.Succeeded)
-        //        return Forbid();
+            if (task is null)
+                return NotFound();
 
-        //    _context.AssignmentEntries.Add(assignmentEntry);
-        //    await _context.SaveChangesAsync();
+            //var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+            //if (!authorization.Succeeded)
+            //    return Forbid();
 
-        //    var entry = await _context.AssignmentEntries
-        //        .Where(ae => ae.Id == assignmentEntry.Id)
-        //        .Select(ae => new AssignmentEntryProjection {
-        //            Id = ae.Id,
-        //            AssignmentTaskId = ae.AssignedTask.Id,
-        //            CourseId = ae.AssignedTask.Assignment.Course.Id,
-        //            StudentId = ae.Student.UserId,
-        //            State = ae.State,
-        //            Grading = ae.Grading,
-        //            Versions = ae.Versions
-        //        })
-        //        .FirstOrDefaultAsync();
+            if (task.Assignment.StartDate > DateTime.UtcNow) {
+                ModelState.AddModelError(string.Empty, "The assignment has not started yet.");
+                return BadRequest(ModelState);
+            }
 
-        //    return CreatedAtAction("GetAssignmentEntry", new { id = entry.Id }, assignmentMapper.MapAssignmentEntryProjection(entry));
-        //}
+            if (task.Assignment.EndDate < DateTime.UtcNow) {
+                ModelState.AddModelError(string.Empty, "The assignment deadline has passed.");
+                return BadRequest(ModelState);
+            }
+
+            if (task.Assignment.Type == AssignmentType.CustomAssignedTasks) {
+                ModelState.AddModelError(string.Empty, "Tasks cannot be self assigned for this assignment.");
+                return BadRequest(ModelState);
+            }
+
+            if (task.Assignment.Type == AssignmentType.SingleChoiceList && task.StudentsAssigned.Any()) {
+                ModelState.AddModelError(string.Empty, "A task can only be assigned to a single student.");
+                return BadRequest(ModelState);
+            }
+
+            if (task.Assignment.Type == AssignmentType.MultipleChoiceList && task.Assignment.NumberOfDuplicates <= task.StudentsAssigned.Count) {
+                ModelState.AddModelError(string.Empty, "This task has reached maximum student assignments.");
+                return BadRequest(ModelState);
+            }
+
+            var studentId = userManager.GetUserId(User);
+
+            var studentAssignedTask = new StudentAssignedTask {
+                State = StudentAssignedTaskState.Assigned,
+                StudentId = studentId,
+                TaskId = task.Id
+            };
+
+            _context.StudentAssignedTasks.Add(studentAssignedTask);
+            await _context.SaveChangesAsync();
+
+            var studentTask = await _context.StudentAssignedTasks
+                .Where(sat => sat.Id == studentAssignedTask.Id)
+                .Select(sat => new StudentTaskProjection {
+                    Task = sat.Task,
+                    StudentId = sat.StudentId,
+                    CourseId = sat.Task.Assignment.Course.Id,
+                    State = sat.State,
+                    Grading = sat.Grading,
+                    Submissions = sat.Submissions
+                })
+                .FirstOrDefaultAsync();
+
+            return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, taskMapper.MapStudentAssignedTask(studentTask));
+        }
 
         //// DELETE: api/AssignmentEntries/5
         //[HttpDelete("{id}")]
