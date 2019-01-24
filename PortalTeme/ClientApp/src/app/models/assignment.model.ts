@@ -70,6 +70,8 @@ export interface AssignmentTaskEdit extends EditModel {
 
 export interface StudentAssignedTask extends StudentAssignedTaskEdit {
     id: string;
+
+    student: User;
 }
 
 export interface StudentAssignedTaskEdit extends EditModel {

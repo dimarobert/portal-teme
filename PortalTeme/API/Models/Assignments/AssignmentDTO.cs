@@ -78,6 +78,7 @@ namespace PortalTeme.API.Models.Assignments {
 
         [Required(AllowEmptyStrings = false)]
         public string StudentId { get; set; }
+        public UserDTO Student { get; set; }
 
         public StudentAssignedTaskState State { get; set; }
 

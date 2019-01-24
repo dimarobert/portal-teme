@@ -89,6 +89,12 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
     if (this.assignment.type == AssignmentType.MultipleChoiceList && this.assignment.numberOfDuplicates <= task.studentsAssigned.length)
       return false;
 
+    if (this.compareToNow(this.assignment.startDate) > 0)
+      return false;
+
+    if (this.compareToNow(this.assignment.endDate) < 0)
+      return false;
+
     return true;
   }
 

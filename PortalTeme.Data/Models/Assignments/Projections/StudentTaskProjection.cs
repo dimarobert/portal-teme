@@ -19,5 +19,6 @@ namespace PortalTeme.Data.Models.Assignments.Projections {
 
     public class StudentTaskProjection : StudentTaskProjectionBase {
         public List<TaskSubmission> Submissions { get; set; }
+        public StudentInfo Student { get; set; }
     }
 }
