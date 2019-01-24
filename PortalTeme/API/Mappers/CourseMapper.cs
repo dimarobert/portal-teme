@@ -29,6 +29,7 @@ namespace PortalTeme.API.Mappers {
         CourseEditDTO MapCourseEdit(Course course);
 
         UserDTO MapUser(User user);
+        UserDTO MapStudent(StudentInfo student);
 
         CourseGroup MapCourseGroupDTO(CourseGroupDTO group);
         CourseGroupDTO MapCourseGroup(CourseGroup cGroup);
@@ -113,7 +114,7 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private static CourseGroupDTO MapGroupRef(CourseGroup group) {
+        private CourseGroupDTO MapGroupRef(CourseGroup group) {
             return new CourseGroupDTO {
                 GroupId = group.GroupId,
                 CourseId = group.CourseId,
@@ -121,7 +122,7 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private static UserDTO MapStudent(StudentInfo student) {
+        public UserDTO MapStudent(StudentInfo student) {
             return new UserDTO {
                 Id = student.UserId,
                 FirstName = student.User.FirstName,

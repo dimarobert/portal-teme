@@ -29,6 +29,7 @@ namespace PortalTeme.API.Mappers {
         public StudentAssignedTaskDTO MapStudentAssignedTask(StudentTaskProjection studentTask) {
             return new StudentAssignedTaskDTO {
                 StudentId = studentTask.StudentId,
+                Student = courseMapper.MapStudent(studentTask.Student),
                 Task = MapTask(studentTask.Task),
                 Grading = studentTask.Grading,
                 State = studentTask.State,
@@ -42,7 +43,7 @@ namespace PortalTeme.API.Mappers {
                 AssignmentId = task.AssignmentId,
                 Name = task.Name,
                 Description = task.Description,
-                StudentsAssigned = task.StudentsAssigned?.Select(sa => courseMapper.MapUser(sa.Student.User)).ToList() ?? new List<UserDTO>()
+                StudentsAssigned = task.StudentsAssigned?.Select(sa => courseMapper.MapStudent(sa.Student)).ToList() ?? new List<UserDTO>()
             };
         }
 

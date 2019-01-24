@@ -177,6 +177,7 @@ namespace PortalTeme.API.Controllers {
                 .Where(sat => sat.Id == studentAssignedTask.Id)
                 .Select(sat => new StudentTaskProjection {
                     Task = sat.Task,
+                    Student = sat.Student,
                     StudentId = sat.StudentId,
                     CourseId = sat.Task.Assignment.Course.Id,
                     State = sat.State,
@@ -184,6 +185,12 @@ namespace PortalTeme.API.Controllers {
                     Submissions = sat.Submissions
                 })
                 .FirstOrDefaultAsync();
+
+            await _context.Entry(studentTask.Task)
+                .Collection(t => t.StudentsAssigned)
+                .Query()
+                .Include(sa => sa.Student).ThenInclude(s => s.User)
+                .LoadAsync();
 
             return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, taskMapper.MapStudentAssignedTask(studentTask));
         }
