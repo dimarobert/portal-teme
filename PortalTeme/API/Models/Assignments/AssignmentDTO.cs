@@ -50,7 +50,7 @@ namespace PortalTeme.API.Models.Assignments {
     }
 
     public class StudentAssignmentDTO : AssignmentDTO {
-        public StudentAssignedTaskDTO AssignedTask { get; set; }
+        public AssignmentTaskDTO AssignedTask { get; set; }
     }
 
     public class AssignmentTaskBaseDTO {
@@ -69,6 +69,7 @@ namespace PortalTeme.API.Models.Assignments {
 
     public class AssignmentTaskDTO : AssignmentTaskBaseDTO {
         public Guid Id { get; set; }
+        public List<UserDTO> StudentsAssigned { get; set; }
     }
 
     public class StudentAssignedTaskDTO {

@@ -273,6 +273,12 @@ export class StudentAssignedTasksService extends ModelWithSlugService<StudentAss
       }));
   }
 
+  public assignTaskToSelf(taskId: string): Promise<StudentAssignedTask> {
+    return this.http.post<StudentAssignedTask>(`${this.apiRoot}/${taskId}/assign`, {})
+      .pipe(take(1))
+      .toPromise();
+  }
+
 }
 
 

@@ -1,4 +1,5 @@
-﻿using PortalTeme.API.Models.Assignments;
+﻿using PortalTeme.API.Models;
+using PortalTeme.API.Models.Assignments;
 using PortalTeme.Data.Models;
 using PortalTeme.Data.Models.Assignments.Projections;
 using System;
@@ -19,6 +20,11 @@ namespace PortalTeme.API.Mappers {
     }
 
     public class TaskMapper : ITaskMapper {
+        private readonly ICourseMapper courseMapper;
+
+        public TaskMapper(ICourseMapper courseMapper) {
+            this.courseMapper = courseMapper;
+        }
 
         public StudentAssignedTaskDTO MapStudentAssignedTask(StudentTaskProjection studentTask) {
             return new StudentAssignedTaskDTO {
@@ -35,7 +41,8 @@ namespace PortalTeme.API.Mappers {
                 Id = task.Id,
                 AssignmentId = task.AssignmentId,
                 Name = task.Name,
-                Description = task.Description
+                Description = task.Description,
+                StudentsAssigned = task.StudentsAssigned?.Select(sa => courseMapper.MapUser(sa.Student.User)).ToList() ?? new List<UserDTO>()
             };
         }
 

@@ -1,5 +1,5 @@
 import { EditModel, BaseModel } from './base.model';
-import { CourseRef } from './course.model';
+import { CourseRef, User } from './course.model';
 
 export interface UserAssignment extends Assignment {
     assignedTask: AssignmentTask;
@@ -55,6 +55,8 @@ export default AssignmentTypeText;
 
 export interface AssignmentTask extends AssignmentTaskEdit {
     id: string;
+
+    studentsAssigned: User[];
 }
 
 export interface AssignmentTaskEdit extends EditModel {
@@ -62,6 +64,8 @@ export interface AssignmentTaskEdit extends EditModel {
 
     name: string;
     description: string;
+
+    studentsAssigned?: User[];
 }
 
 export interface StudentAssignedTask extends StudentAssignedTaskEdit {

@@ -22,30 +22,56 @@
       </mat-card-subtitle>
     </mat-card-header>
   </mat-card>
-  <div class="assignment-content">
+  <div class="assignment-container">
+    <div class="assignment-content">
 
-    <div class="assignment-description" [innerHTML]="assignment.description | safeHtml"></div>
+      <div class="assignment-description" [innerHTML]="assignment.description | safeHtml"></div>
 
-    <ng-container *ngIf="showTasksList">
-      <p *ngIf="submissionsStarted && !submissionsEnded">You did not choose a task for this assignment yet. You can
-        choose one from below.</p>
-      <mat-accordion [style.width]="'100%'">
-        <mat-expansion-panel *ngFor="let task of assignment.tasks">
-          <mat-expansion-panel-header>
-            <mat-panel-title>{{task.name}}</mat-panel-title>
-          </mat-expansion-panel-header>
+      <ng-container *ngIf="showTasksList">
+        <p *ngIf="submissionsStarted && !submissionsEnded">You did not choose a task for this assignment yet. You can
+          choose one from below.</p>
+        <mat-accordion [style.width]="'100%'">
+          <mat-expansion-panel *ngFor="let task of assignment.tasks">
+            <mat-expansion-panel-header>
+              <mat-panel-title>{{task.name}}</mat-panel-title>
+              <mat-panel-description *ngIf="task.studentsAssigned?.length > 0">
+                <span *ngIf="assignment.type == AssignmentType.SingleChoiceList">
+                  Assigned to: {{task.studentsAssigned[0].firstName}} {{task.studentsAssigned[0].lastName}}
+                </span>
+                <span *ngIf="assignment.type == AssignmentType.MultipleChoiceList">
+                  Students assigned: {{task.studentsAssigned.length}}
+                </span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
 
-          <div [innerHTML]="task.description | safeHtml"></div>
-          
-          <button mat-button color="accent" *ngIf="!userHasChosenTask && !submissionsEnded" (click)="chooseTask(task)">Choose this task</button>
+            <div [innerHTML]="task.description | safeHtml"></div>
 
-        </mat-expansion-panel>
-      </mat-accordion>
-    </ng-container>
+            <h3 *ngIf="assignment.type == AssignmentType.MultipleChoiceList" class="mat-h3">
+              Students assigned:
+              <span *ngFor="let student of task.studentsAssigned; last as isLast">{{student.firstName}}
+                {{student.lastName}} <span *ngIf="!isLast">, </span></span>
+            </h3>
 
-    <ng-container *ngIf="userHasChosenTask">
+            <button mat-button color="accent" *ngIf="taskCanBeChosen(task)" (click)="chooseTask(task)">Choose
+              this task</button>
 
-    </ng-container>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ng-container>
+
+      <ng-container *ngIf="userHasChosenTask">
+        <mat-accordion [style.width]="'100%'">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>{{assignment.assignedTask.name}}</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div [innerHTML]="assignment.assignedTask.description | safeHtml"></div>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ng-container>
+    </div>
 
   </div>
 

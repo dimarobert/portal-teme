@@ -34,9 +34,9 @@ namespace PortalTeme.API.Mappers {
             var dto = new StudentAssignmentDTO();
             MapAssignmentInternal(dto, assignment);
 
-            //var assignedTask = assignment.AssignmentTasks.FirstOrDefault(v => v.StudentId == user.Id);
-            //if (!(assignedTask is null))
-            //    dto.AssignedVariant = MapTask(assignedTask);
+            var assignedTask = assignment.AssignmentTasks.FirstOrDefault(t => t.StudentsAssigned.Any(sa => sa.StudentId == user.Id));
+            if (!(assignedTask is null))
+                dto.AssignedTask = taskMapper.MapTask(assignedTask);
 
             return dto;
         }
