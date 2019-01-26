@@ -23,4 +23,9 @@
 
 
   <input #fileInput type="file" multiple class="hidden-file-input" (change)="onFileInputChange($event)" />
+
+  <div *ngIf="uploading">
+    <div class="text-right">{{progress}} / {{total}}</div>
+    <mat-progress-bar [value]="computeProgress()"></mat-progress-bar>
+  </div>
 </div>
