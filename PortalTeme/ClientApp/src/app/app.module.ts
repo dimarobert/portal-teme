@@ -62,6 +62,9 @@ import { TabbedMenuComponent } from './components/tabbed-menu/tabbed-menu.compon
 import { AssignmentEditTasksPageComponent } from './user-pages/course-manage/assignment-edit-tasks-page/assignment-edit-tasks-page.component';
 import { AssignmentTasksEditComponent } from './components/assignments/assignment-tasks-edit/assignment-tasks-edit.component';
 import { AssignmentTasksEditFormComponent } from './components/assignments/assignment-tasks-edit-form/assignment-tasks-edit-form.component';
+import { DateAdapterService } from './modules/AngularMaterialImports/date.adapter';
+import { CreateSubmissionPageComponent } from './user-pages/create-submission-page/create-submission-page.component';
+import { DropzoneFileUploadComponent } from './components/dropzone-file-upload/dropzone-file-upload.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -120,7 +123,9 @@ const httpInterceptorProviders: Provider[] = [
     AssignmentCardComponent,
     AssignmentEditTasksPageComponent,
     AssignmentTasksEditComponent,
-    AssignmentTasksEditFormComponent
+    AssignmentTasksEditFormComponent,
+    CreateSubmissionPageComponent,
+    DropzoneFileUploadComponent
 
   ],
   imports: [
@@ -155,7 +160,8 @@ const httpInterceptorProviders: Provider[] = [
               { path: 'assignment/:assignmentId/tasks', component: AssignmentEditTasksPageComponent }
             ]
           },
-          { path: ':assigSlug', component: ViewAssignmentPageComponent }
+          { path: ':assigSlug', component: ViewAssignmentPageComponent },
+          { path: ':assigSlug/new-submission', component: CreateSubmissionPageComponent }
         ]
       },
       {
@@ -194,7 +200,7 @@ const httpInterceptorProviders: Provider[] = [
   ],
   providers: [
     SettingsProvider,
-    { provide: APP_INITIALIZER, useFactory: settingsProviderFactory, deps: [SettingsProvider], multi: true },
+    { provide: APP_INITIALIZER, useFactory: settingsProviderFactory, deps: [SettingsProvider, DateAdapterService], multi: true },
     ...httpInterceptorProviders,
     { provide: externalUrlProvider, useValue: externalUrlRedirect },
     {

@@ -59,17 +59,36 @@
         </mat-accordion>
       </ng-container>
 
-      <ng-container *ngIf="userHasChosenTask">
+      <ng-container *ngIf="assignedTask">
         <mat-accordion [style.width]="'100%'">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
-              <mat-panel-title>{{assignment.assignedTask.name}}</mat-panel-title>
+              <mat-panel-title>Chosen task details</mat-panel-title>
+              <mat-panel-description *ngIf="assignedTask.state == StudentAssignedTaskState.Graded">Grade:
+                {{assignedTask.grading}}</mat-panel-description>
             </mat-expansion-panel-header>
-
+            <h4 class="text-center">{{assignment.assignedTask.name}}</h4>
             <div [innerHTML]="assignment.assignedTask.description | safeHtml"></div>
 
           </mat-expansion-panel>
         </mat-accordion>
+        <hr />
+
+        <p class="text-center" *ngIf="assignedTask.submissions.length == 0">You did not have any submissions for this task.</p>
+        <mat-accordion [style.width]="'100%'">
+          <mat-expansion-panel *ngFor="let submission of assignedTask.submissions">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Submission {{getDateString(submission.dateAdded)}}</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <pre>
+              {{submission.files | json}}
+            </pre>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <a mat-raised-button color="accent" [routerLink]="['new-submission']">Create submission</a>
       </ng-container>
     </div>
 

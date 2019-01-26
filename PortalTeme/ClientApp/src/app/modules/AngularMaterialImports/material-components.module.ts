@@ -25,8 +25,11 @@ import {
   MatProgressBarModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatExpansionModule
+  MatExpansionModule,
+  DateAdapter,
+  MAT_DATE_LOCALE
 } from '@angular/material';
+import { CustomDateAdapter, DateAdapterService } from './date.adapter';
 
 const importedMaterialComponents = [
   CdkAccordionModule,
@@ -65,5 +68,9 @@ const importedMaterialComponents = [
 @NgModule({
   imports: importedMaterialComponents,
   exports: importedMaterialComponents,
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'ro-RO'},
+    { provide: DateAdapter, useClass: CustomDateAdapter }
+  ]
 })
 export class MaterialComponentsModule { }

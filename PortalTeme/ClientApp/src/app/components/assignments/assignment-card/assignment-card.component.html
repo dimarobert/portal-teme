@@ -1,10 +1,10 @@
 <mat-card class="assignment-card" [class.mat-elevation-z8]="isHovered" (mouseenter)="isHovered = true" (mouseleave)="isHovered = false">
   <mat-card-header>
     <mat-card-title>{{assignment.name}}</mat-card-title>
-    <mat-card-subtitle>
+    <mat-card-subtitle matTooltip="You've missed the deadline." [matTooltipDisabled]="!isPassedDeadline(assignment)">
       <span [class.text-danger]="isPassedDeadline(assignment)" [class.text-warning]="isCloseToDeadline(assignment)"
-        [class.text-success]="!isCloseToDeadline(assignment)" matTooltip="You've missed the deadline."
-        [matTooltipDisabled]="!isPassedDeadline(assignment)">Deadline: {{assignment.endDate.toLocaleDateString()}}</span>
+        [class.text-success]="!isCloseToDeadline(assignment)">Deadline: {{assignment.endDate.toLocaleDateString()}}</span>
+      <mat-icon class="tooltip-arrow" inline="true" *ngIf="isPassedDeadline(assignment)">arrow_right</mat-icon>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content></mat-card-content>

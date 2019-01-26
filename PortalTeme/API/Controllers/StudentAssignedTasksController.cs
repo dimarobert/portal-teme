@@ -73,6 +73,7 @@ namespace PortalTeme.API.Controllers {
                 .Select(sat => new StudentTaskProjection {
                     Task = sat.Task,
                     StudentId = sat.StudentId,
+                    Student = sat.Student,
                     CourseId = sat.Task.Assignment.Course.Id,
                     State = sat.State,
                     Grading = sat.Grading,
@@ -86,6 +87,10 @@ namespace PortalTeme.API.Controllers {
             var authorization = await authorizationService.AuthorizeAsync(User, studentTask, AuthorizationConstants.CanViewStudentTaskPolicy);
             if (!authorization.Succeeded)
                 return Forbid();
+
+            await _context.Entry(studentTask.Student)
+                .Reference(t => t.User)
+                .LoadAsync();
 
             return taskMapper.MapStudentAssignedTask(studentTask);
         }
