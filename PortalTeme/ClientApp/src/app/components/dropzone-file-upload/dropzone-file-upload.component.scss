@@ -1,0 +1,95 @@
+$img-size: 120px;
+.dropzone {
+    display: inline-block;
+    border: 1px dashed white;
+    border-radius: 5px;
+    min-width: 200px * 1.77;
+    min-height: 200px;
+    max-width: 4 * ($img-size + 20px) + 80px;
+    max-height: 4 * ($img-size + 20px) + 65px;
+    overflow-y: auto;
+    padding: 30px;
+    cursor: pointer;
+    &.hovered {
+        border: 1px solid blue;
+    }
+    .add-files-text {
+        text-align: center;
+        margin-bottom: 10px;
+        color: gray;
+        cursor: pointer;
+    }
+    .files {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-width: 4 * ($img-size + 20px);
+        max-height: 4 * ($img-size + 20px);
+        margin-top: 10px;
+        .file-container {
+            cursor: initial;
+            position: relative;
+            margin: 0 10px 10px;
+            width: $img-size;
+            height: $img-size;
+            overflow: hidden;
+            border-radius: 10px;
+            img.thumbnail {
+                width: $img-size;
+                height: $img-size;
+                object-fit: cover;
+            }
+            .doc-container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid white;
+                border-radius: 12px;
+            }
+            .file-details {
+                display: none;
+                position: absolute;
+                padding: 10px 5px 0;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                min-width: 100%;
+                max-width: 100%;
+                text-align: center;
+                &>div {
+                    display: inline-block;
+                    padding: 3px;
+                    border-radius: 3px;
+                    margin-bottom: 5px;
+                    color: black;
+                    font-size: .8em;
+                    background-color: rgba($color: #fff, $alpha: 0.6)
+                }
+                .remove-button {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                }
+            }
+            &:hover {
+                img.thumbnail {
+                    filter: blur(8px);
+                }
+                .file-details {
+                    display: block;
+                }
+            }
+        }
+    }
+    .hidden-file-input {
+        visibility: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 0;
+        width: 0;
+    }
+}

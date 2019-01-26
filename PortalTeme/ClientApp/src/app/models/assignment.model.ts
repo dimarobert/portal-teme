@@ -68,21 +68,18 @@ export interface AssignmentTaskEdit extends EditModel {
     studentsAssigned?: User[];
 }
 
-export interface StudentAssignedTask extends StudentAssignedTaskEdit {
-    id: string;
-
-    student: User;
-}
-
-export interface StudentAssignedTaskEdit extends EditModel {
+export interface StudentAssignedTask extends BaseModel {
 
     task: AssignmentTask;
 
     studentId: string;
+    student: User;
 
     state: StudentAssignedTaskState;
 
     grading?: number;
+
+    submissions: TaskSubmission[];
 }
 
 export enum StudentAssignedTaskState {

@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, StudentAssignedTask, StudentAssignedTaskEdit, UserAssignment, AssignmentTaskEdit, AssignmentTask } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'

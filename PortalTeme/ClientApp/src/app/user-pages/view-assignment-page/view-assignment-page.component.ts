@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, combineLatest } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take } from 'rxjs/operators';
-import { AssignmentType, UserAssignment, AssignmentTask } from '../../models/assignment.model';
+import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState } from '../../models/assignment.model';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MAT_DATE_LOCALE } from '@angular/material';
 
 @Component({
   selector: 'app-view-assignment-page',
@@ -15,13 +16,15 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   AssignmentType = AssignmentType;
+  StudentAssignedTaskState = StudentAssignedTaskState;
 
   routeSub: Subscription;
   assignment: UserAssignment;
+  assignedTask: StudentAssignedTask;
 
   datesShown: boolean = false;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory, @Inject(MAT_DATE_LOCALE) private matDateLocale: string) { }
 
   courseSlug: string;
   assignmentSlug: string;
@@ -45,6 +48,14 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(assignmentResult => {
         this.assignment = assignmentResult;
+
+        if (this.userHasChosenTask) {
+          this.modelSvcFactory.studentAssignedTasks.getAssignedTask(this.assignment.id)
+            .pipe(take(1))
+            .subscribe(studentTask => {
+              this.assignedTask = studentTask;
+            });
+        }
       });
   }
 
@@ -96,6 +107,10 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
       return false;
 
     return true;
+  }
+
+  getDateString(date: Date): string {
+    return date.toLocaleString(this.matDateLocale);
   }
 
   compareDates(date1: Date | number, date2: Date | number): number {

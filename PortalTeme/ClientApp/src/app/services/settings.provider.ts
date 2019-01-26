@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApplicationSettings, UserSettings } from '../models/application-settings.model';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { DateAdapterService } from '../modules/AngularMaterialImports/date.adapter';
 
 @Injectable()
 export class SettingsProvider {
@@ -37,6 +38,9 @@ export class SettingsProvider {
 }
 
 
-export function settingsProviderFactory(provider: SettingsProvider) {
-  return () => provider.load();
+export function settingsProviderFactory(provider: SettingsProvider, dateSvc: DateAdapterService) {
+  return () => {
+    dateSvc.setFirstDayOfWeek(1);
+    provider.load();
+  }
 }

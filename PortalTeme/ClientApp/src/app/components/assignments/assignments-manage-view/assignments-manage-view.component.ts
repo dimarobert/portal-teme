@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Inject } from '@angular/core';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { take } from 'rxjs/operators';
 import { Assignment } from '../../../models/assignment.model';
@@ -10,6 +10,7 @@ import { CustomItemAccessor } from '../../../models/item.accesor';
 import { ModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MAT_DATE_LOCALE } from '@angular/material';
 
 @Component({
   selector: 'app-assignments-manage-view',
@@ -28,7 +29,7 @@ export class AssignmentsManageViewComponent implements OnInit {
 
   @ViewChild('assignmentsTable') assignmentsTable: DataTableComponent;
 
-  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory, private sanitizer: DomSanitizer) { }
+  constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory, @Inject(MAT_DATE_LOCALE) private matDateLocale: string) { }
 
   ngOnInit() {
     this.modelAccessor = new BaseModelAccessor();
@@ -46,25 +47,19 @@ export class AssignmentsManageViewComponent implements OnInit {
       }, {
         id: nameof<Assignment>('startDate'),
         title: 'Start Date',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => {
-          const date = new Date(item.startDate);
-          return date.toLocaleDateString();
-        })
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.startDate.toLocaleDateString(this.matDateLocale))
       }, {
         id: nameof<Assignment>('endDate'),
         title: 'End Date',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => {
-          const date = new Date(item.endDate);
-          return date.toLocaleDateString();
-        })
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.endDate.toLocaleDateString(this.matDateLocale))
       }, {
         id: 'createdOn',
         title: 'Created on',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => item.dateAdded.toLocaleDateString())
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.dateAdded.toLocaleDateString(this.matDateLocale))
       }, {
         id: 'lastUpdate',
         title: 'Last updated',
-        itemAccessor: new CustomItemAccessor<Assignment>(item => item.lastUpdated.toLocaleDateString())
+        itemAccessor: new CustomItemAccessor<Assignment>(item => item.lastUpdated.toLocaleDateString(this.matDateLocale))
       }
     ]);
 
