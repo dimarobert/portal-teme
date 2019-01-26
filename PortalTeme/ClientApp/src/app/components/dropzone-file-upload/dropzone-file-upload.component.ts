@@ -1,5 +1,6 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Observable, of, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { map, last, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dropzone-file-upload',
@@ -8,10 +9,15 @@ import { Observable, of, BehaviorSubject, ReplaySubject } from 'rxjs';
 })
 export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
 
-  constructor() { }
+  @Input() uploadUrl: string;
+
+  constructor(private http: HttpClient) { }
 
   protected files: FileData[] = [];
   hovered: boolean;
+  uploading: boolean;
+  progress: number = 0;
+  total: number = 0;
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
 
@@ -167,9 +173,36 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
   }
 
   uploadFiles(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      reject('not implemented');
-    });
+    if (!this.uploadUrl)
+      throw new Error('No upload url specified. Cannot upload files.');
+
+    const formData = new FormData();
+    for (const file of this.files) {
+      formData.append(file.file.name, file.file, file.file.name);
+    }
+    this.uploading = true;
+    return this.http.post(this.uploadUrl, formData, {
+      reportProgress: true
+    })
+      .pipe(
+        tap((event: HttpEvent<any>) => {
+          switch (event.type) {
+            case HttpEventType.UploadProgress:
+              this.progress = event.loaded;
+              this.total = event.total;
+              break;
+          }
+        }),
+        last(),
+        map(_ => { }))
+      .toPromise();
+  }
+
+  computeProgress(): number {
+    if (this.progress == 0 || this.total == 0)
+      return 0;
+
+    return this.progress / this.total * 100;
   }
 
   getRegexMatches(regex: RegExp, input: string): string[][] {
