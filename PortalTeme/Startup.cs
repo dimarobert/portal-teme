@@ -25,6 +25,7 @@ using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
 using PortalTeme.Data.Identity;
 using PortalTeme.Extensions.CacheExtensions;
+using PortalTeme.HostedServices;
 using PortalTeme.Routing;
 using PortalTeme.Services;
 using System;
@@ -52,6 +53,13 @@ namespace PortalTeme {
 
             services.AddAntiforgery();
 
+            services.AddHostedService<TempFilesCleaner>();
+            services.AddSingleton<IFileProvider, ContentRootFileProvider>();
+
+            // TODO: This could be registered as singleton
+            services.AddDbContext<FilesContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("FilesContextConnection"))
+            );
             services.AddDbContext<PortalTemeContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("PortalTemeContextConnection"))
             );
@@ -68,6 +76,9 @@ namespace PortalTeme {
                 .AddEntityFrameworkStores<IdentityContext>();
 
             services.AddSingleton<IUrlSlugService, UrlSlugService>();
+            services.AddSingleton<ITempFilesRepository, InMemoryTempFilesRepository>();
+
+            services.AddScoped<IFileService, DbFileService>();
 
             services.AddScoped<ICourseMapper, CourseMapper>();
             services.AddScoped<IAssignmentMapper, AssignmentMapper>();

@@ -10,6 +10,9 @@ using System.Text;
 namespace PortalTeme.Data.Migrations {
     public class MigrationsContext : IdentityContext {
 
+        public DbSet<FileInfo> Files { get; set; }
+
+
         public DbSet<StudentInfo> Students { get; set; }
 
         public DbSet<AcademicYear> AcademicYears { get; set; }

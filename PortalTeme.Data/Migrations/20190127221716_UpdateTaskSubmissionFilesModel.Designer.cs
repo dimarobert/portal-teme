@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortalTeme.Data.Migrations;
 
-namespace PortalTeme.Auth.Migrations
+namespace PortalTeme.Data.Migrations
 {
     [DbContext(typeof(MigrationsContext))]
-    partial class MigrationsContextModelSnapshot : ModelSnapshot
+    [Migration("20190127221716_UpdateTaskSubmissionFilesModel")]
+    partial class UpdateTaskSubmissionFilesModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

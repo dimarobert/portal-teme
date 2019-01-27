@@ -5,11 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
 using PortalTeme.API.Models.Assignments;
+using PortalTeme.API.Models.Tasks;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using PortalTeme.Data.Models.Assignments.Projections;
+using PortalTeme.Helpers;
+using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +27,17 @@ namespace PortalTeme.API.Controllers {
         private readonly PortalTemeContext _context;
         private readonly UserManager<User> userManager;
         private readonly ITaskMapper taskMapper;
+        private readonly IFileService fileProvider;
         private readonly IAuthorizationService authorizationService;
 
-        public StudentAssignedTasksController(PortalTemeContext context, UserManager<User> userManager, ITaskMapper taskMapper, IAuthorizationService authorizationService) {
+        public StudentAssignedTasksController(PortalTemeContext context, UserManager<User> userManager,
+            ITaskMapper taskMapper,
+            IFileService fileService,
+            IAuthorizationService authorizationService) {
             _context = context;
             this.userManager = userManager;
             this.taskMapper = taskMapper;
+            fileProvider = fileService;
             this.authorizationService = authorizationService;
         }
 
@@ -71,6 +79,7 @@ namespace PortalTeme.API.Controllers {
             var studentTask = await _context.StudentAssignedTasks
                 .Where(sat => sat.StudentId == studentId && sat.Task.AssignmentId == assignmentId)
                 .Select(sat => new StudentTaskProjection {
+                    Id = sat.Id,
                     Task = sat.Task,
                     StudentId = sat.StudentId,
                     Student = sat.Student,
@@ -198,6 +207,52 @@ namespace PortalTeme.API.Controllers {
                 .LoadAsync();
 
             return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, taskMapper.MapStudentAssignedTask(studentTask));
+        }
+
+        // POST: api/StudentAssignedTasks/5/Assign
+        [HttpPost("{taskId}/Submit")]
+        public async Task<ActionResult<StudentAssignedTaskDTO>> PostSubmitTask(CreateTaskSubmissionRequest request) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var studentTask = await _context.StudentAssignedTasks
+                .FirstOrDefaultAsync(st => st.Id == request.StudentTaskId);
+
+            if (studentTask is null)
+                return NotFound();
+
+            if (studentTask.StudentId != userManager.GetUserId(User))
+                return Forbid();
+
+            var submission = new TaskSubmission {
+                AssignedTask = studentTask,
+                DateAdded = DateTime.Now,
+                Files = new List<TaskSubmissionFile>()
+            };
+
+            _context.TaskSubmissions.Add(submission);
+            await _context.SaveChangesAsync();
+
+            foreach (var uploadedFile in request.UploadedFiles) {
+
+                var submissionFolder = $"StudentSubmissions/{studentTask.StudentId}/{studentTask.Id}/{submission.Id}";
+
+                // TODO: validate file extension.
+                var (fileName, extension) = FilesHelpers.GetFileNameAndExtension(uploadedFile.OriginalName);
+
+                var file = await fileProvider.MoveTempFile(uploadedFile.TempFileName, submissionFolder, uploadedFile.OriginalName);
+
+                submission.Files.Add(new TaskSubmissionFile {
+                    FileId = file.Id,
+                    FileType = TaskSubmissionFileType.SourceCode,
+                    TaskSubmission = submission
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return null;
         }
 
         //// DELETE: api/AssignmentEntries/5

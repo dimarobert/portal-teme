@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
-import { map, last, tap } from 'rxjs/operators';
+import { HttpClient, HttpEvent, HttpEventType, HttpRequest } from '@angular/common/http';
+import { map, last, tap, take, first } from 'rxjs/operators';
+import { UploadedFile } from './upload-file.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dropzone-file-upload',
@@ -16,7 +18,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
   protected files: FileData[] = [];
   hovered: boolean;
   uploading: boolean;
-  progress: number = 0;
+  progress: BehaviorSubject<number> = new BehaviorSubject(0);
   total: number = 0;
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
@@ -91,21 +93,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
   }
 
   getFileSize(file: FileData): string {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let size = file.file.size;
-    let unit = 0;
-    while (size >= 1024) {
-      size /= 1024.0;
-      unit++;
-    }
-
-    let sizeStr = '';
-    if (unit > 1)
-      sizeStr = size.toFixed(2);
-    else
-      sizeStr = Math.floor(size).toString();
-
-    return `${sizeStr} ${units[unit]}`;
+    return this.getFriendlySize(file.file.size);
   }
 
   getFileName(file: FileData): string {
@@ -172,7 +160,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
     fileReader.readAsDataURL(file.file);
   }
 
-  uploadFiles(): Promise<void> {
+  uploadFiles(): Promise<UploadedFile[]> {
     if (!this.uploadUrl)
       throw new Error('No upload url specified. Cannot upload files.');
 
@@ -181,28 +169,54 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
       formData.append(file.file.name, file.file, file.file.name);
     }
     this.uploading = true;
-    return this.http.post(this.uploadUrl, formData, {
+    const uploadRequest = new HttpRequest('POST', this.uploadUrl, formData, {
       reportProgress: true
     })
+    return this.http.request<UploadedFile[]>(uploadRequest)
       .pipe(
-        tap((event: HttpEvent<any>) => {
+        tap((event: HttpEvent<UploadedFile[]>) => {
           switch (event.type) {
             case HttpEventType.UploadProgress:
-              this.progress = event.loaded;
+              this.progress.next(event.loaded);
               this.total = event.total;
               break;
           }
         }),
-        last(),
-        map(_ => { }))
-      .toPromise();
+        first(event => event.type === HttpEventType.Response),
+        map(event => {
+          if (event.type === HttpEventType.Response)
+            return event.body;
+          return [];
+        }),
+        take(1)
+      ).toPromise();
   }
 
-  computeProgress(): number {
-    if (this.progress == 0 || this.total == 0)
-      return 0;
+  computeProgress(): Observable<number> {
+    return this.progress
+      .pipe(map(currentValue => {
+        if (currentValue == 0 || this.total == 0)
+          return 0;
 
-    return this.progress / this.total * 100;
+        return (currentValue / this.total) * 100;
+      }));
+  }
+
+  getFriendlySize(size: number) {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let unit = 0;
+    while (size >= 1024) {
+      size /= 1024.0;
+      unit++;
+    }
+
+    let sizeStr = '';
+    if (unit > 1)
+      sizeStr = size.toFixed(2);
+    else
+      sizeStr = Math.floor(size).toString();
+
+    return `${sizeStr} ${units[unit]}`;
   }
 
   getRegexMatches(regex: RegExp, input: string): string[][] {

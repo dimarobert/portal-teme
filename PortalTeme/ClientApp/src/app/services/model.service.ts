@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask, CreateTaskSubmissionRequest } from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
@@ -63,6 +63,7 @@ export class ModelServiceFactory {
   public get studentAssignedTasks(): StudentAssignedTasksService {
     return this._studentAssignedTasksService || (this._studentAssignedTasksService = new StudentAssignedTasksService('StudentAssignedTasks', this.http));
   }
+
 }
 
 class AbstractModelService {
@@ -274,6 +275,11 @@ export class StudentAssignedTasksService extends AbstractModelService {
       .toPromise();
   }
 
+  public submitTask(submitRequest: CreateTaskSubmissionRequest): Promise<void> {
+    return this.http.post<void>(`${this.apiRoot}/${submitRequest.studentTaskId}/submit`, submitRequest)
+      .pipe(take(1))
+      .toPromise();
+  }
 }
 
 

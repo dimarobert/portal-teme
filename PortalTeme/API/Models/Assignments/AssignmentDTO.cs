@@ -74,6 +74,8 @@ namespace PortalTeme.API.Models.Assignments {
 
     public class StudentAssignedTaskDTO {
 
+        public Guid Id { get; set; }
+
         public AssignmentTaskDTO Task { get; set; }
 
         [Required(AllowEmptyStrings = false)]

@@ -1,5 +1,6 @@
 import { EditModel, BaseModel } from './base.model';
 import { CourseRef, User } from './course.model';
+import { UploadedFile } from '../components/dropzone-file-upload/upload-file.model';
 
 export interface UserAssignment extends Assignment {
     assignedTask: AssignmentTask;
@@ -87,6 +88,11 @@ export enum StudentAssignedTaskState {
     Submitted,
     Reviewed,
     Graded
+}
+
+export interface CreateTaskSubmissionRequest {
+    studentTaskId: string;
+    uploadedFiles: UploadedFile[];
 }
 
 export interface TaskSubmission extends EditModel {

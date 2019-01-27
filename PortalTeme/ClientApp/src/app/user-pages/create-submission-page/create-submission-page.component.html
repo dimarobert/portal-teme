@@ -1,5 +1,5 @@
-<app-dropzone-file-upload #dropzone [uploadUrl]="">
+<app-dropzone-file-upload #dropzone [uploadUrl]="uploadUrl">
 </app-dropzone-file-upload>
 
 <br />
-<button mat-raised-button color="accent" [disabled]="dropzone.uploading" (click)="dropzone.uploadFiles()">Submit</button>
+<button mat-raised-button color="accent" [disabled]="dropzone.uploading" (click)="submit()">Submit</button>
