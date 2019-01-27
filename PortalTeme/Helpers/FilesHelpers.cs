@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PortalTeme.Helpers
-{
-    public static class FilesHelpers
-    {
-        
+namespace PortalTeme.Helpers {
+    public static class FilesHelpers {
+
         public static (string fileName, string extension) GetFileNameAndExtension(string fileNameWithExt) {
             if (string.IsNullOrWhiteSpace(fileNameWithExt))
                 throw new ArgumentException("Invalid file name provided.", nameof(fileNameWithExt));
@@ -19,7 +17,7 @@ namespace PortalTeme.Helpers
 
             return (
                 fileNameWithExt.Substring(0, extSeparatorPosition),
-                fileNameWithExt.Substring(extSeparatorPosition)
+                fileNameWithExt.Substring(extSeparatorPosition + 1)
             );
         }
 

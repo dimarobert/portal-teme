@@ -101,6 +101,11 @@ namespace PortalTeme.API.Controllers {
                 .Reference(t => t.User)
                 .LoadAsync();
 
+            await _context.TaskSubmissions
+                .Where(t => studentTask.Submissions.Contains(t))
+                .Include(s => s.Files)
+                .ToListAsync();
+
             return taskMapper.MapStudentAssignedTask(studentTask);
         }
 

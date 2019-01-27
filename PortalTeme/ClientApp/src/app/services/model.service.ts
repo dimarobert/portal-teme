@@ -257,7 +257,11 @@ export class StudentAssignedTasksService extends AbstractModelService {
    * @param assignmentId 
    */
   public getAssignedTask(assignmentId: string): Observable<StudentAssignedTask> {
-    return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`);
+    return this.http.get<StudentAssignedTask>(`${this.apiRoot}/${assignmentId}`)
+      .pipe(map(studentTask => {
+        studentTask.submissions.forEach(sub => { sub.dateAdded = new Date(sub.dateAdded); })
+        return studentTask;
+      }));
   }
 
   /**
