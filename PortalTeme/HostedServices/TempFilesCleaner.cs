@@ -40,6 +40,9 @@ namespace PortalTeme.HostedServices {
 
         public Task StopAsync(CancellationToken cancellationToken) {
             _timer?.Change(Timeout.Infinite, 0);
+
+            // try to clear all temp files before stopping.
+            tempFilesRepository.ClearAll();
             return Task.CompletedTask;
         }
 

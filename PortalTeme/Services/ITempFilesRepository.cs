@@ -13,6 +13,7 @@ namespace PortalTeme.Services {
         TempFileInfo Dequeue();
         List<TempFileInfo> GetExpired();
         void ClearUntil(DateTime untilDate);
+        void ClearAll();
     }
 
     public class InMemoryTempFilesRepository : ITempFilesRepository {
@@ -81,6 +82,15 @@ namespace PortalTeme.Services {
                 .TakeWhile(kvp => kvp.Key < DateTime.UtcNow)
                 .Select(kvp => kvp.Value)
                 .ToList();
+        }
+
+        public void ClearAll() {
+            locker.EnterWriteLock();
+            try {
+                ClearUntilInternal(DateTime.MaxValue);
+            } finally {
+                locker.ExitWriteLock();
+            }
         }
 
         public void ClearUntil(DateTime untilDate) {
