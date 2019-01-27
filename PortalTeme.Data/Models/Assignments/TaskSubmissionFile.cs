@@ -8,11 +8,11 @@ namespace PortalTeme.Data.Models {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        [Required]
-        public TaskSubmissionFileType FileType { get; set; }
+        public FileInfo File { get; set; }
+        public Guid FileId { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public TaskSubmissionFileType FileType { get; set; }
 
         public string Description { get; set; }
 

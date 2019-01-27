@@ -14,5 +14,9 @@ namespace PortalTeme.Data.Models {
         public List<TaskSubmissionFile> Files { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        public TaskSubmission() {
+            Files = new List<TaskSubmissionFile>();
+        }
     }
 }

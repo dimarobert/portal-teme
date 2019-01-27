@@ -1,6 +1,11 @@
 <div class="dropzone" (dragenter)="onDragStart($event)" (dragend)="onDragEnd($event)" (dragover)="onDragOver($event)"
   (drop)="onDrop($event)" (click)="onClick($event)" [class.hovered]="hovered">
 
+  <div *ngIf="uploading">
+    <mat-progress-bar [value]="computeProgress() | async"></mat-progress-bar>
+    <div class="text-right">{{getFriendlySize(progress | async)}} / {{getFriendlySize(total)}}</div>
+  </div>
+
   <div id="add-files-handle" class="add-files-text">Click to add files</div>
 
   <div class="files">
@@ -24,8 +29,4 @@
 
   <input #fileInput type="file" multiple class="hidden-file-input" (change)="onFileInputChange($event)" />
 
-  <div *ngIf="uploading">
-    <div class="text-right">{{progress}} / {{total}}</div>
-    <mat-progress-bar [value]="computeProgress()"></mat-progress-bar>
-  </div>
 </div>

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortalTeme.Data.Migrations;
 
-namespace PortalTeme.Auth.Migrations
+namespace PortalTeme.Data.Migrations
 {
     [DbContext(typeof(MigrationsContext))]
-    partial class MigrationsContextModelSnapshot : ModelSnapshot
+    [Migration("20190127164753_AddFiles")]
+    partial class AddFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -514,15 +516,14 @@ namespace PortalTeme.Auth.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<Guid>("FileId");
-
                     b.Property<int>("FileType");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<Guid?>("TaskSubmissionId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileId");
 
                     b.HasIndex("TaskSubmissionId");
 
@@ -707,11 +708,6 @@ namespace PortalTeme.Auth.Migrations
 
             modelBuilder.Entity("PortalTeme.Data.Models.TaskSubmissionFile", b =>
                 {
-                    b.HasOne("PortalTeme.Data.Models.FileInfo", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("PortalTeme.Data.Models.TaskSubmission", "TaskSubmission")
                         .WithMany("Files")
                         .HasForeignKey("TaskSubmissionId");
