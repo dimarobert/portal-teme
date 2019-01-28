@@ -11,6 +11,7 @@ export class AssignmentTasksEditComponent implements OnInit, OnDestroy {
 
   @Input() tasks: Observable<AssignmentTask[]>;
   @Input() assignmentId: string;
+  @Input() isCustomAssigned: boolean;
 
   @Input() create: (newTask: AssignmentTaskEdit) => Promise<AssignmentTask>;
   @Input() update: (task: AssignmentTask) => Promise<void>;

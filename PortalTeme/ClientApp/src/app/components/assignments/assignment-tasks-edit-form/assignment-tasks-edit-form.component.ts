@@ -19,6 +19,7 @@ export class AssignmentTasksEditFormComponent implements OnInit {
   config: EditorConfig;
 
   @Input() assignmentId: string;
+  @Input() isCustomAssigned: boolean;
   @Input() task: AssignmentTask;
   @Input() submitClick: (task: AssignmentTaskEdit) => Promise<void>;
   @Input() deleteTask: (task: AssignmentTaskEdit) => void;
@@ -37,6 +38,8 @@ export class AssignmentTasksEditFormComponent implements OnInit {
 
     this.taskForm = new FormGroup({});
     this.taskForm.addControl(nameof<AssignmentTask>('name'), new FormControl());
+    if (this.isCustomAssigned)
+      this.taskForm.addControl(/*nameof<AssignmentTask>(*/'assignTo'/*)*/, new FormControl());
     this.taskForm.addControl(nameof<AssignmentTask>('description'), new FormControl());
 
     this.taskForm.valueChanges.subscribe(val => {
@@ -59,6 +62,10 @@ export class AssignmentTasksEditFormComponent implements OnInit {
 
   get name(): AbstractControl {
     return this.taskForm.get(nameof<AssignmentTask>('name'));
+  }
+
+  get assignTo(): AbstractControl {
+    return this.taskForm.get(/*nameof<AssignmentTask>(*/'assignTo'/*)*/);
   }
 
   get description(): AbstractControl {
