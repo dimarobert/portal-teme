@@ -4,7 +4,7 @@
       <mat-panel-title>{{task.name}}</mat-panel-title>
     </mat-expansion-panel-header>
 
-    <app-assignment-tasks-edit-form [task]="task" [assignmentId]="assignmentId" [submitClick]="submitClick()" [deleteTask]="deleteTask()"></app-assignment-tasks-edit-form>
+    <app-assignment-tasks-edit-form [task]="task" [assignmentId]="assignmentId" [isCustomAssigned]="isCustomAssigned" [submitClick]="submitClick()" [deleteTask]="deleteTask()"></app-assignment-tasks-edit-form>
 
   </mat-expansion-panel>
 </mat-accordion>

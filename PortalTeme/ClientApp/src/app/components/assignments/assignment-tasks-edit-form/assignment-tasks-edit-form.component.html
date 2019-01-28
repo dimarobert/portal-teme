@@ -6,6 +6,16 @@
     <mat-error *ngIf="name.hasError('required')">The assignment name is required.</mat-error>
   </mat-form-field>
 
+  <!-- assign to -->
+  <mat-form-field class="full-width" *ngIf="isCustomAssigned">
+    <mat-select [formControl]="assignTo" placeholder="Assign To" required>
+      <!-- <mat-option *ngFor="let option of courses | async" [value]="option.id">
+              {{option.name}}
+          </mat-option> -->
+    </mat-select>
+    <mat-error *ngIf="assignTo.hasError('required')">The task must be assigned.</mat-error>
+  </mat-form-field>
+
   <!-- description -->
   <div class="full-width">
     <label>Assignment details:</label>

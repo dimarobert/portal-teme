@@ -39,6 +39,7 @@ export class AssignmentEditTasksPageComponent implements OnInit {
     this.getData();
 
   }
+
   getData(): any {
     this.assignment = new BehaviorSubject(null);
     this.routeSub = this.route.paramMap
@@ -58,6 +59,11 @@ export class AssignmentEditTasksPageComponent implements OnInit {
 
   get tasks(): Observable<AssignmentTask[]> {
     return this.assignment.pipe(map(a => a.tasks));
+  }
+
+  get isCustomAssigned(): Observable<boolean> {
+    return this.assignment
+      .pipe(map(a => a.type == AssignmentType.CustomAssignedTasks));
   }
 
   create(): (newTask: AssignmentTaskEdit) => Promise<void> {
