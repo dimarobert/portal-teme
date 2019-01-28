@@ -27,7 +27,7 @@ namespace PortalTeme.API.Controllers {
         private readonly PortalTemeContext _context;
         private readonly UserManager<User> userManager;
         private readonly ITaskMapper taskMapper;
-        private readonly IFileService fileProvider;
+        private readonly IFileService fileService;
         private readonly IAuthorizationService authorizationService;
 
         public StudentAssignedTasksController(PortalTemeContext context, UserManager<User> userManager,
@@ -37,7 +37,7 @@ namespace PortalTeme.API.Controllers {
             _context = context;
             this.userManager = userManager;
             this.taskMapper = taskMapper;
-            fileProvider = fileService;
+            this.fileService = fileService;
             this.authorizationService = authorizationService;
         }
 
@@ -103,10 +103,10 @@ namespace PortalTeme.API.Controllers {
 
             await _context.TaskSubmissions
                 .Where(t => studentTask.Submissions.Contains(t))
-                .Include(s => s.Files)
+                .Include(s => s.Files).ThenInclude(f => f.File)
                 .ToListAsync();
 
-            return taskMapper.MapStudentAssignedTask(studentTask);
+            return await taskMapper.MapStudentAssignedTask(studentTask);
         }
 
         //// PUT: api/AssignmentEntries/5
@@ -211,7 +211,7 @@ namespace PortalTeme.API.Controllers {
                 .Include(sa => sa.Student).ThenInclude(s => s.User)
                 .LoadAsync();
 
-            return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, taskMapper.MapStudentAssignedTask(studentTask));
+            return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, await taskMapper.MapStudentAssignedTask(studentTask));
         }
 
         // POST: api/StudentAssignedTasks/5/Assign
@@ -246,7 +246,7 @@ namespace PortalTeme.API.Controllers {
                 // TODO: validate file extension.
                 var (fileName, extension) = FilesHelpers.GetFileNameAndExtension(uploadedFile.OriginalName);
 
-                var file = await fileProvider.MoveTempFile(uploadedFile.TempFileName, submissionFolder, uploadedFile.OriginalName);
+                var file = await fileService.MoveTempFile(uploadedFile.TempFileName, submissionFolder, uploadedFile.OriginalName);
 
                 submission.Files.Add(new TaskSubmissionFile {
                     FileId = file.Id,

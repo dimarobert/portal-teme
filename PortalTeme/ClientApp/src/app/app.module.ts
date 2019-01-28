@@ -65,6 +65,7 @@ import { AssignmentTasksEditFormComponent } from './components/assignments/assig
 import { DateAdapterService } from './modules/AngularMaterialImports/date.adapter';
 import { CreateSubmissionPageComponent } from './user-pages/create-submission-page/create-submission-page.component';
 import { DropzoneFileUploadComponent } from './components/dropzone-file-upload/dropzone-file-upload.component';
+import { DiskSizePipe } from './pipes/disk-size.pipe';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -93,6 +94,7 @@ const httpInterceptorProviders: Provider[] = [
     KeysPipe,
     EnumKeysPipe,
     SafeHtmlPipe,
+    DiskSizePipe,
 
     CoursesRouterComponent,
     CourseEditRouterComponent,

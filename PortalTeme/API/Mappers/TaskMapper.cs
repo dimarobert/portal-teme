@@ -2,6 +2,7 @@
 using PortalTeme.API.Models.Assignments;
 using PortalTeme.Data.Models;
 using PortalTeme.Data.Models.Assignments.Projections;
+using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,23 @@ namespace PortalTeme.API.Mappers {
         AssignmentTask MapTaskEditDTO(AssignmentTaskEditDTO task);
         AssignmentTask MapTaskDTO(AssignmentTaskDTO task);
 
-        StudentAssignedTaskDTO MapStudentAssignedTask(StudentTaskProjection studentTask);
+        Task<StudentAssignedTaskDTO> MapStudentAssignedTask(StudentTaskProjection studentTask);
     }
 
     public class TaskMapper : ITaskMapper {
         private readonly ICourseMapper courseMapper;
+        private readonly IFileService fileService;
 
-        public TaskMapper(ICourseMapper courseMapper) {
+        public TaskMapper(ICourseMapper courseMapper, IFileService fileService) {
             this.courseMapper = courseMapper;
+            this.fileService = fileService;
         }
 
-        public StudentAssignedTaskDTO MapStudentAssignedTask(StudentTaskProjection studentTask) {
+        public async Task<StudentAssignedTaskDTO> MapStudentAssignedTask(StudentTaskProjection studentTask) {
+            var submissions = new List<TaskSubmissionDTO>();
+            foreach (var sub in studentTask.Submissions)
+                submissions.Add(await MapSubmission(studentTask.Id, sub));
+
             return new StudentAssignedTaskDTO {
                 Id = studentTask.Id,
                 StudentId = studentTask.StudentId,
@@ -34,7 +41,7 @@ namespace PortalTeme.API.Mappers {
                 Task = MapTask(studentTask.Task),
                 Grading = studentTask.Grading,
                 State = studentTask.State,
-                Submissions = studentTask.Submissions.Select(sub => MapSubmission(studentTask.Id, sub)).ToList()
+                Submissions = submissions
             };
         }
 
@@ -66,18 +73,26 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        private TaskSubmissionDTO MapSubmission(Guid studentTaskId, TaskSubmission submission) {
+        private async Task<TaskSubmissionDTO> MapSubmission(Guid studentTaskId, TaskSubmission submission) {
+            var files = new List<TaskSubmissionFileDTO>();
+            foreach (var file in submission.Files)
+                files.Add(await MapSubmissionFile(file));
+
             return new TaskSubmissionDTO {
                 Id = submission.Id,
                 StudentTaskId = studentTaskId,
                 DateAdded = submission.DateAdded,
-                Files = submission.Files.Select(file => MapSubmissionFile(file)).ToList()
+                Files = files
             };
         }
 
-        private TaskSubmissionFileDTO MapSubmissionFile(TaskSubmissionFile file) {
+        private async Task<TaskSubmissionFileDTO> MapSubmissionFile(TaskSubmissionFile file) {
+            var fileSize = await fileService.GetFileSize(file.File);
             return new TaskSubmissionFileDTO {
                 Id = file.Id,
+                Name = file.File.FileName,
+                Extension = file.File.Extension,
+                Size = fileSize,
                 Description = file.Description,
                 FileType = file.FileType
             };

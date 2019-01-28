@@ -3,13 +3,13 @@
 
   <div *ngIf="uploading">
     <mat-progress-bar [value]="computeProgress() | async"></mat-progress-bar>
-    <div class="text-right">{{getFriendlySize(progress | async)}} / {{getFriendlySize(total)}}</div>
+    <div class="text-right">{{progress | async | diskSize}} / {{total | diskSize}}</div>
   </div>
 
   <div id="add-files-handle" class="add-files-text">Click to add files</div>
 
   <div class="files">
-    <div class="file-container" *ngFor="let file of files">
+    <div class="file-container" *ngFor="let file of _files">
 
       <img *ngIf="isImage(file) && file.dataURL" class="thumbnail" [src]="file.dataURL" />
       <div *ngIf="!isImage(file)" class="doc-container">
@@ -17,7 +17,7 @@
       </div>
 
       <div class="file-details">
-        <div [innerText]="getFileSize(file)"></div>
+        <div [innerText]="file.file.size | diskSize"></div>
         <div [innerHTML]="getFileName(file)"></div>
         <button mat-icon-button color="warn" class="remove-button" (click)="removeFile(file)">
           <mat-icon>clear</mat-icon>

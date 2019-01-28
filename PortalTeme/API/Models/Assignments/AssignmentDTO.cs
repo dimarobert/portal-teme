@@ -106,9 +106,10 @@ namespace PortalTeme.API.Models.Assignments {
 
         public TaskSubmissionFileType FileType { get; set; }
 
-        public string Name { get; set; }
-
         public string Description { get; set; }
 
+        public string Name { get; set; }
+        public string Extension { get; set; }
+        public long Size { get; set; }
     }
 }

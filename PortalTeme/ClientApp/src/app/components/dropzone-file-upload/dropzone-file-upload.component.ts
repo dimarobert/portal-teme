@@ -15,7 +15,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
 
   constructor(private http: HttpClient) { }
 
-  protected files: FileData[] = [];
+  _files: FileData[] = [];
   hovered: boolean;
   uploading: boolean;
   progress: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -81,19 +81,15 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
           file: file,
           dataURL: ''
         };
-        this.files.push(newFileData);
+        this._files.push(newFileData);
         this.createThumbnail(newFileData);
       }
     }
   }
 
   removeFile(file: FileData) {
-    const idx = this.files.indexOf(file);
-    this.files.splice(idx, 1);
-  }
-
-  getFileSize(file: FileData): string {
-    return this.getFriendlySize(file.file.size);
+    const idx = this._files.indexOf(file);
+    this._files.splice(idx, 1);
   }
 
   getFileName(file: FileData): string {
@@ -165,7 +161,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
       throw new Error('No upload url specified. Cannot upload files.');
 
     const formData = new FormData();
-    for (const file of this.files) {
+    for (const file of this._files) {
       formData.append(file.file.name, file.file, file.file.name);
     }
     this.uploading = true;
@@ -200,23 +196,6 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
 
         return (currentValue / this.total) * 100;
       }));
-  }
-
-  getFriendlySize(size: number) {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let unit = 0;
-    while (size >= 1024) {
-      size /= 1024.0;
-      unit++;
-    }
-
-    let sizeStr = '';
-    if (unit > 1)
-      sizeStr = size.toFixed(2);
-    else
-      sizeStr = Math.floor(size).toString();
-
-    return `${sizeStr} ${units[unit]}`;
   }
 
   getRegexMatches(regex: RegExp, input: string): string[][] {

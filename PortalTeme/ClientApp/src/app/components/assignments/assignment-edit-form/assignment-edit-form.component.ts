@@ -8,7 +8,7 @@ import { EditorConfig } from '../../../../typings/index';
 
 import { nameof } from '../../../type-guards/nameof.guard';
 
-import AssignmentTypeText, { Assignment, AssignmentEdit, AssignmentType } from '../../../models/assignment.model';
+import { AssignmentTypeText, Assignment, AssignmentEdit, AssignmentType } from '../../../models/assignment.model';
 
 @Component({
   selector: 'app-assignment-edit-form',

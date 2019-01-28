@@ -24,6 +24,7 @@ namespace PortalTeme.Services {
         Task<string> CreateTempFile(Stream stream);
 
         Task<Data.Models.FileInfo> MoveTempFile(string tempFileName, string relativeFolderPath, string fileName);
+        Task<long> GetFileSize(Data.Models.FileInfo file);
     }
 
     public class DbFileService : IFileService {
@@ -70,6 +71,11 @@ namespace PortalTeme.Services {
             return await context.Files.FindAsync(fileId);
         }
 
+        public async Task<long> GetFileSize(Data.Models.FileInfo file) {
+            var fileInfo = await fileProvider.GetFile(file.RelativeFolderPath, file.FileName, file.Extension);
+            return fileInfo.Length;
+        }
+
         public async Task DeleteFile(Guid fileId) {
             var file = await context.Files.FindAsync(fileId);
 
@@ -106,6 +112,6 @@ namespace PortalTeme.Services {
             await context.SaveChangesAsync();
             return file;
         }
-
+      
     }
 }
