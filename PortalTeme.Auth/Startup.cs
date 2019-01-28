@@ -19,6 +19,7 @@ using PortalTeme.Data.Identity;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace PortalTeme.Auth {
@@ -65,15 +66,17 @@ namespace PortalTeme.Auth {
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Admin/", AuthorizationConstants.AdministratorPolicy);
                 });
 
+            var developerTempCert = Path.Combine(Configuration[Microsoft.Extensions.Hosting.HostDefaults.ContentRootKey], "tempkey.rsa");
+
             services.AddIdentityServer(options => {
                 options.UserInteraction.LoginUrl = "/Identity/Account/Login";
                 options.UserInteraction.LogoutUrl = "/Identity/Account/Logout";
             })
-                .AddDeveloperSigningCredential() // TODO: Replace with .AddSigningCredential()
+                .AddDeveloperSigningCredential(true, developerTempCert) // TODO: Replace with .AddSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
-                .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
-                .AddInMemoryClients(IdentityServerConfig.GetClients())
+                .AddInMemoryApiResources(IdentityServerConfig.GetApiResources(Configuration))
+                .AddInMemoryClients(IdentityServerConfig.GetClients(Configuration))
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
 

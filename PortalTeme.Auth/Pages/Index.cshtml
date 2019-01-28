@@ -1,5 +1,4 @@
 ﻿@page
-@using PortalTeme.Common.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using PortalTeme.Common.Authorization
 @inject IAuthorizationService AuthorizationService
@@ -13,4 +12,4 @@
     <h6 class="text-success">You are an administrator of the platform. You can manage the authentication and authorization settings in the <a asp-area="Identity" asp-page="/Admin/Index">Admin</a> page.</h6>
 }
 
-<a class="btn btn-outline-info" href="@AuthenticationConstants.AngularAppRootUrl">Back to the app</a>
+<a class="btn btn-outline-info" href="@Model.AngularAppUri">Back to the app</a>
