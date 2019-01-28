@@ -1,4 +1,4 @@
-import { EditModel, BaseModel } from './base.model';
+import { EditModel, BaseModel, NamedModel } from './base.model';
 import { CourseRef, User } from './course.model';
 import { UploadedFile } from '../components/dropzone-file-upload/upload-file.model';
 
@@ -38,7 +38,7 @@ export enum AssignmentType {
     CustomAssignedTasks
 }
 
-const AssignmentTypeText = {
+export const AssignmentTypeText = {
     SingleTask: "Single task",
     SingleTaskText: "A single exercise/task will be defined for the entire class to solve.",
 
@@ -52,7 +52,7 @@ const AssignmentTypeText = {
     CustomAssignedTasksText: "Each task will be manually assigned to each student."
 }
 
-export default AssignmentTypeText;
+// export default AssignmentTypeText;
 
 export interface AssignmentTask extends AssignmentTaskEdit {
     id: string;
@@ -101,8 +101,9 @@ export interface TaskSubmission extends EditModel {
     files: TaskSubmissionFile[];
 }
 
-export interface TaskSubmissionFile extends EditModel {
-    name: string;
+export interface TaskSubmissionFile extends NamedModel {
+    extension: string;
+    size: number;
     description: string;
     fileType: TaskSubmissionFileType;
 }
@@ -111,4 +112,10 @@ export enum TaskSubmissionFileType {
     SourceCode,
     Project,
     Essay
+}
+
+export const TaskSubmissionFileTypeText = {
+    SourceCode: "Source code",
+    Project: "Project",
+    Essay: "Essay"
 }

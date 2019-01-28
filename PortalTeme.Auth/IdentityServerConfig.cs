@@ -1,6 +1,7 @@
 ﻿using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using PortalTeme.Common.Authentication;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,15 @@ namespace PortalTeme.Auth {
             };
         }
 
-        public static IEnumerable<ApiResource> GetApiResources() {
+        public static IEnumerable<ApiResource> GetApiResources(IConfiguration configuration) {
+            var angularClientConf = configuration.GetSection("AngularClient");
+            var secret = angularClientConf.GetValue<string>("ApiSecret");
+
             return new List<ApiResource> {
                 new ApiResource {
                     Name = AuthenticationConstants.ApplicationMainApi_Name,
                     ApiSecrets = {
-                        new Secret("apisecret".Sha256())
+                        new Secret(secret.Sha256())
                     },
                     DisplayName = "Portal Teme Main API",
                     Scopes = {
@@ -42,26 +46,30 @@ namespace PortalTeme.Auth {
             };
         }
 
-        public static IEnumerable<Client> GetClients() {
+        public static IEnumerable<Client> GetClients(IConfiguration configuration) {
+            var angularClientConf = configuration.GetSection("AngularClient");
+            var rootUri = angularClientConf.GetValue<string>("AppUri");
+            var secret = angularClientConf.GetValue<string>("Secret");
+
             return new List<Client> {
                 new Client {
                     ClientId = AuthenticationConstants.AngularAppClientId,
                     ClientName = "Portal Teme WebApp",
-                    ClientUri = AuthenticationConstants.AngularAppRootUrl,
+                    ClientUri = rootUri,
 
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     AllowOfflineAccess = true,
                     UpdateAccessTokenClaimsOnRefresh = true,
-
+                    
                     //TODO: enable when the UI is done
                     RequireConsent = false,
 
                     ClientSecrets = {
-                        new Secret("secret".Sha256())
+                        new Secret(secret.Sha256())
                     },
 
-                    RedirectUris = { AuthenticationConstants.AngularAppLoginCallback },
-                    PostLogoutRedirectUris = { AuthenticationConstants.AngularAppLogoutCallback },
+                    RedirectUris = { AuthenticationConstants.AngularAppLoginCallback(rootUri) },
+                    PostLogoutRedirectUris = { AuthenticationConstants.AngularAppLogoutCallback(rootUri) },
 
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,

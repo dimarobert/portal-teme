@@ -74,16 +74,22 @@
         </mat-accordion>
         <hr />
 
-        <p class="text-center" *ngIf="assignedTask.submissions.length == 0">You did not have any submissions for this task.</p>
+        <p class="text-center" *ngIf="assignedTask.submissions.length == 0">You did not have any submissions for this
+          task.</p>
         <mat-accordion [style.width]="'100%'">
           <mat-expansion-panel *ngFor="let submission of assignedTask.submissions">
             <mat-expansion-panel-header>
               <mat-panel-title>Submission {{getDateString(submission.dateAdded)}}</mat-panel-title>
             </mat-expansion-panel-header>
 
-            <pre>
-              {{submission.files | json}}
-            </pre>
+            <mat-list>
+              <h3 mat-subheader>Uploaded files</h3>
+              <mat-list-item *ngFor="let file of submission.files">
+                <mat-icon mat-list-icon>description</mat-icon>
+                <h4 mat-line>{{file.name}} <span class="text-muted">(.{{file.extension}} file)</span></h4>
+                <p mat-line>{{file.size | diskSize}} - {{getFileTypeString(file.fileType)}}</p>
+              </mat-list-item>
+            </mat-list>
 
           </mat-expansion-panel>
         </mat-accordion>

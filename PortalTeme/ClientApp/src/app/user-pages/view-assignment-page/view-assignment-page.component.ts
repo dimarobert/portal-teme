@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, combineLatest } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take } from 'rxjs/operators';
-import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState } from '../../models/assignment.model';
+import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText } from '../../models/assignment.model';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MAT_DATE_LOCALE } from '@angular/material';
 
@@ -119,6 +119,10 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   compareToNow(date: Date): number {
     return this.compareDates(date, Date.now());
+  }
+
+  getFileTypeString(type: TaskSubmissionFileType): string {
+    return TaskSubmissionFileTypeText[TaskSubmissionFileType[type]];
   }
 
   ngOnDestroy(): void {

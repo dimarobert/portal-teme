@@ -7,9 +7,8 @@ namespace PortalTeme.Common.Authentication {
 
         public const string AngularAppClientId = "PortalTemeAngularWebApp";
 
-        public const string AngularAppRootUrl = "https://localhost:44327";
-        public const string AngularAppLoginCallback = AngularAppRootUrl + "/signin-oidc";
-        public const string AngularAppLogoutCallback = AngularAppRootUrl + "/signout-callback-oidc";
+        public static string AngularAppLoginCallback(string rootUri) => rootUri + "/signin-oidc";
+        public static string AngularAppLogoutCallback(string rootUri) => rootUri + "/signout-callback-oidc";
 
         public const string ApplicationMainApi_Name = "PortalTemeApi";
 

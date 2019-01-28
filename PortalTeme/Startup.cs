@@ -19,7 +19,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.API.Mappers;
-using PortalTeme.Authorization;
 using PortalTeme.Common.Authentication;
 using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
@@ -168,6 +167,9 @@ namespace PortalTeme {
         // ConfigureServices
 
         private async Task RunRefreshTokenLogic(CookieValidatePrincipalContext context) {
+            var authorizationSection = Configuration.GetSection("Authorization");
+
+
             if (!context.Principal.Identity.IsAuthenticated)
                 return;
 
@@ -180,7 +182,7 @@ namespace PortalTeme {
             if (expires > DateTime.Now.AddMinutes(-1))
                 return;
 
-            var disco = await DiscoveryClient.GetAsync(AuthorizationConstants.AuthorityUri);
+            var disco = await DiscoveryClient.GetAsync(authorizationSection.GetValue<string>("AuthorityUri"));
             if (disco.IsError)
                 return;
 
@@ -209,13 +211,15 @@ namespace PortalTeme {
         }
 
         private void SetupOpenIdSettings(OpenIdConnectOptions options) {
+            var authorizationSection = Configuration.GetSection("Authorization");
+
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-            options.Authority = AuthorizationConstants.AuthorityUri;
+            options.Authority = authorizationSection.GetValue<string>("AuthorityUri");
             options.RequireHttpsMetadata = false;
 
             options.ClientId = AuthenticationConstants.AngularAppClientId;
-            options.ClientSecret = AuthorizationConstants.ClientSecret;
+            options.ClientSecret = authorizationSection.GetValue<string>("ClientSecret");
             options.ResponseType = "code id_token";
 
             options.SaveTokens = true;
@@ -252,10 +256,12 @@ namespace PortalTeme {
         }
 
         private void SetupIdServerAuth(IdentityServerAuthenticationOptions options) {
-            options.Authority = AuthorizationConstants.AuthorityUri;
+            var authorizationSection = Configuration.GetSection("Authorization");
+
+            options.Authority = authorizationSection.GetValue<string>("AuthorityUri");
 
             options.ApiName = AuthenticationConstants.ApplicationMainApi_Name;
-            options.ApiSecret = AuthorizationConstants.MainApiSecret;
+            options.ApiSecret = authorizationSection.GetValue<string>("MainApiSecret");
 
             options.EnableCaching = true;
             options.CacheDuration = TimeSpan.FromMinutes(10);
@@ -280,6 +286,7 @@ namespace PortalTeme {
                     if (cachedClaims is null) {
 
                         var discoveryClient = new DiscoveryClient(context.Options.Authority);
+                        discoveryClient.Policy.RequireHttps = false; // TODO: Reenable https
                         var doc = await discoveryClient.GetAsync();
                         var userInfoClient = new UserInfoClient(doc.UserInfoEndpoint);
                         var response = await userInfoClient.GetAsync(accessToken.RawData);

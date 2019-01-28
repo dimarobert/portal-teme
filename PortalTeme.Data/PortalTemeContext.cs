@@ -46,6 +46,8 @@ namespace PortalTeme.Data {
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<FileInfo>().ToTable("Files");
+
             modelBuilder.Entity<User>().ToTable("AspNetUsers");
             modelBuilder.Entity<CourseGroup>().ToTable("CourseGroup");
             modelBuilder.Entity<CourseAssistant>().ToTable("CourseAssistant");

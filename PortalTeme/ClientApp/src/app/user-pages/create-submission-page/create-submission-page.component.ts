@@ -19,7 +19,7 @@ export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
   private courseSlug: string;
   private assignmentSlug: string;
   private routeSub: Subscription;
-  protected uploadUrl: string = '/api/FileUpload';
+  _uploadUrl: string = '/api/FileUpload';
 
   private studentTask: StudentAssignedTask;
 
