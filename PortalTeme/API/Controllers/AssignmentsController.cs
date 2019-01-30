@@ -205,7 +205,7 @@ namespace PortalTeme.API.Controllers {
 
         // DELETE: api/Assignments/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AssignmentDTO>> DeleteAssignment(Guid id) {
+        public async Task<IActionResult> DeleteAssignment(Guid id) {
             var assignment = await _context.Assignments
                 .Include(a => a.Course)
                 .ThenInclude(c => c.CourseInfo)
@@ -214,7 +214,7 @@ namespace PortalTeme.API.Controllers {
             if (assignment is null)
                 return NotFound();
 
-            var course = _context.Courses
+            var course = await _context.Courses
                 .Include(c => c.Professor)
                 .Include(c => c.Assistants)
                 .Include(c => c.Groups)
@@ -228,7 +228,7 @@ namespace PortalTeme.API.Controllers {
             _context.Assignments.Remove(assignment);
             await _context.SaveChangesAsync();
 
-            return assignmentMapper.MapAssignment(assignment);
+            return NoContent();
         }
 
 

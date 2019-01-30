@@ -9,6 +9,7 @@ import { EditorConfig } from '../../../../typings/index';
 import { nameof } from '../../../type-guards/nameof.guard';
 
 import { AssignmentTypeText, Assignment, AssignmentEdit, AssignmentType } from '../../../models/assignment.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-assignment-edit-form',
@@ -87,7 +88,7 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
     this.assignmentForm.addControl(nameof<Assignment>('name'), new FormControl());
     this.assignmentForm.addControl(nameof<Assignment>('type'), new FormControl('0'));
     this.assignmentForm.addControl(nameof<Assignment>('numberOfDuplicates'), new FormControl(2, Validators.min(2)));
-    this.assignmentForm.addControl(nameof<Assignment>('description'), new FormControl());
+    this.assignmentForm.addControl(nameof<Assignment>('description'), new FormControl('', Validators.required));
     this.assignmentForm.addControl(nameof<Assignment>('startDate'), new FormControl());
     this.assignmentForm.addControl(nameof<Assignment>('endDate'), new FormControl());
 
@@ -170,6 +171,12 @@ export class AssignmentEditFormComponent implements OnInit, OnDestroy {
     this.submitClick(newAssignment)
       .then(_ => {
         this.saved.next(true);
+        this.saving.next(false);
+      }).catch((response: HttpErrorResponse) => {
+        if (response.error.description)
+          this.description.setErrors({
+            required: true
+          });
         this.saving.next(false);
       });
   }
