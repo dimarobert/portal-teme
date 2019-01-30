@@ -233,7 +233,8 @@ namespace PortalTeme.API.Controllers {
             var submission = new TaskSubmission {
                 AssignedTask = studentTask,
                 DateAdded = DateTime.Now,
-                Files = new List<TaskSubmissionFile>()
+                Files = new List<TaskSubmissionFile>(),
+                Description = request.Description
             };
 
             _context.TaskSubmissions.Add(submission);

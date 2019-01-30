@@ -5,6 +5,8 @@ import { ModelServiceFactory } from '../../services/model.service';
 import { CreateTaskSubmissionRequest, StudentAssignedTask } from '../../models/assignment.model';
 import { combineLatest, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
+import { nameof } from '../../type-guards/nameof.guard';
 
 @Component({
   selector: 'app-create-submission-page',
@@ -23,6 +25,8 @@ export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
 
   private studentTask: StudentAssignedTask;
 
+  submissionForm: FormGroup;
+
   ngOnInit() {
 
     this.routeSub = combineLatest(
@@ -34,6 +38,9 @@ export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
 
       this.getAssignment();
     });
+
+    this.submissionForm = new FormGroup({});
+    this.submissionForm.addControl(nameof<CreateTaskSubmissionRequest>('description'), new FormControl(''));
 
   }
 
@@ -50,16 +57,21 @@ export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  get description(): AbstractControl {
+    return this.submissionForm.get('description');
+  }
 
   submit() {
     this.dropzone.uploadFiles()
       .then(files => {
         let submission: CreateTaskSubmissionRequest = {
           studentTaskId: this.studentTask.id,
-          uploadedFiles: files
+          uploadedFiles: files,
+          description: this.description.value
         }
 
         this.modelSvcFactory.studentAssignedTasks.submitTask(submission);
+        this.router.navigate(['../'], { relativeTo: this.route });
       });
   }
 

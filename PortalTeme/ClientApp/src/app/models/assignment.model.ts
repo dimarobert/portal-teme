@@ -93,11 +93,13 @@ export enum StudentAssignedTaskState {
 export interface CreateTaskSubmissionRequest {
     studentTaskId: string;
     uploadedFiles: UploadedFile[];
+    description: string;
 }
 
 export interface TaskSubmission extends EditModel {
     studentTaskId: string;
     dateAdded: Date;
+    description: string;
     files: TaskSubmissionFile[];
 }
 
