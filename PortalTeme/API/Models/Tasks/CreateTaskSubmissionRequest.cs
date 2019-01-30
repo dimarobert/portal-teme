@@ -13,5 +13,7 @@ namespace PortalTeme.API.Models.Tasks
         public Guid StudentTaskId { get; set; }
 
         public List<UploadedTempFile> UploadedFiles { get; set; }
+
+        public string Description { get; set; }
     }
 }

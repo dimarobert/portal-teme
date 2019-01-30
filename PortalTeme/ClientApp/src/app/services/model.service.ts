@@ -97,7 +97,8 @@ export class ModelServiceBase<TModel extends BaseModel> extends AbstractModelSer
     return this.http.delete<TModel>(`${this.apiRoot}/${modelId}`)
       .pipe(
         map(model => {
-          this.mapResponses(model);
+          if (model)
+            this.mapResponses(model);
           return model;
         }),
         take(1)

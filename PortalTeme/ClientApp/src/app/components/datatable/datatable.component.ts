@@ -6,11 +6,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ObservableDataSource } from '../../datasources/observable.datasource';
 import { isHttpErrorResponse } from '../../type-guards/errors.type-guard';
 import { ColumnDefinition, ColumnType, DataTableColumns, EditableColumnDefinition } from '../../models/column-definition.model';
-import { ItemAccessor } from "../../models/item.accesor";
 import { ModelAccessor } from "../../models/model.accessor";
 import { ItemDatasource } from '../../datasources/item-datasource';
 import { isDatasourceColumnDefinition, isEditableColumnDefinition } from '../../type-guards/column-definitions.type-guards';
-import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { startWith, map } from 'rxjs/operators';
 
 @Component({

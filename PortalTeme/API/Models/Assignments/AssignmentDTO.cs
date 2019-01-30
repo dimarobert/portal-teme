@@ -97,6 +97,8 @@ namespace PortalTeme.API.Models.Assignments {
 
         public DateTime DateAdded { get; set; }
 
+        public string Description { get; set; }
+
         public List<TaskSubmissionFileDTO> Files { get; set; }
     }
 

@@ -57,8 +57,11 @@
 
             <!-- description -->
             <div class="full-width">
-                <label>Assignment details:</label>
-                <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
+                <label [class.text-danger]="description.touched && description.hasError('required')">Assignment
+                    details*:</label>
+                <div [class.red-border]="description.touched && description.hasError('required')">
+                    <ckeditor [editor]="CKEditor" [config]="config" [formControl]="description"></ckeditor>
+                </div>
             </div>
 
             <!-- form button -->

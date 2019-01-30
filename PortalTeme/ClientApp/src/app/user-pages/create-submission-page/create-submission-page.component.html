@@ -1,5 +1,22 @@
-<app-dropzone-file-upload #dropzone [uploadUrl]="_uploadUrl">
-</app-dropzone-file-upload>
+<mat-card class="submission-card">
+    <mat-card-header>
+        <mat-card-title>Create new submission</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
 
-<br />
-<button mat-raised-button color="accent" [disabled]="dropzone.uploading" (click)="submit()">Submit</button>
+        <form [formGroup]="submissionForm">
+
+            <p>Files to submit</p>
+            <app-dropzone-file-upload #dropzone [uploadUrl]="_uploadUrl"></app-dropzone-file-upload>
+
+            <!-- description -->
+            <mat-form-field class="full-width" appearance="outline">
+                <mat-label>Details about this submission</mat-label>
+                <textarea matInput [formControl]="description"></textarea>
+            </mat-form-field>
+
+            <br />
+            <button mat-raised-button color="accent" [disabled]="dropzone.uploading" (click)="submit()">Submit</button>
+        </form>
+    </mat-card-content>
+</mat-card>

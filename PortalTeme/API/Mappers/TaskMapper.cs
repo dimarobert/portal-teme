@@ -82,6 +82,7 @@ namespace PortalTeme.API.Mappers {
                 Id = submission.Id,
                 StudentTaskId = studentTaskId,
                 DateAdded = submission.DateAdded,
+                Description = submission.Description,
                 Files = files
             };
         }
