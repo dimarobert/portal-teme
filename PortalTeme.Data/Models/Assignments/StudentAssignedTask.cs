@@ -20,16 +20,15 @@ namespace PortalTeme.Data.Models {
         [Required]
         public StudentAssignedTaskState State { get; set; }
 
-        public int? Grading { get; set; }
+        public string Review { get; set; }
+
+        public int? FinalGrading { get; set; }
 
         public List<TaskSubmission> Submissions { get; set; }
-
     }
 
     public enum StudentAssignedTaskState {
         Assigned,
-        Submitted,
-        Reviewed,
-        Graded
+        FinalGraded
     }
 }

@@ -64,12 +64,17 @@
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>Chosen task details</mat-panel-title>
-              <mat-panel-description *ngIf="assignedTask.state == StudentAssignedTaskState.Graded">Grade:
-                {{assignedTask.grading}}</mat-panel-description>
+              <mat-panel-description *ngIf="assignedTask.state == StudentAssignedTaskState.FinalGraded"  [class.text-danger]="assignedTask.finalGrading < 5">Grade:
+                {{assignedTask.finalGrading}}</mat-panel-description>
             </mat-expansion-panel-header>
             <h4 class="text-center">{{assignment.assignedTask.name}}</h4>
             <div [innerHTML]="assignment.assignedTask.description | safeHtml"></div>
 
+            <ng-container *ngIf="assignedTask.review">
+              <hr />
+              <h5 class="text-info">Professor review</h5>
+              <p [innerText]="assignedTask.review"></p>
+            </ng-container>
           </mat-expansion-panel>
         </mat-accordion>
         <hr />
@@ -80,6 +85,8 @@
           <mat-expansion-panel *ngFor="let submission of assignedTask.submissions">
             <mat-expansion-panel-header>
               <mat-panel-title>Submission {{getDateString(submission.dateAdded)}}</mat-panel-title>
+              <mat-panel-description *ngIf="submission.state == TaskSubmissionState.Graded" [class.text-danger]="submission.grading < 5">Grade:
+                {{submission.grading}}</mat-panel-description>
             </mat-expansion-panel-header>
 
             <ng-container *ngIf="submission.description">
@@ -99,12 +106,24 @@
               </mat-list-item>
             </mat-list>
 
+            <ng-container *ngIf="submission.state > TaskSubmissionState.Submitted">
+              <hr />
+              <h5 class="text-info">Professor review</h5>
+              <p [innerText]="submission.review || ''"></p>
+            </ng-container>
+
+            <a mat-raised-button *ngIf="canGrade | async" class="mt-3 ml-2" color="primary" (click)="openGradeDialog(submission)">
+              <span *ngIf="submission.state == TaskSubmissionState.Submitted">Grade submission</span>
+              <span *ngIf="submission.state != TaskSubmissionState.Submitted">Update grading</span>
+            </a>
           </mat-expansion-panel>
         </mat-accordion>
 
         <a mat-raised-button *ngIf="canAddSubmission | async" class="mt-3" color="accent" [routerLink]="['new-submission']">Create
           submission</a>
-        <a mat-raised-button *ngIf="canGrade | async" class="mt-3 ml-2" color="primary" (click)="openGradeDialog()">Grade assignment</a>
+        <a mat-raised-button *ngIf="canAddFinalGrade | async" class="mt-3 ml-2" color="primary" (click)="openFinalGradeDialog()">Confirm
+          final grade</a>
+
       </ng-container>
     </div>
 

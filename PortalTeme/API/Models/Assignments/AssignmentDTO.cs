@@ -84,7 +84,9 @@ namespace PortalTeme.API.Models.Assignments {
 
         public StudentAssignedTaskState State { get; set; }
 
-        public int? Grading { get; set; }
+        public string Review { get; set; }
+
+        public int? FinalGrading { get; set; }
 
         public List<TaskSubmissionDTO> Submissions { get; set; }
     }
@@ -96,6 +98,12 @@ namespace PortalTeme.API.Models.Assignments {
         public Guid StudentTaskId { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        public TaskSubmissionState State { get; set; }
+
+        public string Review { get; set; }
+
+        public int? Grading { get; set; }
 
         public string Description { get; set; }
 

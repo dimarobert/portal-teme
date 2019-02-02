@@ -70,7 +70,7 @@ export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
           description: this.description.value
         }
 
-        this.modelSvcFactory.studentAssignedTasks.submitTask(submission);
+        this.modelSvcFactory.submissions.create(submission);
         this.router.navigate(['../'], { relativeTo: this.route });
       });
   }

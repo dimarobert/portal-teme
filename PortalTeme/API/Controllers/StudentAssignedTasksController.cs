@@ -41,32 +41,6 @@ namespace PortalTeme.API.Controllers {
             this.authorizationService = authorizationService;
         }
 
-        //// GET: api/AssignmentEntries/ForAssignment/5
-        //[HttpGet("ForAssignment/{assignmentId}")]
-        //public async Task<ActionResult<IEnumerable<AssignmentEntryDTO>>> GetAssignmentEntries(Guid assignmentId) {
-        //    var entries = await _context.AssignmentEntries
-        //        .Where(ae => ae.AssignedTask.AssignmentId == assignmentId)
-        //        .Select(ae => new AssignmentEntryProjection {
-        //            Id = ae.Id,
-        //            AssignmentTaskId = ae.AssignmentTask.Id,
-        //            CourseId = ae.AssignmentTask.Assignment.Course.Id,
-        //            StudentId = ae.Student.UserId,
-        //            State = ae.State,
-        //            Grading = ae.Grading,
-        //            Versions = ae.Versions
-        //        })
-        //        .ToListAsync();
-
-        //    var results = new List<AssignmentEntryDTO>();
-        //    foreach (var entry in entries) {
-        //        var authorization = await authorizationService.AuthorizeAsync(User, entry, AuthorizationConstants.CanViewAssignmentEntriesPolicy);
-        //        if (!authorization.Succeeded)
-        //            results.Add(assignmentMapper.MapAssignmentEntryProjection(entry));
-        //    }
-
-        //    return results;
-        //}
-
         // GET: api/StudentAssignedTasks/5
         [HttpGet("{assignmentId}")]
         public async Task<ActionResult<StudentAssignedTaskDTO>> GetStudentAssignedTask(Guid assignmentId) {
@@ -85,7 +59,8 @@ namespace PortalTeme.API.Controllers {
                     Student = sat.Student,
                     CourseId = sat.Task.Assignment.Course.Id,
                     State = sat.State,
-                    Grading = sat.Grading,
+                    Review = sat.Review,
+                    FinalGrading = sat.FinalGrading,
                     Submissions = sat.Submissions
                 })
                 .FirstOrDefaultAsync();
@@ -108,35 +83,6 @@ namespace PortalTeme.API.Controllers {
 
             return await taskMapper.MapStudentAssignedTask(studentTask);
         }
-
-        //// PUT: api/AssignmentEntries/5
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutAssignmentEntry(Guid id, AssignmentEntryDTO assignmentEntryDto) {
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    if (id != assignmentEntryDto.Id)
-        //        return BadRequest();
-
-        //    var assignmentEntry = assignmentMapper.MapAssignmentEntryProjectionDTO(assignmentEntryDto);
-
-        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-        //    if (!authorization.Succeeded)
-        //        return Forbid();
-
-        //    _context.Entry(assignmentEntry).State = EntityState.Modified;
-
-        //    try {
-        //        await _context.SaveChangesAsync();
-        //    } catch (DbUpdateConcurrencyException) {
-        //        if (!AssignmentEntryExists(id))
-        //            return NotFound();
-        //        else
-        //            throw;
-        //    }
-
-        //    return NoContent();
-        //}
 
         // POST: api/StudentAssignedTasks/5/Assign
         [HttpPost("{taskId}/Assign")]
@@ -200,7 +146,7 @@ namespace PortalTeme.API.Controllers {
                     StudentId = sat.StudentId,
                     CourseId = sat.Task.Assignment.Course.Id,
                     State = sat.State,
-                    Grading = sat.Grading,
+                    FinalGrading = sat.FinalGrading,
                     Submissions = sat.Submissions
                 })
                 .FirstOrDefaultAsync();
@@ -214,64 +160,15 @@ namespace PortalTeme.API.Controllers {
             return CreatedAtAction("GetAssignmentEntry", new { id = studentAssignedTask.Id }, await taskMapper.MapStudentAssignedTask(studentTask));
         }
 
-        // POST: api/StudentAssignedTasks/5/Assign
-        [HttpPost("{taskId}/Submit")]
-        public async Task<ActionResult<StudentAssignedTaskDTO>> PostSubmitTask(Guid taskId, CreateTaskSubmissionRequest request) {
-
-            if (taskId != request.StudentTaskId)
-                return BadRequest();
+        // POST: api/Submissions/5/FinalGrade
+        [HttpPost("{studentTaskId}/FinalGrade")]
+        public async Task<IActionResult> PostFinalGrade(Guid studentTaskId, FinalReviewStudentTaskRequest request) {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var studentTask = await _context.StudentAssignedTasks
-                .FirstOrDefaultAsync(st => st.Id == request.StudentTaskId);
-
-            if (studentTask is null)
-                return NotFound();
-
-            if (studentTask.StudentId != userManager.GetUserId(User))
-                return Forbid();
-
-            var submission = new TaskSubmission {
-                AssignedTask = studentTask,
-                DateAdded = DateTime.Now,
-                Files = new List<TaskSubmissionFile>(),
-                Description = request.Description
-            };
-
-            _context.TaskSubmissions.Add(submission);
-            await _context.SaveChangesAsync();
-
-            foreach (var uploadedFile in request.UploadedFiles) {
-
-                var submissionFolder = $"StudentSubmissions/{studentTask.StudentId}/{studentTask.Id}/{submission.Id}";
-
-                // TODO: validate file extension.
-                var (fileName, extension) = FilesHelpers.GetFileNameAndExtension(uploadedFile.OriginalName);
-
-                var file = await fileService.MoveTempFile(uploadedFile.TempFileName, submissionFolder, uploadedFile.OriginalName);
-
-                submission.Files.Add(new TaskSubmissionFile {
-                    FileId = file.Id,
-                    FileType = TaskSubmissionFileType.SourceCode,
-                    TaskSubmission = submission
-                });
-            }
-
-            await _context.SaveChangesAsync();
-
-            return null;
-        }
-
-        [HttpPost("{taskId}/Grade")]
-        public async Task<IActionResult> PostGradeTask(Guid taskId, GradeTaskSubmissionRequest request) {
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var studentTask = await _context.StudentAssignedTasks
-               .FirstOrDefaultAsync(st => st.Id == taskId);
+               .FirstOrDefaultAsync(ts => ts.Id == studentTaskId);
 
             if (studentTask is null)
                 return NotFound();
@@ -280,44 +177,13 @@ namespace PortalTeme.API.Controllers {
             //    if (!authorization.Succeeded)
             //        return Forbid();
 
-            studentTask.Grading = request.Grade;
-            studentTask.State = StudentAssignedTaskState.Graded;
+            studentTask.Review = request.Review;
+            studentTask.FinalGrading = request.Grade;
+            studentTask.State = StudentAssignedTaskState.FinalGraded;
+
             await _context.SaveChangesAsync();
 
             return Ok();
         }
-        //// DELETE: api/AssignmentEntries/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<AssignmentEntryDTO>> DeleteAssignmentEntry(Guid id) {
-        //    var assignmentEntry = await _context.AssignmentEntries.FindAsync(id);
-        //    if (assignmentEntry is null)
-        //        return NotFound();
-
-        //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
-        //    if (!authorization.Succeeded)
-        //        return Forbid();
-
-        //    var projection = await _context.AssignmentEntries
-        //          .Where(ae => ae.Id == assignmentEntry.Id)
-        //          .Select(ae => new AssignmentEntryProjection {
-        //              Id = ae.Id,
-        //              AssignmentTaskId = ae.AssignedTask.Id,
-        //              CourseId = ae.AssignedTask.Assignment.Course.Id,
-        //              StudentId = ae.Student.UserId,
-        //              State = ae.State,
-        //              Grading = ae.Grading,
-        //              Versions = ae.Versions
-        //          })
-        //          .FirstOrDefaultAsync();
-
-        //    _context.AssignmentEntries.Remove(assignmentEntry);
-        //    await _context.SaveChangesAsync();
-
-        //    return assignmentMapper.MapAssignmentEntryProjection(projection);
-        //}
-
-        //private bool AssignmentEntryExists(Guid id) {
-        //    return _context.AssignmentEntries.Any(e => e.Id == id);
-        //}
     }
 }
