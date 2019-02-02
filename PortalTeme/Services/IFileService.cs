@@ -13,6 +13,9 @@ namespace PortalTeme.Services {
 
         Task<Data.Models.FileInfo> CreateFile(Stream stream, string relativeFolderPath, string fileName);
         Task<Data.Models.FileInfo> GetFile(Guid fileId);
+        Task<Stream> GetFileContents(Guid fileId);
+        Task<Stream> GetFileContents(Data.Models.FileInfo file);
+
         Task<Data.Models.FileInfo> MoveFile(Guid sourceFileId, string relativeFolderPath, string fileName);
         Task DeleteFile(Guid fileId);
 
@@ -71,6 +74,16 @@ namespace PortalTeme.Services {
             return await context.Files.FindAsync(fileId);
         }
 
+        public async Task<Stream> GetFileContents(Guid fileId) {
+            var file = await GetFile(fileId);
+            return await GetFileContents(file);
+        }
+
+        public async Task<Stream> GetFileContents(Data.Models.FileInfo file) {
+            var fileInfo = await fileProvider.GetFile(file.RelativeFolderPath, file.FileName, file.Extension);
+            return fileInfo.CreateReadStream();
+        }
+
         public async Task<long> GetFileSize(Data.Models.FileInfo file) {
             var fileInfo = await fileProvider.GetFile(file.RelativeFolderPath, file.FileName, file.Extension);
             return fileInfo.Length;
@@ -112,6 +125,6 @@ namespace PortalTeme.Services {
             await context.SaveChangesAsync();
             return file;
         }
-      
+
     }
 }

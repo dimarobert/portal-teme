@@ -27,9 +27,10 @@ import {
   MatNativeDateModule,
   MatExpansionModule,
   DateAdapter,
-  MAT_DATE_LOCALE
+  MAT_DATE_LOCALE,
+  MatDialogModule
 } from '@angular/material';
-import { CustomDateAdapter, DateAdapterService } from './date.adapter';
+import { CustomDateAdapter } from './date.adapter';
 
 const importedMaterialComponents = [
   CdkAccordionModule,
@@ -46,6 +47,7 @@ const importedMaterialComponents = [
   MatToolbarModule,
   MatSidenavModule,
   MatTabsModule,
+  MatDialogModule,
 
   MatCardModule,
   MatExpansionModule,
@@ -69,7 +71,7 @@ const importedMaterialComponents = [
   imports: importedMaterialComponents,
   exports: importedMaterialComponents,
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'ro-RO'},
+    { provide: MAT_DATE_LOCALE, useValue: 'ro-RO' },
     { provide: DateAdapter, useClass: CustomDateAdapter }
   ]
 })

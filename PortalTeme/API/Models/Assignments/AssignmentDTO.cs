@@ -106,6 +106,8 @@ namespace PortalTeme.API.Models.Assignments {
 
         public Guid? Id { get; set; }
 
+        public Guid FileId { get; set; }
+
         public TaskSubmissionFileType FileType { get; set; }
 
         public string Description { get; set; }

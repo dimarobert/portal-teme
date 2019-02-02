@@ -20,6 +20,14 @@ export class AuthService {
     location.href = loginUrl;
   }
 
+  public get user(): UserSettings {
+    return this.settings.user;
+  }
+
+  public get user$(): Observable<UserSettings> {
+    return this.settings.user$;
+  }
+
   public isAuthenticated(): Observable<boolean> {
     return this.tokenService.getAccessToken()
       .pipe(
@@ -49,5 +57,17 @@ export class AuthService {
         this.isInRoleInternal(user, AuthConstants.professorRoleName) ||
         this.isInRoleInternal(user, AuthConstants.adminRoleName)
       ));
+  }
+
+  public canManageCourse(): Observable<boolean> {
+    return this.settings.user$
+      .pipe(map(user =>
+        this.isInRoleInternal(user, AuthConstants.professorRoleName) ||
+        this.isInRoleInternal(user, AuthConstants.adminRoleName)
+      ));
+  }
+
+  public canGradeAssignment(): Observable<boolean> {
+    return this.canManageCourse();
   }
 }

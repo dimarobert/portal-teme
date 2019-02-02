@@ -28,3 +28,10 @@
 .mat-subtitle {
     color: rgba(255, 255, 255, .7);
 }
+
+.file-download {
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+}

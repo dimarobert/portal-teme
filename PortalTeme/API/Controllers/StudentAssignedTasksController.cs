@@ -216,7 +216,10 @@ namespace PortalTeme.API.Controllers {
 
         // POST: api/StudentAssignedTasks/5/Assign
         [HttpPost("{taskId}/Submit")]
-        public async Task<ActionResult<StudentAssignedTaskDTO>> PostSubmitTask(CreateTaskSubmissionRequest request) {
+        public async Task<ActionResult<StudentAssignedTaskDTO>> PostSubmitTask(Guid taskId, CreateTaskSubmissionRequest request) {
+
+            if (taskId != request.StudentTaskId)
+                return BadRequest();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -261,6 +264,28 @@ namespace PortalTeme.API.Controllers {
             return null;
         }
 
+        [HttpPost("{taskId}/Grade")]
+        public async Task<IActionResult> PostGradeTask(Guid taskId, GradeTaskSubmissionRequest request) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var studentTask = await _context.StudentAssignedTasks
+               .FirstOrDefaultAsync(st => st.Id == taskId);
+
+            if (studentTask is null)
+                return NotFound();
+
+            //    var authorization = await authorizationService.AuthorizeAsync(User, assignmentEntry, AuthorizationConstants.CanEditAssignmentEntriesPolicy);
+            //    if (!authorization.Succeeded)
+            //        return Forbid();
+
+            studentTask.Grading = request.Grade;
+            studentTask.State = StudentAssignedTaskState.Graded;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
         //// DELETE: api/AssignmentEntries/5
         //[HttpDelete("{id}")]
         //public async Task<ActionResult<AssignmentEntryDTO>> DeleteAssignmentEntry(Guid id) {

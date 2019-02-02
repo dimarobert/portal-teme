@@ -91,6 +91,7 @@ namespace PortalTeme.API.Mappers {
             var fileSize = await fileService.GetFileSize(file.File);
             return new TaskSubmissionFileDTO {
                 Id = file.Id,
+                FileId = file.FileId,
                 Name = file.File.FileName,
                 Extension = file.File.Extension,
                 Size = fileSize,

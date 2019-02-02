@@ -22,7 +22,9 @@ namespace PortalTeme.Data.Models {
         [Required]
         public string Extension { get; set; }
 
-        public string RelativeFilePath => Path.Combine(RelativeFolderPath, $"{FileName}.{Extension}");
+        public string FullFileName => $"{FileName}.{Extension}";
+
+        public string RelativeFilePath => Path.Combine(RelativeFolderPath, FullFileName);
 
     }
 }

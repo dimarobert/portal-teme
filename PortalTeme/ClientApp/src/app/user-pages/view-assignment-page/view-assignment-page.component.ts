@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, combineLatest } from 'rxjs';
+import { Subscription, combineLatest, Observable, of } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
-import { take } from 'rxjs/operators';
-import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText } from '../../models/assignment.model';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { MAT_DATE_LOCALE } from '@angular/material';
+import { take, map } from 'rxjs/operators';
+import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText, TaskSubmissionFile } from '../../models/assignment.model';
+import { MAT_DATE_LOCALE, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+
+import { saveAs } from 'file-saver';
+import { AuthService } from '../../authentication/services/auth.service';
 
 @Component({
   selector: 'app-view-assignment-page',
@@ -24,7 +26,11 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   datesShown: boolean = false;
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory, @Inject(MAT_DATE_LOCALE) private matDateLocale: string) { }
+  constructor(private route: ActivatedRoute,
+    private modelSvcFactory: ModelServiceFactory,
+    private auth: AuthService,
+    public dialog: MatDialog,
+    @Inject(MAT_DATE_LOCALE) private matDateLocale: string) { }
 
   courseSlug: string;
   assignmentSlug: string;
@@ -50,12 +56,16 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
         this.assignment = assignmentResult;
 
         if (this.userHasChosenTask) {
-          this.modelSvcFactory.studentAssignedTasks.getAssignedTask(this.assignment.id)
-            .pipe(take(1))
-            .subscribe(studentTask => {
-              this.assignedTask = studentTask;
-            });
+          this.getAssignedTask();
         }
+      });
+  }
+
+  private getAssignedTask() {
+    this.modelSvcFactory.studentAssignedTasks.getAssignedTask(this.assignment.id)
+      .pipe(take(1))
+      .subscribe(studentTask => {
+        this.assignedTask = studentTask;
       });
   }
 
@@ -125,7 +135,60 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
     return TaskSubmissionFileTypeText[TaskSubmissionFileType[type]];
   }
 
+  downloadFile(file: TaskSubmissionFile) {
+    // event.preventDefault();
+
+    this.modelSvcFactory.files.download(file.fileId)
+      .then(downloadedFile => saveAs(downloadedFile.blob, downloadedFile.fileName || `${file.name}.${file.extension}`))
+  }
+
+  get canAddSubmission(): Observable<boolean> {
+    if (this.submissionsEnded)
+      return of(false);
+    return this.auth.user$
+      .pipe(map(user => this.assignedTask.studentId == user.id))
+  }
+
+  get canGrade(): Observable<boolean> {
+    return this.auth.canGradeAssignment();
+  }
+
+  openGradeDialog(): void {
+    const dialogRef = this.dialog.open<GradeAssignmentDialog, GradeDialogData>(GradeAssignmentDialog, {
+      width: '250px',
+      data: {
+        grade: this.assignedTask.grading
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.modelSvcFactory.studentAssignedTasks.gradeTask(this.assignedTask.id, result.grade)
+        .then(_ => this.getAssignedTask());
+    });
+  }
+
   ngOnDestroy(): void {
     this.routeSub.unsubscribe();
   }
+}
+
+
+export interface GradeDialogData {
+  grade: number;
+}
+
+@Component({
+  selector: 'grade-assignment-dialog',
+  templateUrl: 'grade-assignment-dialog.html',
+})
+export class GradeAssignmentDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<GradeAssignmentDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: GradeDialogData) { }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
 }
