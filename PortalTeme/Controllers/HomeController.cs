@@ -30,6 +30,7 @@ namespace PortalTeme.Controllers {
             var userRoles = User.FindAll(IdentityModel.JwtClaimTypes.Role).Select(claim => claim.Value).Distinct().ToList();
             return new AngularIndexViewModel {
                 User = new UserSettings {
+                    Id = User.FindFirst(IdentityModel.JwtClaimTypes.Subject)?.Value,
                     Email = User.FindFirst(IdentityModel.JwtClaimTypes.Email)?.Value,
                     FirstName = User.FindFirst(IdentityModel.JwtClaimTypes.GivenName)?.Value,
                     LastName = User.FindFirst(IdentityModel.JwtClaimTypes.FamilyName)?.Value,

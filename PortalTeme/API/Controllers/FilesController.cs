@@ -22,16 +22,16 @@ namespace PortalTeme.API.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class FileUploadController : ControllerBase {
+    public class FilesController : ControllerBase {
 
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
         private readonly IFileService fileService;
 
-        public FileUploadController(IFileService fileService) {
+        public FilesController(IFileService fileService) {
             this.fileService = fileService;
         }
 
-        [HttpPost]
+        [HttpPost("Upload")]
         [DisableFormValueModelBinding]
         public async Task<ActionResult<List<UploadedTempFile>>> Upload() {
 
@@ -40,6 +40,14 @@ namespace PortalTeme.API.Controllers {
             var filesAndFormData = await ParseMultipartRequest();
 
             return filesAndFormData.Files;
+        }
+
+        [HttpGet("{fileId}")]
+        public async Task<IActionResult> GetFile(Guid fileId) {
+            var file = await fileService.GetFile(fileId);
+            var fileStream = await fileService.GetFileContents(file);
+
+            return File(fileStream, "application/octet-stream", file.FullFileName);
         }
 
         private async Task<FilesAndFormData> ParseMultipartRequest() {

@@ -18,6 +18,7 @@
     @if(Model.User != null) {
     <text>
     window.portalTeme.settings.user = {
+        id: "@Model.User.Id",
         email: "@Model.User.Email",
         firstName: "@Model.User.FirstName",
         lastName: "@Model.User.LastName",

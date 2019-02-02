@@ -10,6 +10,7 @@ import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
 import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask, CreateTaskSubmissionRequest } from '../models/assignment.model';
+import { FileDownload } from '../models/file-download.model';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +65,10 @@ export class ModelServiceFactory {
     return this._studentAssignedTasksService || (this._studentAssignedTasksService = new StudentAssignedTasksService('StudentAssignedTasks', this.http));
   }
 
+  private _filesService: FilesService = null;
+  public get files(): FilesService {
+    return this._filesService || (this._filesService = new FilesService('Files', this.http));
+  }
 }
 
 class AbstractModelService {
@@ -285,6 +290,36 @@ export class StudentAssignedTasksService extends AbstractModelService {
       .pipe(take(1))
       .toPromise();
   }
+
+  public gradeTask(studentTaskId: string, grade: number): Promise<void> {
+    return this.http.post<void>(`${this.apiRoot}/${studentTaskId}/grade`, {
+      grade: grade
+    }).pipe(take(1))
+      .toPromise();
+  }
+}
+
+export class FilesService extends AbstractModelService {
+
+  public download(fileId: string): Promise<FileDownload> {
+    return this.http.get(`${this.apiRoot}/${fileId}`, { observe: 'response', responseType: 'blob' })
+      .pipe(
+        map(fileResponse => {
+          const contentDisposition = fileResponse.headers.get('Content-Disposition');
+          const fileNameMatch = /filename=(.*);/.exec(contentDisposition);
+          let fileName = '';
+          if (fileNameMatch != null && fileNameMatch[1])
+            fileName = fileNameMatch[1].replace(/^['"]|['"]$/g, '');
+
+          return {
+            fileName: fileName,
+            blob: fileResponse.body
+          };
+        }),
+        take(1)
+      ).toPromise();
+  }
+
 }
 
 

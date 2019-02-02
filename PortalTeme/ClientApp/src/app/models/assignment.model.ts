@@ -104,6 +104,7 @@ export interface TaskSubmission extends EditModel {
 }
 
 export interface TaskSubmissionFile extends NamedModel {
+    fileId: string;
     extension: string;
     size: number;
     description: string;

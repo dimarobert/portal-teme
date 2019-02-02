@@ -6,7 +6,7 @@
 
   <mat-toolbar>
     <b class="text-primary fill-space">{{course.courseDef.name}}</b>
-    <a mat-icon-button [routerLink]="['manage']">
+    <a mat-icon-button *ngIf="canManage | async" [routerLink]="['manage']">
       <mat-icon>settings</mat-icon>
     </a>
     <button mat-icon-button (click)="toggleShowCourseDetails()">

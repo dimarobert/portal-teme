@@ -3,8 +3,9 @@ import { Course, User } from '../../models/course.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { AuthService } from '../../authentication/services/auth.service';
 
 @Component({
   selector: 'app-course-page',
@@ -33,7 +34,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 })
 export class CoursePageComponent implements OnInit, OnDestroy {
 
-  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private route: ActivatedRoute, private modelSvcFactory: ModelServiceFactory, private auth: AuthService) { }
 
   showCourseDetails: boolean = false;
 
@@ -54,6 +55,10 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         });
 
     });
+  }
+
+  get canManage(): Observable<boolean> {
+    return this.auth.canManageCourse();
   }
 
   toggleShowCourseDetails() {

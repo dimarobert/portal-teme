@@ -45,7 +45,7 @@ import { CoursePageComponent } from './user-pages/course-page/course-page.compon
 import { CourseRouterComponent } from './user-pages/course-router/course-router.component';
 import { CourseManagePageComponent } from './user-pages/course-manage/course-manage-page/course-manage-page.component';
 import { CourseManageRouterComponent } from './user-pages/course-manage/course-manage-router/course-manage-router.component';
-import { ViewAssignmentPageComponent } from './user-pages/view-assignment-page/view-assignment-page.component';
+import { ViewAssignmentPageComponent, GradeAssignmentDialog } from './user-pages/view-assignment-page/view-assignment-page.component';
 import { CourseEditAssistantsPageComponent } from './admin/courses/course-edit-assistants-page/course-edit-assistants-page.component';
 import { CourseEditAssistantsComponent } from './components/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseEditAttendeesPageComponent } from './admin/courses/course-edit-attendees-page/course-edit-attendees-page.component';
@@ -126,6 +126,8 @@ const httpInterceptorProviders: Provider[] = [
     AssignmentEditTasksPageComponent,
     AssignmentTasksEditComponent,
     AssignmentTasksEditFormComponent,
+    GradeAssignmentDialog,
+    
     CreateSubmissionPageComponent,
     DropzoneFileUploadComponent
 
@@ -210,6 +212,7 @@ const httpInterceptorProviders: Provider[] = [
       useValue: { cssProps: { userSelect: true } },
     }
   ],
+  entryComponents: [GradeAssignmentDialog],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PortalTeme.API.Models.Tasks
-{
-    public class CreateTaskSubmissionRequest
-    {
+namespace PortalTeme.API.Models.Tasks {
+    public class CreateTaskSubmissionRequest {
         [Required]
         public Guid StudentTaskId { get; set; }
 
