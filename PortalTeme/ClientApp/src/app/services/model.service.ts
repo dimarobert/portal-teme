@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask, CreateTaskSubmissionRequest } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask, CreateTaskSubmissionRequest, GradeTaskSubmissionRequest } from '../models/assignment.model';
 import { FileDownload } from '../models/file-download.model';
 
 @Injectable({
@@ -63,6 +63,12 @@ export class ModelServiceFactory {
   private _studentAssignedTasksService: StudentAssignedTasksService = null;
   public get studentAssignedTasks(): StudentAssignedTasksService {
     return this._studentAssignedTasksService || (this._studentAssignedTasksService = new StudentAssignedTasksService('StudentAssignedTasks', this.http));
+  }
+
+
+  private _submissionsService: SubmissionsService = null;
+  public get submissions(): SubmissionsService {
+    return this._submissionsService || (this._submissionsService = new SubmissionsService('Submissions', this.http));
   }
 
   private _filesService: FilesService = null;
@@ -250,14 +256,6 @@ function mapAssignment(assign: AssignmentEdit): void {
 
 export class StudentAssignedTasksService extends AbstractModelService {
 
-  // public getAll(): Observable<StudentAssignedTask[]> {
-  //   throw new Error('Invalid operation. GetAll is not supported for StudentAssignedTasks. Use the getByAssignment(assignmentId) method instead.');
-  // }
-
-  // public get(): Observable<StudentAssignedTask> {
-  //   throw new Error('Invalid operation. Get is not supported for StudentAssignedTasks. Use the getAssignedTask(assignmentId) method instead.');
-  // }
-
   /**
    * This will return the task assigned to the current user for the provided assignmentId.
    * @param assignmentId 
@@ -285,16 +283,24 @@ export class StudentAssignedTasksService extends AbstractModelService {
       .toPromise();
   }
 
-  public submitTask(submitRequest: CreateTaskSubmissionRequest): Promise<void> {
-    return this.http.post<void>(`${this.apiRoot}/${submitRequest.studentTaskId}/submit`, submitRequest)
+  public confirmFinalGrading(studentTaskId: string, request: GradeTaskSubmissionRequest): Promise<void> {
+    return this.http.post<void>(`${this.apiRoot}/${studentTaskId}/finalGrade`, request).pipe(take(1))
+      .toPromise();
+  }
+
+}
+
+export class SubmissionsService extends AbstractModelService {
+
+  public create(submitRequest: CreateTaskSubmissionRequest): Promise<void> {
+    return this.http.post<void>(this.apiRoot, submitRequest)
       .pipe(take(1))
       .toPromise();
   }
 
-  public gradeTask(studentTaskId: string, grade: number): Promise<void> {
-    return this.http.post<void>(`${this.apiRoot}/${studentTaskId}/grade`, {
-      grade: grade
-    }).pipe(take(1))
+  public grade(submissionId: string, request: GradeTaskSubmissionRequest): Promise<void> {
+    return this.http.post<void>(`${this.apiRoot}/${submissionId}/grade`, request)
+      .pipe(take(1))
       .toPromise();
   }
 }

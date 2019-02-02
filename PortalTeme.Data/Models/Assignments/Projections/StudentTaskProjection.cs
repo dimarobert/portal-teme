@@ -13,7 +13,9 @@ namespace PortalTeme.Data.Models.Assignments.Projections {
 
         public StudentAssignedTaskState State { get; set; }
 
-        public int? Grading { get; set; }
+        public string Review { get; set; }
+
+        public int? FinalGrading { get; set; }
 
     }
 

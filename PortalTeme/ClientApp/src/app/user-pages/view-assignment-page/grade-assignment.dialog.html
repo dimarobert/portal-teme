@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<form [formGroup]="form" (submit)="submitDialog()">
+    <div mat-dialog-content>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Submission review</mat-label>
+            <textarea matInput [formControl]="review" [required]="data.reviewRequired"></textarea>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Grade</mat-label>
+            <input matInput type="number" min="1" max="10" [formControl]="grade">
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button type="button" (click)="onNoClick()">Cancel</button>
+        <button mat-button type="submit" cdkFocusInitial>Ok</button>
+    </div>
+</form>

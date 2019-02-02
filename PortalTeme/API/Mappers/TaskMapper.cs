@@ -39,7 +39,8 @@ namespace PortalTeme.API.Mappers {
                 StudentId = studentTask.StudentId,
                 Student = courseMapper.MapStudent(studentTask.Student),
                 Task = MapTask(studentTask.Task),
-                Grading = studentTask.Grading,
+                FinalGrading = studentTask.FinalGrading,
+                Review = studentTask.Review,
                 State = studentTask.State,
                 Submissions = submissions
             };
@@ -81,6 +82,9 @@ namespace PortalTeme.API.Mappers {
             return new TaskSubmissionDTO {
                 Id = submission.Id,
                 StudentTaskId = studentTaskId,
+                State = submission.State,
+                Review = submission.Review,
+                Grading = submission.Grading,
                 DateAdded = submission.DateAdded,
                 Description = submission.Description,
                 Files = files

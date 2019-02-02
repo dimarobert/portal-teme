@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace PortalTeme.API.Models.Tasks {
-    public class ReviewTaskSubmissionRequest {
+    public class FinalReviewStudentTaskRequest {
 
-        [Required]
         public string Review { get; set; }
 
-        public int? Grade { get; set; }
-
+        [Required]
+        public int Grade { get; set; }
     }
 }

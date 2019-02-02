@@ -77,17 +77,15 @@ export interface StudentAssignedTask extends BaseModel {
     student: User;
 
     state: StudentAssignedTaskState;
-
-    grading?: number;
+    review: string;
+    finalGrading?: number;
 
     submissions: TaskSubmission[];
 }
 
 export enum StudentAssignedTaskState {
     Assigned,
-    Submitted,
-    Reviewed,
-    Graded
+    FinalGraded
 }
 
 export interface CreateTaskSubmissionRequest {
@@ -96,11 +94,25 @@ export interface CreateTaskSubmissionRequest {
     description: string;
 }
 
+export interface GradeTaskSubmissionRequest {
+    review: string;
+    grade: number;
+}
+
 export interface TaskSubmission extends EditModel {
     studentTaskId: string;
     dateAdded: Date;
+    state: TaskSubmissionState;
     description: string;
+    review: string;
+    grading?: number;
     files: TaskSubmissionFile[];
+}
+
+export enum TaskSubmissionState {
+    Submitted,
+    Reviewed,
+    Graded
 }
 
 export interface TaskSubmissionFile extends NamedModel {

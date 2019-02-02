@@ -3,11 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, combineLatest, Observable, of } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take, map } from 'rxjs/operators';
-import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText, TaskSubmissionFile } from '../../models/assignment.model';
-import { MAT_DATE_LOCALE, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText, TaskSubmissionFile, TaskSubmission, TaskSubmissionState } from '../../models/assignment.model';
+import { MAT_DATE_LOCALE, MatDialog } from '@angular/material';
 
 import { saveAs } from 'file-saver';
 import { AuthService } from '../../authentication/services/auth.service';
+import { GradeSubmissionDialog, GradeDialogData, GradeDialogResult } from './grade-assignment.dialog';
 
 @Component({
   selector: 'app-view-assignment-page',
@@ -19,6 +20,7 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
   AssignmentType = AssignmentType;
   StudentAssignedTaskState = StudentAssignedTaskState;
+  TaskSubmissionState = TaskSubmissionState;
 
   routeSub: Subscription;
   assignment: UserAssignment;
@@ -143,26 +145,82 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
   }
 
   get canAddSubmission(): Observable<boolean> {
-    if (this.submissionsEnded)
+    if (this.submissionsEnded || this.assignedTask.state == StudentAssignedTaskState.FinalGraded)
       return of(false);
     return this.auth.user$
       .pipe(map(user => this.assignedTask.studentId == user.id))
   }
 
   get canGrade(): Observable<boolean> {
+    if (this.assignedTask.state == StudentAssignedTaskState.FinalGraded)
+      return of(false);
+
     return this.auth.canGradeAssignment();
   }
 
-  openGradeDialog(): void {
-    const dialogRef = this.dialog.open<GradeAssignmentDialog, GradeDialogData>(GradeAssignmentDialog, {
-      width: '250px',
+  get canAddFinalGrade(): Observable<boolean> {
+    return this.auth.canGradeAssignment()
+      .pipe(map(allowed => {
+        if (!allowed)
+          return false;
+
+        if (this.assignedTask.state == StudentAssignedTaskState.FinalGraded)
+          return false;
+
+        return !!this.lastGradedSubmission;
+      }));
+  }
+
+  get lastGradedSubmission(): TaskSubmission {
+
+    const submissions = this.assignedTask.submissions;
+    for (let i = submissions.length - 1; i > -1; i--) {
+      if (submissions[i].state == TaskSubmissionState.Graded)
+        return submissions[i];
+    }
+    return null;
+  }
+
+  openGradeDialog(submission: TaskSubmission): void {
+    const dialogRef = this.dialog.open<GradeSubmissionDialog, GradeDialogData, GradeDialogResult>(GradeSubmissionDialog, {
+      width: '300px',
       data: {
-        grade: this.assignedTask.grading
+        title: 'Grade submission',
+        reviewRequired: true,
+        review: submission.review,
+        grade: submission.grading
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.modelSvcFactory.studentAssignedTasks.gradeTask(this.assignedTask.id, result.grade)
+      if (!result)
+        return;
+
+      this.modelSvcFactory.submissions.grade(submission.id, {
+        review: result.review,
+        grade: result.grade
+      })
+        .then(_ => this.getAssignedTask());
+    });
+  }
+
+  openFinalGradeDialog(): void {
+    const dialogRef = this.dialog.open<GradeSubmissionDialog, GradeDialogData, GradeDialogResult>(GradeSubmissionDialog, {
+      width: '300px',
+      data: {
+        title: 'Confirm final grading',
+        grade: this.lastGradedSubmission.grading
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result)
+        return;
+
+      this.modelSvcFactory.studentAssignedTasks.confirmFinalGrading(this.assignedTask.id, {
+        review: result.review,
+        grade: result.grade
+      })
         .then(_ => this.getAssignedTask());
     });
   }
@@ -170,25 +228,4 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routeSub.unsubscribe();
   }
-}
-
-
-export interface GradeDialogData {
-  grade: number;
-}
-
-@Component({
-  selector: 'grade-assignment-dialog',
-  templateUrl: 'grade-assignment-dialog.html',
-})
-export class GradeAssignmentDialog {
-
-  constructor(
-    public dialogRef: MatDialogRef<GradeAssignmentDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: GradeDialogData) { }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
 }
