@@ -166,6 +166,12 @@ namespace PortalTeme {
 
         // ConfigureServices
 
+        private void SetupCookieSettings(CookieAuthenticationOptions options) {
+            options.Events = new CookieAuthenticationEvents {
+                OnValidatePrincipal = RunRefreshTokenLogic
+            };
+        }
+
         private async Task RunRefreshTokenLogic(CookieValidatePrincipalContext context) {
             var authorizationSection = Configuration.GetSection("Authorization");
 
@@ -173,7 +179,7 @@ namespace PortalTeme {
             if (!context.Principal.Identity.IsAuthenticated)
                 return;
 
-            var refreshToken = context.Properties.GetTokenValue("refresh_token");
+            var refreshToken = context.Properties.GetTokenValue(OpenIdConnectParameterNames.RefreshToken);
             if (refreshToken is null)
                 return;
 
@@ -186,7 +192,7 @@ namespace PortalTeme {
             if (disco.IsError)
                 return;
 
-            var tokenClient = new TokenClient(disco.TokenEndpoint);
+            var tokenClient = new TokenClient(disco.TokenEndpoint, AuthenticationConstants.AngularAppClientId, authorizationSection.GetValue<string>("ClientSecret"));
             var clientResponse = await tokenClient.RequestRefreshTokenAsync(refreshToken);
 
             if (clientResponse.IsError) {
@@ -204,11 +210,6 @@ namespace PortalTeme {
             context.ShouldRenew = true;
         }
 
-        private void SetupCookieSettings(CookieAuthenticationOptions options) {
-            options.Events = new CookieAuthenticationEvents {
-                OnValidatePrincipal = RunRefreshTokenLogic
-            };
-        }
 
         private void SetupOpenIdSettings(OpenIdConnectOptions options) {
             var authorizationSection = Configuration.GetSection("Authorization");

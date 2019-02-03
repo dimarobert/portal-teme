@@ -1,9 +1,9 @@
-<div class="center-content" *ngIf="!assignment">
+<div class="center-content" *ngIf="loading | async">
   <mat-spinner></mat-spinner>
 </div>
 
 
-<ng-container *ngIf="assignment">
+<ng-container *ngIf="!(loading | async)">
 
   <mat-card class="title-card">
     <mat-card-header>
@@ -64,7 +64,8 @@
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>Chosen task details</mat-panel-title>
-              <mat-panel-description *ngIf="assignedTask.state == StudentAssignedTaskState.FinalGraded"  [class.text-danger]="assignedTask.finalGrading < 5">Grade:
+              <mat-panel-description *ngIf="assignedTask.state == StudentAssignedTaskState.FinalGraded"
+                [class.text-danger]="assignedTask.finalGrading < 5">Grade:
                 {{assignedTask.finalGrading}}</mat-panel-description>
             </mat-expansion-panel-header>
             <h4 class="text-center">{{assignment.assignedTask.name}}</h4>

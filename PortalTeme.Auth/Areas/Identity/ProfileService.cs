@@ -52,9 +52,8 @@ namespace PortalTeme.Auth.Areas.Identity {
             var principal = await claimsFactory.CreateAsync(user);
             var claims = principal.Claims.ToList();
 
-            //var userRoles = await userManager.GetRolesAsync(user);
-            //foreach (var role in userRoles)
-            //    claims.Add(new Claim(JwtClaimTypes.Role, role));
+            claims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName));
+            claims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName));
 
             context.AddRequestedClaims(claims);
 

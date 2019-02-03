@@ -35,6 +35,9 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Account
         {
             var vm = await BuildLoggedOutViewModelAsync(logoutId);
 
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
+
             if (vm.TriggerExternalSignout) {
                 string url = Url.Page("Logout", new { logoutId = vm.LogoutId });
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);

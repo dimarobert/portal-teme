@@ -20,7 +20,7 @@
                 <tr>
                     <th scope="row">@i</th>
                     <td>@role.Name</td>
-                    <td class="float-right">
+                    <td class="actions-cell">
                         <a id="role-assign" asp-page="ViewUsersInRole" asp-route-roleId="@role.Id" class="btn btn-outline-success">View users</a>
                         <button id="role-delete" type="submit" asp-page-handler="DeleteRole" asp-route-roleId="@role.Id" class="btn btn-danger">Delete</button>
                     </td>

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, combineLatest, Observable, of } from 'rxjs';
+import { Subscription, combineLatest, Observable, of, BehaviorSubject } from 'rxjs';
 import { ModelServiceFactory } from '../../services/model.service';
 import { take, map } from 'rxjs/operators';
 import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText, TaskSubmissionFile, TaskSubmission, TaskSubmissionState } from '../../models/assignment.model';
@@ -22,7 +22,9 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
   StudentAssignedTaskState = StudentAssignedTaskState;
   TaskSubmissionState = TaskSubmissionState;
 
-  routeSub: Subscription;
+  private routeSub: Subscription;
+
+  loading: BehaviorSubject<boolean>;
   assignment: UserAssignment;
   assignedTask: StudentAssignedTask;
 
@@ -38,6 +40,7 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
   assignmentSlug: string;
 
   ngOnInit() {
+    this.loading = new BehaviorSubject(true);
 
     this.routeSub = combineLatest(
       this.route.parent.paramMap,
@@ -59,7 +62,8 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
 
         if (this.userHasChosenTask) {
           this.getAssignedTask();
-        }
+        } else
+          this.loading.next(false);
       });
   }
 
@@ -68,6 +72,7 @@ export class ViewAssignmentPageComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(studentTask => {
         this.assignedTask = studentTask;
+        this.loading.next(false);
       });
   }
 
