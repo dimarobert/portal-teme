@@ -86,7 +86,7 @@ namespace PortalTeme.Services {
 
         public async Task<long> GetFileSize(Data.Models.FileInfo file) {
             var fileInfo = await fileProvider.GetFile(file.RelativeFolderPath, file.FileName, file.Extension);
-            return fileInfo.Length;
+            return fileInfo.Exists ? fileInfo.Length : 0;
         }
 
         public async Task DeleteFile(Guid fileId) {

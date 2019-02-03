@@ -8,6 +8,7 @@ using PortalTeme.API.Models.Assignments;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Identity;
+using PortalTeme.Data.Models;
 using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
@@ -100,6 +101,9 @@ namespace PortalTeme.API.Controllers {
                 return Forbid();
 
             var user = await userManager.GetUserAsync(User);
+
+            if (assignment.StartDate > DateTime.UtcNow)
+                assignment.AssignmentTasks = new List<AssignmentTask>();
 
             return assignmentMapper.MapStudentAssignment(assignment, user);
         }

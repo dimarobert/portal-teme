@@ -52,8 +52,6 @@ export const AssignmentTypeText = {
     CustomAssignedTasksText: "Each task will be manually assigned to each student."
 }
 
-// export default AssignmentTypeText;
-
 export interface AssignmentTask extends AssignmentTaskEdit {
     id: string;
 

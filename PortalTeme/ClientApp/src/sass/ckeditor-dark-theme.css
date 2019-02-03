@@ -70,4 +70,7 @@
     --ck-color-widget-editable-focus-background: var(--ck-custom-white);
     /* -- Overrides the default colors used by the ckeditor5-link package. ---------------------- */
     --ck-color-link-default: hsl(190, 100%, 75%);
+    /* -- Overrides table editor colors */
+    --ck-color-table-focused-cell-background: hsl(270, 2%, 20%);
+    --ck-color-widget-editable-focus-background: hsl(270, 2%, 20%);
 }
