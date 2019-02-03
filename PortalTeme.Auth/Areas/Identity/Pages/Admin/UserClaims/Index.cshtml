@@ -1,0 +1,44 @@
+﻿@page
+@model PortalTeme.Auth.Areas.Identity.Pages.Admin.UserClaims.IndexModel
+@{
+    ViewData["Title"] = "User Claims";
+    ViewData["ActivePage"] = AdminNavPages.UserClaims;
+}
+
+<form method="post">
+    <table class="table table-dark table-hover table-with-buttons">
+        <thead>
+            <tr>
+                <th scope="col">Claim Name</th>
+                <th scope="col">Claim Value</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i <= Model.Claims.Count; i++) {
+                var claim = Model.Claims[i - 1];
+                <tr>
+                    <td>@claim.Name</td>
+                    <td>@claim.Value</td>
+                    <td class="actions-cell">
+                        <button id="claim-delete" type="submit" asp-page-handler="DeleteClaim" asp-route-userId="@Model.UserId" asp-route-claimName="@claim.Name" asp-route-claimValue="@claim.Value" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Claims.Any()) {
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No claims</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <a id="back" class="btn btn-outline-secondary" asp-page="/Admin/Users/Index">Back</a>
+    <a id="claim-add" class="btn btn-primary" asp-page="AddClaim" asp-route-userId="@Model.UserId">Add Claim</a>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

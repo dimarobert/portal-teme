@@ -11,6 +11,7 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
         public const string Users = "Users";
 
         public const string UserRoles = "UserRoles";
+        public const string UserClaims = "UserClaims";
         public const string AddRole = "AddRole";
         public const string ViewUsersInRole = "ViewUsersInRole";
         public const string AssignRole = "AssignRole";
@@ -21,8 +22,12 @@ namespace PortalTeme.Auth.Areas.Identity.Pages.Admin {
             PageHelper.GetActivePageClass(viewContext, AddRole) ??
             PageHelper.GetActivePageClass(viewContext, AssignRole);
 
+        //public static string UserClaimsNavClass(ViewContext viewContext)
+        //    => PageHelper.GetActivePageClass(viewContext, UserClaims);
+
         public static string UsersNavClass(ViewContext viewContext)
-            => PageHelper.GetActivePageClass(viewContext, Users);
+            => PageHelper.GetActivePageClass(viewContext, Users) ??
+            PageHelper.GetActivePageClass(viewContext, UserClaims);
 
     }
 }
