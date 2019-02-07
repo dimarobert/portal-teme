@@ -39,6 +39,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   showCourseDetails: boolean = false;
 
   course: Course;
+  members: User[];
   private courseSlug: string;
   private routerParamsSub: Subscription;
 
@@ -52,6 +53,10 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         .subscribe(courseResult => {
           this.course = courseResult;
           this.course.assignments = this.course.assignments.sort((first, second) => first.endDate.valueOf() - second.endDate.valueOf());
+
+          this.modelSvcFactory.courses.getMembers(this.course.id)
+            .pipe(take(1))
+            .subscribe(members => this.members = members);
         });
 
     });
@@ -74,7 +79,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     return `Assistant${plural}:`;
   }
 
-  getAssistantText(assistant: User): string {
+  getUserText(assistant: User): string {
     return `${assistant.firstName} ${assistant.lastName}`;
   }
 

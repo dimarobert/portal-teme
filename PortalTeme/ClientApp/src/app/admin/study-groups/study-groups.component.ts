@@ -41,6 +41,10 @@ export class StudyGroupsComponent implements OnInit {
 
     this.columnDefs = new DataTableColumns([
       <EditableColumnDefinition>{
+        id: nameof<StudyGroup>('code'),
+        title: 'Code',
+        type: ColumnType.Textbox
+      }, <EditableColumnDefinition>{
         id: nameof<StudyGroup>('name'),
         title: 'Name',
         type: ColumnType.Textbox

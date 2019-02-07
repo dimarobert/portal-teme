@@ -27,13 +27,19 @@
         <span *ngIf="course.assistants.length == 1" class="center-text-icon">
           <span>Assistant:</span>
           <mat-icon class="ml-2 mr-1">record_voice_over</mat-icon>
-          <span [innerText]="getAssistantText(course.assistants[0])"></span>
+          <span [innerText]="getUserText(course.assistants[0])"></span>
         </span>
         <mat-list class="assistants-list" *ngIf="course.assistants.length > 1">
           <h3 mat-subheader>Assistants</h3>
           <mat-list-item *ngFor="let assistant of course.assistants">
             <mat-icon mat-list-icon>record_voice_over</mat-icon>
-            <h4 mat-line [innerText]="getAssistantText(assistant)"></h4>
+            <h4 mat-line [innerText]="getUserText(assistant)"></h4>
+          </mat-list-item>
+
+          <h3 mat-subheader>Members</h3>
+          <mat-list-item *ngFor="let member of members">
+            <mat-icon mat-list-icon>record_voice_over</mat-icon>
+            <h4 mat-line [innerText]="getUserText(member)"></h4>
           </mat-list-item>
         </mat-list>
       </mat-card-content>
