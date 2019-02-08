@@ -186,6 +186,11 @@ export class ModelWithSlugService<TViewModel extends BaseModel, TEditModel exten
 }
 
 export class CoursesService extends ModelWithSlugService<Course, CourseEdit> {
+
+  getMembers(courseId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiRoot}/${courseId}/members`);
+  }
+
   protected mapResponses(course: Course): void {
     course.assignments.forEach(assign => mapAssignment(assign));
   }

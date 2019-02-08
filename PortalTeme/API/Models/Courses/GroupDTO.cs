@@ -12,6 +12,8 @@ namespace PortalTeme.API.Models.Courses {
         [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
+        [Required]
+        public string Code { get; set; }
 
         [Required]
         public Guid Domain { get; set; }
