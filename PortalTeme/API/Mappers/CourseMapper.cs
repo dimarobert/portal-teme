@@ -164,6 +164,7 @@ namespace PortalTeme.API.Mappers {
             return new GroupDTO {
                 Id = group.Id,
                 Name = group.Name,
+                Code = group.Code,
                 Domain = group.Domain.Id,
                 Year = group.Year.Id
             };
@@ -176,6 +177,7 @@ namespace PortalTeme.API.Mappers {
             return new Group {
                 Id = dto.Id ?? Guid.Empty,
                 Name = dto.Name,
+                Code = dto.Code,
                 Domain = domain,
                 Year = year
             };

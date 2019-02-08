@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalTeme.API.Mappers;
+using PortalTeme.API.Models;
 using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
+using PortalTeme.Data.Identity;
 using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -20,11 +23,13 @@ namespace PortalTeme.API.Controllers {
         private readonly PortalTemeContext _context;
         private readonly IAuthorizationService authorizationService;
         private readonly ICourseMapper courseMapper;
+        private readonly UserManager<User> userManager;
 
-        public CoursesController(PortalTemeContext context, IAuthorizationService authorizationService, ICourseMapper courseMapper) {
+        public CoursesController(PortalTemeContext context, IAuthorizationService authorizationService, ICourseMapper courseMapper, UserManager<User> userManager) {
             _context = context;
             this.authorizationService = authorizationService;
             this.courseMapper = courseMapper;
+            this.userManager = userManager;
         }
 
         // GET: api/Courses
@@ -107,6 +112,34 @@ namespace PortalTeme.API.Controllers {
                 return Forbid();
 
             return courseMapper.MapCourseView(course);
+        }
+
+
+        // GET: api/Courses/5/members
+        [HttpGet("{id}/members")]
+        public async Task<ActionResult<List<UserDTO>>> GetCourseMembers(Guid id) {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var course = await _context.Courses.FindAsync(id);
+
+            if (course is null)
+                return NotFound();
+
+            var courseGroups = await _context.Courses
+                .Where(c => c.Id == id)
+                .Select(c => new {
+                    Groups = c.Groups.Select(g => g.Group)
+                }).ToListAsync();
+
+            var groupMembers = new List<UserDTO>();
+            foreach (var group in courseGroups.SelectMany(c => c.Groups)) {
+                var users = await userManager.GetUsersForClaimAsync(new System.Security.Claims.Claim("study_group", group.Code));
+                groupMembers.AddRange(users.Select(user => courseMapper.MapUser(user)));
+            }
+
+            return groupMembers;
         }
 
 
