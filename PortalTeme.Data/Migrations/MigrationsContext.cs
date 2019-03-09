@@ -62,11 +62,20 @@ namespace PortalTeme.Data.Migrations {
                 .WithOne()
                 .HasForeignKey<StudentInfo>(s => s.UserId);
 
+            NoCascadeFromCourseDefToYear(builder);
+
             AddCourseAssistant_ManyToMany(builder);
             AddCourseGroup_ManyToMany(builder);
             AddCourseStudent_ManyToMany(builder);
             AddStudentTask_ManyToMany(builder);
 
+        }
+
+        private static void NoCascadeFromCourseDefToYear(ModelBuilder builder) {
+            builder.Entity<CourseDefinition>()
+                .HasOne(cd => cd.Year)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void AddCourseAssistant_ManyToMany(ModelBuilder builder) {
@@ -90,7 +99,7 @@ namespace PortalTeme.Data.Migrations {
                 .HasOne(cg => cg.Course)
                 .WithMany(course => course.Groups)
                 .HasForeignKey(cg => cg.CourseId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<CourseGroup>()
                 .HasOne(cg => cg.Group)
                 .WithMany()
