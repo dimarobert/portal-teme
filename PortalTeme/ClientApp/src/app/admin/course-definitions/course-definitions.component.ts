@@ -10,6 +10,7 @@ import { ModelServiceFactory } from '../../services/model.service';
 import { DatasourceColumnDefinition, ColumnType, EditableColumnDefinition, DataTableColumns } from '../../models/column-definition.model';
 import { NamedModelItemDatasource } from '../../datasources/named-model.item-datasource';
 import { BaseModelAccessor, ModelAccessor } from '../../models/model.accessor';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
   selector: 'app-course-definitions',
@@ -18,7 +19,7 @@ import { BaseModelAccessor, ModelAccessor } from '../../models/model.accessor';
 })
 export class CourseDefinitionsComponent implements OnInit {
 
-  constructor(private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private menuService: MenuService) { }
 
   columnDefs: DataTableColumns;
   data: BehaviorSubject<CourseDefinition[]>;
@@ -72,15 +73,24 @@ export class CourseDefinitionsComponent implements OnInit {
   }
 
   save(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courseDefinitions.save(element);
+    return this.modelSvcFactory.courseDefinitions.save(element).then((cd) => {
+      this.menuService.refreshCourses();
+      return cd;
+    });
   }
 
   update(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courseDefinitions.update(element);
+    return this.modelSvcFactory.courseDefinitions.update(element).then((cd) => {
+      this.menuService.refreshCourses();
+      return cd;
+    });
   }
 
   delete(element: CourseDefinition): Promise<CourseDefinition> {
-    return this.modelSvcFactory.courseDefinitions.delete(element.id);
+    return this.modelSvcFactory.courseDefinitions.delete(element.id).then((cd) => {
+      this.menuService.refreshCourses();
+      return cd;
+    });
   }
 
 }

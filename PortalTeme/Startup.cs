@@ -52,8 +52,10 @@ namespace PortalTeme {
 
             services.AddAntiforgery();
 
-            services.AddHostedService<TempFilesCleaner>();
+            services.AddSingleton<IJsonSerializer, JsonNetSerializer>();
+
             services.AddSingleton<IFileProvider, ContentRootFileProvider>();
+            services.AddHostedService<TempFilesCleaner>();
 
             // TODO: This could be registered as singleton
             services.AddDbContext<FilesContext>(options =>
@@ -85,6 +87,7 @@ namespace PortalTeme {
 
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();
+            services.AddSingleton<ICacheService, DistributedCacheService>();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)

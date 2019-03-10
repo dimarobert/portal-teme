@@ -12,6 +12,7 @@ import { CourseAssistant, User, Course } from '../../../models/course.model';
 import { CustomModelItemDatasource } from '../../../datasources/named-model.item-datasource';
 import { take } from 'rxjs/operators';
 import { DataTableComponent } from '../../datatable/datatable.component';
+import { MenuService } from '../../../services/menu.service';
 
 @Component({
   selector: 'app-course-edit-assistants',
@@ -20,7 +21,7 @@ import { DataTableComponent } from '../../datatable/datatable.component';
 })
 export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
 
-  constructor(private modelSvcFactory: ModelServiceFactory) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private menuService: MenuService) { }
 
   @Input() courseId: string;
 
@@ -93,7 +94,10 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
       assistant: element
     };
     return this.modelSvcFactory.courseRelations.addAssistant(value)
-      .then(ca => ca.assistant);
+      .then(ca => {
+        this.menuService.refreshCourses();
+        return ca.assistant;
+      });
   }
 
   delete(element: User): Promise<User> {
@@ -102,7 +106,10 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
       assistant: element
     };
     return this.modelSvcFactory.courseRelations.deleteAssistant(value)
-      .then(ca => ca.assistant);
+      .then(ca => {
+        this.menuService.refreshCourses();
+        return ca.assistant;
+      });
   }
 
   ngOnDestroy(): void { }

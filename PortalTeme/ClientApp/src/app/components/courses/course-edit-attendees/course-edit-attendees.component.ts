@@ -14,6 +14,7 @@ import { StudyGroup } from './../../../models/study-group.model';
 import { Course, User, CourseGroup, CourseStudent } from './../../../models/course.model';
 import { DataTableColumns } from '../../../models/column-definition.model';
 import { DataTableComponent } from '../../datatable/datatable.component';
+import { MenuService } from '../../../services/menu.service';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { DataTableComponent } from '../../datatable/datatable.component';
 })
 export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
 
-  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private menuService: MenuService) { }
 
   @Input() courseId: string;
 
@@ -121,12 +122,20 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
 
   saveGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
-    return this.modelSvcFactory.courseRelations.addGroup(element);
+    return this.modelSvcFactory.courseRelations.addGroup(element)
+      .then(g => {
+        this.menuService.refreshCourses();
+        return g;
+      });
   }
 
   deleteGroup(element: CourseGroup): Promise<CourseGroup> {
     element.courseId = this.currentCourse.id;
-    return this.modelSvcFactory.courseRelations.deleteGroup(element);
+    return this.modelSvcFactory.courseRelations.deleteGroup(element)
+      .then(g => {
+        this.menuService.refreshCourses();
+        return g;
+      });
   }
 
 
@@ -136,7 +145,10 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
       student: element
     };
     return this.modelSvcFactory.courseRelations.addStudent(value)
-      .then(cs => cs.student);
+      .then(cs => {
+        this.menuService.refreshCourses();
+        return cs.student;
+      });
   }
 
   deleteStudent(element: User): Promise<User> {
@@ -145,7 +157,10 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
       student: element
     };
     return this.modelSvcFactory.courseRelations.deleteStudent(value)
-      .then(cs => cs.student);
+      .then(cs => {
+        this.menuService.refreshCourses();
+        return cs.student;
+      });
   }
 
   ngOnDestroy(): void { }

@@ -52,6 +52,7 @@ export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {
 
   courses: Subject<CourseEdit[]>;
   coursesMenuStateSub: Subscription;
+  coursesRefreshSub: Subscription;
 
   constructor(private router: Router, private breakpointObserver: BreakpointObserver,
     private menuService: MenuService,
@@ -67,14 +68,17 @@ export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {
         if (!isAuth)
           return;
 
-        const courses$ = this.modelSvcFactory.courses.getAllRef();
-        courses$
-          .pipe(take(1))
-          .subscribe(courseList => {
-            this.courses.next(courseList.filter(c => c.courseDef.slug != null));
-          });
+        this.getCourses();
       });
 
+  }
+
+  private getCourses() {
+    this.modelSvcFactory.courses.getAllRef()
+      .pipe(take(1))
+      .subscribe(courseList => {
+        this.courses.next(courseList.filter(c => c.courseDef.slug != null));
+      });
   }
 
   ngAfterViewInit(): void {
@@ -82,11 +86,17 @@ export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {
       .subscribe(state => {
         if (this.panelCourses)
           this.panelCourses.expanded = state;
+      });
+
+    this.coursesRefreshSub = this.menuService.watchCoursesRefresh()
+      .subscribe(_ => {
+        this.getCourses();
       })
   }
 
   ngOnDestroy(): void {
     this.coursesMenuStateSub.unsubscribe();
+    this.coursesRefreshSub.unsubscribe();
   }
 
   get isAuthenticated$() {

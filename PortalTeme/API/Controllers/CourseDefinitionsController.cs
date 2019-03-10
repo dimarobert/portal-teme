@@ -17,11 +17,13 @@ namespace PortalTeme.API.Controllers {
     [Authorize(Policy = AuthorizationConstants.AdministratorPolicy)]
     public class CourseDefinitionsController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly ICacheService cache;
         private readonly ICourseMapper courseMapper;
         private readonly IUrlSlugService slugService;
 
-        public CourseDefinitionsController(PortalTemeContext context, ICourseMapper courseMapper, IUrlSlugService slugService) {
+        public CourseDefinitionsController(PortalTemeContext context, ICacheService cache, ICourseMapper courseMapper, IUrlSlugService slugService) {
             _context = context;
+            this.cache = cache;
             this.courseMapper = courseMapper;
             this.slugService = slugService;
         }
@@ -72,6 +74,8 @@ namespace PortalTeme.API.Controllers {
 
             try {
                 await _context.SaveChangesAsync();
+
+                await cache.ClearCourseDefinitionCacheAsync(id);
             } catch (DbUpdateConcurrencyException) {
                 if (!CourseDefinitionExists(id))
                     return NotFound();
@@ -103,6 +107,8 @@ namespace PortalTeme.API.Controllers {
             _context.CourseDefinitions.Add(courseDef);
             await _context.SaveChangesAsync();
 
+            await cache.ClearCoursesRefCacheAsync();
+
             return CreatedAtAction("GetCourseDefinition",
                 new { id = courseDef.Id },
                 courseMapper.MapDefinition(courseDef)
@@ -120,6 +126,8 @@ namespace PortalTeme.API.Controllers {
 
             _context.CourseDefinitions.Remove(courseDefinition);
             await _context.SaveChangesAsync();
+
+            await cache.ClearCourseDefinitionCacheAsync(id);
 
             return courseMapper.MapDefinition(courseDefinition);
         }

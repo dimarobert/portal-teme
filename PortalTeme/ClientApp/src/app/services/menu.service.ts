@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,9 +7,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class MenuService {
 
   coursesCollapseChanges: BehaviorSubject<boolean>;
+  refreshCoursesMenu: Subject<void>;
 
   constructor() {
     this.coursesCollapseChanges = new BehaviorSubject(false);
+    this.refreshCoursesMenu = new Subject();
   }
 
   public watchCoursesCollapseChanges(): Observable<boolean> {
@@ -31,6 +33,14 @@ export class MenuService {
         break;
 
     }
+  }
+
+  public refreshCourses() {
+    this.refreshCoursesMenu.next();
+  }
+
+  public watchCoursesRefresh(): Observable<void> {
+    return this.refreshCoursesMenu;
   }
 
 }

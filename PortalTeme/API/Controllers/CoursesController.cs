@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,7 @@ using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Identity;
-using PortalTeme.Data.Models;
+using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +20,14 @@ namespace PortalTeme.API.Controllers {
     [Authorize]
     public class CoursesController : ControllerBase {
         private readonly PortalTemeContext _context;
+        private readonly ICacheService cache;
         private readonly IAuthorizationService authorizationService;
         private readonly ICourseMapper courseMapper;
         private readonly UserManager<User> userManager;
 
-        public CoursesController(PortalTemeContext context, IAuthorizationService authorizationService, ICourseMapper courseMapper, UserManager<User> userManager) {
+        public CoursesController(PortalTemeContext context, ICacheService cache, IAuthorizationService authorizationService, ICourseMapper courseMapper, UserManager<User> userManager) {
             _context = context;
+            this.cache = cache;
             this.authorizationService = authorizationService;
             this.courseMapper = courseMapper;
             this.userManager = userManager;
@@ -56,6 +57,12 @@ namespace PortalTeme.API.Controllers {
         // GET: api/Courses/Ref
         [HttpGet("Ref")]
         public async Task<ActionResult<IEnumerable<CourseEditDTO>>> GetCoursesRef() {
+
+            // TODO: Caching by user, which can be cleared entirely.
+            //var cachedCourses = await cache.GetCoursesRefAsync();
+            //if (!(cachedCourses is null))
+            //    return cachedCourses;
+
             var courses = await _context.Courses
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
@@ -66,6 +73,8 @@ namespace PortalTeme.API.Controllers {
                 if ((await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanViewCoursePolicy)).Succeeded)
                     results.Add(courseMapper.MapCourseEdit(course));
             }
+
+            //await cache.SetCoursesRefAsync(results);
 
             return results;
         }
@@ -95,6 +104,11 @@ namespace PortalTeme.API.Controllers {
         // GET: api/Courses/Slug/my-course
         [HttpGet("slug/{slug}")]
         public async Task<ActionResult<CourseViewDTO>> GetCourseBySlug(string slug) {
+
+            var cachedCourse = await cache.GetCourseBySlugAsync(slug);
+            if (!(cachedCourse is null))
+                return cachedCourse;
+
             var course = await _context.Courses
                 .Include(c => c.CourseInfo)
                 .Include(c => c.Professor)
@@ -111,7 +125,11 @@ namespace PortalTeme.API.Controllers {
             if (!authorization.Succeeded)
                 return Forbid();
 
-            return courseMapper.MapCourseView(course);
+            var courseDto = courseMapper.MapCourseView(course);
+
+            await cache.SetCourseBySlugAsync(courseDto);
+
+            return courseDto;
         }
 
 
@@ -121,6 +139,10 @@ namespace PortalTeme.API.Controllers {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var cachedMembers = await cache.GetCourseMembersAsync(id);
+            if (!(cachedMembers is null))
+                return cachedMembers;
 
             var course = await _context.Courses.FindAsync(id);
 
@@ -138,6 +160,8 @@ namespace PortalTeme.API.Controllers {
                 var users = await userManager.GetUsersForClaimAsync(new System.Security.Claims.Claim("study_group", group.Code));
                 groupMembers.AddRange(users.Select(user => courseMapper.MapUser(user)));
             }
+
+            await cache.SetCourseMembersAsync(id, groupMembers);
 
             return groupMembers;
         }
@@ -162,6 +186,9 @@ namespace PortalTeme.API.Controllers {
 
             try {
                 await _context.SaveChangesAsync();
+
+                await cache.ClearCourseCacheAsync(id, dbCourse.CourseInfo.Slug);
+
             } catch (DbUpdateConcurrencyException) {
                 if (!CourseExists(id))
                     return NotFound();
@@ -193,6 +220,8 @@ namespace PortalTeme.API.Controllers {
                 .Include(c => c.Professor)
                 .FirstOrDefaultAsync(c => c.Id == dbCourse.Id);
 
+            await cache.ClearCoursesRefCacheAsync();
+
             return CreatedAtAction("GetCourse", new { id = dbCourse.Id }, courseMapper.MapCourseEdit(dbCourse));
         }
 
@@ -217,6 +246,8 @@ namespace PortalTeme.API.Controllers {
 
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
+
+            await cache.ClearCourseCacheAsync(id, course.CourseInfo.Slug);
 
             return courseMapper.MapCourseView(course);
         }
@@ -244,6 +275,7 @@ namespace PortalTeme.API.Controllers {
 
             var course = await _context.Courses
                 .Include(c => c.Professor)
+                .Include(c => c.CourseInfo)
                 .FirstOrDefaultAsync(c => c.Id == cAssistant.CourseId);
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanEditCourseAssistantsPolicy);
@@ -257,6 +289,8 @@ namespace PortalTeme.API.Controllers {
                 .Include(ca => ca.Assistant)
                 .FirstOrDefaultAsync(ca => ca.CourseId == cAssistant.CourseId && ca.AssistantId == cAssistant.AssistantId);
 
+            await cache.ClearCourseCacheAsync(courseId, course.CourseInfo.Slug);
+
             return CreatedAtAction("GetCourse", new { id = cAssistant.CourseId }, courseMapper.MapCourseAssistant(cAssistant));
         }
 
@@ -264,7 +298,7 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteAssistant/{assistantId}")]
         public async Task<ActionResult<CourseAssistantDTO>> DeleteCourseAssistant(Guid courseId, string assistantId) {
             var courseAssistant = await _context.CourseAssistants
-                .Include(ca => ca.Course)
+                .Include(ca => ca.Course).ThenInclude(c => c.CourseInfo)
                 .Include(ca => ca.Assistant)
                 .FirstOrDefaultAsync(ca => ca.CourseId == courseId && ca.AssistantId == assistantId);
 
@@ -277,6 +311,8 @@ namespace PortalTeme.API.Controllers {
 
             _context.CourseAssistants.Remove(courseAssistant);
             await _context.SaveChangesAsync();
+
+            await cache.ClearCourseCacheAsync(courseId, courseAssistant.Course.CourseInfo.Slug);
 
             return courseMapper.MapCourseAssistant(courseAssistant);
         }
@@ -303,6 +339,7 @@ namespace PortalTeme.API.Controllers {
 
             var course = await _context.Courses
                .Include(c => c.Professor)
+               .Include(c => c.CourseInfo)
                .FirstOrDefaultAsync(c => c.Id == cGroup.CourseId);
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanUpdateCoursePolicy);
@@ -316,6 +353,8 @@ namespace PortalTeme.API.Controllers {
                 .Include(cg => cg.Group)
                 .FirstOrDefaultAsync(cg => cg.CourseId == cGroup.CourseId && cg.GroupId == cGroup.GroupId);
 
+            await cache.ClearCourseCacheAsync(courseId, course.CourseInfo.Slug);
+
             return CreatedAtAction("GetCourse", new { id = cGroup.CourseId }, courseMapper.MapCourseGroup(cGroup));
         }
 
@@ -323,7 +362,7 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteGroup/{groupId}")]
         public async Task<ActionResult<CourseGroupDTO>> DeleteCourseGroup(Guid courseId, Guid groupId) {
             var courseGroup = await _context.CourseGroups
-                .Include(cg => cg.Course)
+                .Include(cg => cg.Course).ThenInclude(c => c.CourseInfo)
                 .Include(cg => cg.Group)
                 .FirstOrDefaultAsync(cg => cg.CourseId == courseId && cg.GroupId == groupId);
 
@@ -336,6 +375,8 @@ namespace PortalTeme.API.Controllers {
 
             _context.CourseGroups.Remove(courseGroup);
             await _context.SaveChangesAsync();
+
+            await cache.ClearCourseCacheAsync(courseId, courseGroup.Course.CourseInfo.Slug);
 
             return courseMapper.MapCourseGroup(courseGroup);
         }
@@ -362,6 +403,7 @@ namespace PortalTeme.API.Controllers {
 
             var course = await _context.Courses
                .Include(c => c.Professor)
+               .Include(c => c.CourseInfo)
                .FirstOrDefaultAsync(c => c.Id == cStudent.CourseId);
 
             var authorization = await authorizationService.AuthorizeAsync(User, course, AuthorizationConstants.CanUpdateCoursePolicy);
@@ -375,6 +417,8 @@ namespace PortalTeme.API.Controllers {
                 .Include(cs => cs.Student).ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(cs => cs.CourseId == cStudent.CourseId && cs.StudentId == cStudent.StudentId);
 
+            await cache.ClearCourseCacheAsync(courseId, course.CourseInfo.Slug);
+
             return CreatedAtAction("GetCourse", new { id = cStudent.CourseId }, courseMapper.MapCourseStudent(cStudent));
         }
 
@@ -382,7 +426,7 @@ namespace PortalTeme.API.Controllers {
         [HttpDelete("{courseId}/DeleteStudent/{studentId}")]
         public async Task<ActionResult<CourseStudentDTO>> DeleteCourseStudent(Guid courseId, string studentId) {
             var courseStudent = await _context.CourseStudents
-                .Include(cs => cs.Course)
+                .Include(cs => cs.Course).ThenInclude(c => c.CourseInfo)
                 .Include(cs => cs.Student).ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
 
@@ -396,11 +440,14 @@ namespace PortalTeme.API.Controllers {
             _context.CourseStudents.Remove(courseStudent);
             await _context.SaveChangesAsync();
 
+            await cache.ClearCourseCacheAsync(courseId, courseStudent.Course.CourseInfo.Slug);
+
             return courseMapper.MapCourseStudent(courseStudent);
         }
 
         private bool CourseExists(Guid id) {
             return _context.Courses.Any(e => e.Id == id);
         }
+
     }
 }

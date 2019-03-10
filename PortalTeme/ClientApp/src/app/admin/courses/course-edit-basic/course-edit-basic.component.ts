@@ -10,6 +10,7 @@ import { isHttpErrorResponse } from '../../../type-guards/errors.type-guard';
 import { CourseDefinition } from '../../../models/course-definition.model';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { User, Course } from '../../../models/course.model';
+import { MenuService } from '../../../services/menu.service';
 
 @Component({
   selector: 'app-course-edit-basic',
@@ -26,7 +27,7 @@ export class CourseEditBasicComponent implements OnInit {
 
   formReady: boolean = false;
 
-  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private router: Router) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private router: Router, private menuService: MenuService) { }
 
   private editedCourse: Course;
   private courseId: string;
@@ -88,6 +89,7 @@ export class CourseEditBasicComponent implements OnInit {
     })
       .then(result => {
         this.router.navigate(['../', result.id, 'assistants'], { relativeTo: this.route });
+        this.menuService.refreshCourses();
       }).catch(error => {
         if (isHttpErrorResponse(error)) {
           this.errors = error.error;

@@ -8,6 +8,7 @@ import { isHttpErrorResponse } from '../../../type-guards/errors.type-guard';
 import { CourseDefinition } from '../../../models/course-definition.model';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { User } from '../../../models/course.model';
+import { MenuService } from '../../../services/menu.service';
 
 @Component({
   selector: 'app-course-create',
@@ -22,7 +23,7 @@ export class CourseCreateComponent implements OnInit {
   professors: BehaviorSubject<User[]>;
   errors: { [key: string]: string[] };
 
-  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private router: Router) { }
+  constructor(private modelSvcFactory: ModelServiceFactory, private route: ActivatedRoute, private router: Router, private menuService: MenuService) { }
 
   ngOnInit() {
     this.errors = {};
@@ -70,6 +71,7 @@ export class CourseCreateComponent implements OnInit {
     })
       .then(result => {
         this.router.navigate(['../', result.id, 'assistants'], { relativeTo: this.route });
+        this.menuService.refreshCourses();
       }).catch(error => {
         if (isHttpErrorResponse(error)) {
           this.errors = error.error;
