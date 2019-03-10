@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using PortalTeme.Common.Authentication;
 
 namespace PortalTeme.Auth.Pages
 {
@@ -16,7 +17,7 @@ namespace PortalTeme.Auth.Pages
             this.configuration = configuration;
         }
 
-        public string AngularAppUri => configuration.GetSection("AngularClient").GetValue<string>("AppUri");
+        public string AngularAppUri => configuration.GetSection(AuthenticationConstants.AngularAppClientId).GetValue<string>("AppUri");
 
         public void OnGet()
         {

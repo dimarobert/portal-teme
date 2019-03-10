@@ -22,8 +22,8 @@ namespace PortalTeme.Auth {
         }
 
         public static IEnumerable<ApiResource> GetApiResources(IConfiguration configuration) {
-            var angularClientConf = configuration.GetSection("AngularClient");
-            var secret = angularClientConf.GetValue<string>("ApiSecret");
+            var mainApiConf = configuration.GetSection(AuthenticationConstants.ApplicationMainApi_Name);
+            var secret = mainApiConf.GetValue<string>("ApiSecret");
 
             return new List<ApiResource> {
                 new ApiResource {
@@ -47,31 +47,39 @@ namespace PortalTeme.Auth {
         }
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration) {
-            var angularClientConf = configuration.GetSection("AngularClient");
-            var rootUri = angularClientConf.GetValue<string>("AppUri");
-            var secret = angularClientConf.GetValue<string>("Secret");
+           
 
             return new List<Client> {
-                new Client {
-                    ClientId = AuthenticationConstants.AngularAppClientId,
-                    ClientName = "Portal Teme WebApp",
-                    ClientUri = rootUri,
+                BuildClient(configuration, AuthenticationConstants.AngularAppClientId),
+                BuildClient(configuration, "IISAngularClient")
+            };
+        }
 
-                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-                    AllowOfflineAccess = true,
-                    UpdateAccessTokenClaimsOnRefresh = true,
-                    
-                    //TODO: enable when the UI is done
-                    RequireConsent = false,
+        private static Client BuildClient(IConfiguration configuration, string clientId) {
+            var clientConf = configuration.GetSection(clientId);
+            var rootUri = clientConf.GetValue<string>("AppUri");
+            var secret = clientConf.GetValue<string>("Secret");
 
-                    ClientSecrets = {
+            return new Client {
+                ClientId = clientId,
+                ClientName = "Portal Teme WebApp",
+                ClientUri = rootUri,
+
+                AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                AllowOfflineAccess = true,
+                UpdateAccessTokenClaimsOnRefresh = true,
+
+                //TODO: enable when the UI is done
+                RequireConsent = false,
+
+                ClientSecrets = {
                         new Secret(secret.Sha256())
                     },
 
-                    RedirectUris = { AuthenticationConstants.AngularAppLoginCallback(rootUri) },
-                    PostLogoutRedirectUris = { AuthenticationConstants.AngularAppLogoutCallback(rootUri) },
+                RedirectUris = { AuthenticationConstants.AngularAppLoginCallback(rootUri) },
+                PostLogoutRedirectUris = { AuthenticationConstants.AngularAppLogoutCallback(rootUri) },
 
-                    AllowedScopes = {
+                AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
@@ -79,10 +87,8 @@ namespace PortalTeme.Auth {
                         AuthenticationConstants.ApplicationMainApi_FullAccessScope,
                         AuthenticationConstants.ApplicationMainApi_ReadOnlyScope
                     },
-                    AlwaysIncludeUserClaimsInIdToken = true
-                }
+                AlwaysIncludeUserClaimsInIdToken = true
             };
         }
-
     }
 }

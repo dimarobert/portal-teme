@@ -192,7 +192,7 @@ namespace PortalTeme {
             if (disco.IsError)
                 return;
 
-            var tokenClient = new TokenClient(disco.TokenEndpoint, AuthenticationConstants.AngularAppClientId, authorizationSection.GetValue<string>("ClientSecret"));
+            var tokenClient = new TokenClient(disco.TokenEndpoint, authorizationSection.GetValue<string>("ClientId"), authorizationSection.GetValue<string>("ClientSecret"));
             var clientResponse = await tokenClient.RequestRefreshTokenAsync(refreshToken);
 
             if (clientResponse.IsError) {
@@ -219,7 +219,7 @@ namespace PortalTeme {
             options.Authority = authorizationSection.GetValue<string>("AuthorityUri");
             options.RequireHttpsMetadata = false;
 
-            options.ClientId = AuthenticationConstants.AngularAppClientId;
+            options.ClientId = authorizationSection.GetValue<string>("ClientId");
             options.ClientSecret = authorizationSection.GetValue<string>("ClientSecret");
             options.ResponseType = "code id_token";
 
