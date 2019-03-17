@@ -20,5 +20,9 @@ namespace PortalTeme.Data.Models {
         public string Description { get; set; }
 
         public List<StudentAssignedTask> StudentsAssigned { get; set; }
+
+        public AssignmentTask() {
+            StudentsAssigned = new List<StudentAssignedTask>();
+        }
     }
 }

@@ -1,4 +1,4 @@
-<form [formGroup]="taskForm" #form (submit)="create()">
+<form [formGroup]="taskForm" #form (submit)="submitForm()">
 
   <!-- name -->
   <mat-form-field class="full-width">
@@ -8,12 +8,13 @@
 
   <!-- assign to -->
   <mat-form-field class="full-width" *ngIf="isCustomAssigned">
-    <mat-select [formControl]="assignTo" placeholder="Assign To" required>
-      <!-- <mat-option *ngFor="let option of courses | async" [value]="option.id">
-              {{option.name}}
-          </mat-option> -->
+    <mat-select [formControl]="assignedTo" placeholder="Assign To" required>
+      <mat-option *ngIf="assignedTo.value" [value]="null">&lt;Unassigned&gt;</mat-option>
+      <mat-option *ngFor="let option of courseStudents | async" [value]="option.id">
+        {{option.firstName}} {{option.lastName}}
+      </mat-option>
     </mat-select>
-    <mat-error *ngIf="assignTo.hasError('required')">The task must be assigned.</mat-error>
+    <mat-error *ngIf="assignedTo.hasError('required')">The task must be assigned.</mat-error>
   </mat-form-field>
 
   <!-- description -->
@@ -23,17 +24,20 @@
   </div>
 
   <!-- form button -->
-  <button mat-raised-button type="submit" color="accent" class="mt-2" *ngIf="!(saved | async)" [disabled]="invalid | async">
+  <button mat-raised-button type="submit" color="accent" class="mt-2" *ngIf="!(saved | async)"
+    [disabled]="invalid | async">
     <span *ngIf="!isEditMode">Create</span>
     <span *ngIf="isEditMode">Update</span>
   </button>
-  <button mat-stroked-button type="submit" color="accent" class="mt-2" *ngIf="saved | async" [disabled]="invalid | async">
+  <button mat-stroked-button type="submit" color="accent" class="mt-2" *ngIf="saved | async"
+    [disabled]="invalid | async">
     <span *ngIf="!isEditMode">Create</span>
     <span *ngIf="isEditMode">Update</span>
   </button>
   <button mat-raised-button color="warn" type="button" (click)="delete()">Delete</button>
   <span class="ml-3">
-    <mat-spinner *ngIf="saving | async" [diameter]="30" [style.display]="'inline-block'" [style.top.px]="11"></mat-spinner>
+    <mat-spinner *ngIf="saving | async" [diameter]="30" [style.display]="'inline-block'" [style.top.px]="11">
+    </mat-spinner>
   </span>
   <p class="text-danger" *ngIf="invalid | async">Some of the fields are invalid.</p>
 </form>

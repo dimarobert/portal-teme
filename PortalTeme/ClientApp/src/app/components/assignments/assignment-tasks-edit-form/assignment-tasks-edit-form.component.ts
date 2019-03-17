@@ -5,8 +5,9 @@ import * as ClassicEditor from '../../../../ckeditor/ckeditor';
 import { EditorConfig } from '../../../../typings/index';
 
 import { nameof } from '../../../type-guards/nameof.guard';
-import { AssignmentTask, AssignmentTaskEdit } from '../../../models/assignment.model';
+import { AssignmentTask, AssignmentTaskEdit, AssignmentTaskCreateRequest, AssignmentTaskUpdateRequest } from '../../../models/assignment.model';
 import { BehaviorSubject } from 'rxjs';
+import { User } from '../../../models/course.model';
 
 @Component({
   selector: 'app-assignment-tasks-edit-form',
@@ -18,6 +19,7 @@ export class AssignmentTasksEditFormComponent implements OnInit {
   CKEditor = ClassicEditor;
   config: EditorConfig;
 
+  @Input() courseStudents: User[];
   @Input() assignmentId: string;
   @Input() isCustomAssigned: boolean;
   @Input() task: AssignmentTask;
@@ -38,8 +40,12 @@ export class AssignmentTasksEditFormComponent implements OnInit {
 
     this.taskForm = new FormGroup({});
     this.taskForm.addControl(nameof<AssignmentTask>('name'), new FormControl());
-    if (this.isCustomAssigned)
-      this.taskForm.addControl(/*nameof<AssignmentTask>(*/'assignTo'/*)*/, new FormControl());
+    if (this.isCustomAssigned) {
+      const assignedTo = this.task.studentsAssigned.length
+        ? this.task.studentsAssigned[0].id
+        : null;
+      this.taskForm.addControl(nameof<AssignmentTaskCreateRequest>('assignedTo'), new FormControl(assignedTo));
+    }
     this.taskForm.addControl(nameof<AssignmentTask>('description'), new FormControl());
 
     this.taskForm.valueChanges.subscribe(val => {
@@ -64,34 +70,47 @@ export class AssignmentTasksEditFormComponent implements OnInit {
     return this.taskForm.get(nameof<AssignmentTask>('name'));
   }
 
-  get assignTo(): AbstractControl {
-    return this.taskForm.get(/*nameof<AssignmentTask>(*/'assignTo'/*)*/);
+  get assignedTo(): AbstractControl {
+    return this.taskForm.get(nameof<AssignmentTaskCreateRequest>('assignedTo'));
   }
 
   get description(): AbstractControl {
     return this.taskForm.get(nameof<AssignmentTask>('description'));
   }
 
-  create() {
+  submitForm() {
     if (this.taskForm.invalid) {
       this.invalid.next(this.taskForm.invalid);
       return;
     }
 
-    const newTask: AssignmentTaskEdit = {
-      assignmentId: this.assignmentId,
-      name: this.name.value,
-      description: this.description.value
-    };
-    if (this.task.id)
-      newTask.id = this.task.id;
+    const request = this.createRequest();
+
+    if (this.isCustomAssigned) {
+      request.assignedTo = this.assignedTo.value;
+    }
 
     this.saving.next(true);
-    this.submitClick(newTask)
+    this.submitClick(request)
       .then(_ => {
         this.saved.next(true);
         this.saving.next(false);
       });
+  }
+
+  private createRequest(): AssignmentTaskCreateRequest {
+    let request = <AssignmentTaskCreateRequest>{};
+    if (this.task.id) {
+      request = <AssignmentTaskUpdateRequest>{
+        id: this.task.id
+      };
+    }
+
+    request.assignmentId = this.assignmentId;
+    request.name = this.name.value;
+    request.description = this.description.value;
+
+    return request;
   }
 
   delete() {

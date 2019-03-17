@@ -8,6 +8,7 @@ using PortalTeme.API.Models.Courses;
 using PortalTeme.Common.Authorization;
 using PortalTeme.Data;
 using PortalTeme.Data.Identity;
+using PortalTeme.Helpers;
 using PortalTeme.Services;
 using System;
 using System.Collections.Generic;
@@ -151,19 +152,29 @@ namespace PortalTeme.API.Controllers {
 
             var courseGroups = await _context.Courses
                 .Where(c => c.Id == id)
-                .Select(c => new {
-                    Groups = c.Groups.Select(g => g.Group)
-                }).ToListAsync();
+                .Select(c => c.Groups.Select(g => g.Group))
+                .FirstOrDefaultAsync();
 
-            var groupMembers = new List<UserDTO>();
-            foreach (var group in courseGroups.SelectMany(c => c.Groups)) {
+            var members = new List<UserDTO>();
+            foreach (var group in courseGroups) {
                 var users = await userManager.GetUsersForClaimAsync(new System.Security.Claims.Claim("study_group", group.Code));
-                groupMembers.AddRange(users.Select(user => courseMapper.MapUser(user)));
+                members.AddRange(users.Select(user => courseMapper.MapUser(user)));
             }
 
-            await cache.SetCourseMembersAsync(id, groupMembers);
+            var nonGroupMembers = await _context.Courses
+                .Where(c => c.Id == id)
+                .Select(c => c.Students.Select(s => s.Student.User))
+                .FirstOrDefaultAsync();
 
-            return groupMembers;
+            members.AddRange(nonGroupMembers.Select(user => courseMapper.MapUser(user)));
+
+            members = members.Distinct(ProjectionEqualityComparer<UserDTO>.Create(u => u.Id))
+                .OrderBy(u => u.FirstName)
+                .ToList();
+
+            await cache.SetCourseMembersAsync(id, members);
+
+            return members;
         }
 
 

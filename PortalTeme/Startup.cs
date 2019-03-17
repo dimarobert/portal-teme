@@ -15,11 +15,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Serialization;
 using PortalTeme.API.Mappers;
 using PortalTeme.Common.Authentication;
+using PortalTeme.Common.Caching;
 using PortalTeme.Data;
 using PortalTeme.Data.Authorization.Policies;
 using PortalTeme.Data.Identity;
@@ -87,6 +89,9 @@ namespace PortalTeme {
 
             // TODO: Update to use Redis (at least in prod)
             services.AddDistributedMemoryCache();
+            services.Replace(ServiceDescriptor.Singleton<IDistributedCache, ExtendedMemoryDistributedCache>());
+            services.AddSingleton<IExtendedDistributedCache, ExtendedMemoryDistributedCache>();
+
             services.AddSingleton<ICacheService, DistributedCacheService>();
 
             services.AddMvc()

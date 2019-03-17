@@ -2,9 +2,12 @@
   <mat-expansion-panel *ngFor="let task of tasksList | async" [expanded]="!task.id">
     <mat-expansion-panel-header>
       <mat-panel-title>{{task.name}}</mat-panel-title>
+      <mat-panel-description *ngIf="showAssignedStudent(task)">{{task.studentsAssigned[0].firstName}} {{task.studentsAssigned[0].lastName}}</mat-panel-description>
     </mat-expansion-panel-header>
 
-    <app-assignment-tasks-edit-form [task]="task" [assignmentId]="assignmentId" [isCustomAssigned]="isCustomAssigned" [submitClick]="submitClick()" [deleteTask]="deleteTask()"></app-assignment-tasks-edit-form>
+    <app-assignment-tasks-edit-form [task]="task" [courseStudents]="courseStudents" [assignmentId]="assignmentId"
+      [isCustomAssigned]="isCustomAssigned" [submitClick]="submitClick()" [deleteTask]="deleteTask()">
+    </app-assignment-tasks-edit-form>
 
   </mat-expansion-panel>
 </mat-accordion>

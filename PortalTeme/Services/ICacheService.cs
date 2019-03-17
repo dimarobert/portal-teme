@@ -2,6 +2,8 @@
 using PortalTeme.API.Controllers;
 using PortalTeme.API.Models;
 using PortalTeme.API.Models.Courses;
+using PortalTeme.Common.Caching;
+using PortalTeme.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +28,12 @@ namespace PortalTeme.Services {
     }
 
     public class DistributedCacheService : ICacheService {
-        private readonly IDistributedCache cache;
+        private readonly IExtendedDistributedCache cache;
         private readonly IJsonSerializer jsonSerializer;
 
-        public DistributedCacheService(IDistributedCache cache, IJsonSerializer jsonSerializer) {
+        private const string coursesMasterCacheKey = nameof(Course);
+
+        public DistributedCacheService(IExtendedDistributedCache cache, IJsonSerializer jsonSerializer) {
             this.cache = cache;
             this.jsonSerializer = jsonSerializer;
         }
@@ -46,7 +50,8 @@ namespace PortalTeme.Services {
 
         public async Task SetCoursesRefAsync(List<CourseEditDTO> courses) {
             var cacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCoursesRef)}";
-            await cache.SetStringAsync(cacheKey, jsonSerializer.Serialize(courses));
+            await EnsureCoursesMasterCacheKey();
+            await cache.SetStringAsync(cacheKey, jsonSerializer.Serialize(courses), ExtendedDistributedCacheEntryOptions.New.AddDependencyKey(CacheKeyDependency.WithKey(coursesMasterCacheKey)));
         }
 
 
@@ -61,8 +66,15 @@ namespace PortalTeme.Services {
         }
 
         public async Task SetCourseBySlugAsync(CourseViewDTO course) {
+            var idCacheKey = await EnsureCourseCacheKey(course.Id.Value);
+
             var cacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCourseBySlug)}_{course.CourseDef.Slug}";
-            await cache.SetStringAsync(cacheKey, jsonSerializer.Serialize(course));
+
+            await cache.SetStringAsync(
+                cacheKey,
+                jsonSerializer.Serialize(course),
+                ExtendedDistributedCacheEntryOptions.New.AddDependencyKey(CacheKeyDependency.WithKey(idCacheKey))
+            );
         }
 
 
@@ -77,8 +89,12 @@ namespace PortalTeme.Services {
         }
 
         public async Task SetCourseMembersAsync(Guid courseId, List<UserDTO> members) {
+            var idCacheKey = await EnsureCourseCacheKey(courseId);
+
             var cacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCourseMembers)}_{courseId}";
-            await cache.SetStringAsync(cacheKey, jsonSerializer.Serialize(members));
+            await cache.SetStringAsync(cacheKey, jsonSerializer.Serialize(members),
+                ExtendedDistributedCacheEntryOptions.New.AddDependencyKey(CacheKeyDependency.WithKey(idCacheKey))
+            );
         }
 
 
@@ -90,10 +106,8 @@ namespace PortalTeme.Services {
         }
 
         public async Task ClearCourseCacheAsync(Guid courseId, string slug) {
-            var courseCacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCourseBySlug)}_{slug}";
-            var membersCacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCourseMembers)}_{courseId}";
-            await cache.RemoveAsync(courseCacheKey);
-            await cache.RemoveAsync(membersCacheKey);
+            var idCacheKey = await EnsureCourseCacheKey(courseId);
+            await cache.RemoveAsync(idCacheKey);
 
             await ClearCoursesRefCacheAsync();
         }
@@ -101,6 +115,28 @@ namespace PortalTeme.Services {
         public async Task ClearCoursesRefCacheAsync() {
             var coursesRefCacheKey = $"{nameof(CoursesController)}_{nameof(CoursesController.GetCoursesRef)}";
             await cache.RemoveAsync(coursesRefCacheKey);
+        }
+
+        private async Task EnsureCoursesMasterCacheKey() {
+            var data = await cache.GetAsync(coursesMasterCacheKey);
+            if (data is null)
+                await cache.SetAsync(coursesMasterCacheKey, new byte[0]);
+        }
+
+        private async Task<string> EnsureCourseCacheKey(Guid courseId) {
+            await EnsureCoursesMasterCacheKey();
+
+            var idCacheKey = $"{nameof(Course)}_{courseId}";
+            var data = await cache.GetAsync(idCacheKey);
+            if (data is null)
+                await cache.SetAsync(
+                    idCacheKey,
+                    new byte[0],
+                    ExtendedDistributedCacheEntryOptions.New
+                        .AddDependencyKey(CacheKeyDependency.WithKey(coursesMasterCacheKey))
+                );
+
+            return idCacheKey;
         }
     }
 }

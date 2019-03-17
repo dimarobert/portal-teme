@@ -14,7 +14,8 @@ namespace PortalTeme.API.Mappers {
     public interface ITaskMapper {
 
         AssignmentTaskDTO MapTask(AssignmentTask task);
-        AssignmentTask MapTaskEditDTO(AssignmentTaskEditDTO task);
+        AssignmentTask MapTaskCreateRequest(AssignmentTaskCreateRequest task);
+        AssignmentTask MapTaskUpdateRequest(AssignmentTaskUpdateRequest task);
         AssignmentTask MapTaskDTO(AssignmentTaskDTO task);
 
         Task<StudentAssignedTaskDTO> MapStudentAssignedTask(StudentTaskProjection studentTask);
@@ -56,9 +57,18 @@ namespace PortalTeme.API.Mappers {
             };
         }
 
-        public AssignmentTask MapTaskEditDTO(AssignmentTaskEditDTO task) {
+        public AssignmentTask MapTaskCreateRequest(AssignmentTaskCreateRequest task) {
             return new AssignmentTask {
-                Id = task.Id ?? Guid.Empty,
+                Id = Guid.Empty,
+                AssignmentId = task.AssignmentId,
+                Name = task.Name,
+                Description = task.Description
+            };
+        }
+
+        public AssignmentTask MapTaskUpdateRequest(AssignmentTaskUpdateRequest task) {
+            return new AssignmentTask {
+                Id = task.Id,
                 AssignmentId = task.AssignmentId,
                 Name = task.Name,
                 Description = task.Description

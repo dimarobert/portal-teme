@@ -237,11 +237,28 @@ namespace PortalTeme.API.Controllers {
 
 
         [HttpPost("{assignmentId}/task")]
-        public async Task<ActionResult<AssignmentTaskDTO>> PostTask(AssignmentTaskEditDTO task) {
+        public async Task<ActionResult<AssignmentTaskDTO>> PostTask(AssignmentTaskCreateRequest taskRequest) {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var assignmentTask = taskMapper.MapTaskEditDTO(task);
+            var assignmentTask = taskMapper.MapTaskCreateRequest(taskRequest);
+
+            var assginment = await _context.Assignments.FindAsync(assignmentTask.AssignmentId);
+
+            if (ShouldCustomAssignStudent(taskRequest, assginment)) {
+                var studentUser = await _context.Students.FirstOrDefaultAsync(s => s.UserId == taskRequest.AssignedTo);
+
+                if (studentUser is null) {
+                    ModelState.AddModelError("assignedTo", "The selected student to be assigned could not be found.");
+                    return BadRequest(ModelState);
+                }
+
+                assignmentTask.StudentsAssigned.Add(new StudentAssignedTask {
+                    State = StudentAssignedTaskState.Assigned,
+                    Task = assignmentTask,
+                    StudentId = taskRequest.AssignedTo
+                });
+            }
 
             _context.AssignmentTasks.Add(assignmentTask);
             await _context.SaveChangesAsync();
@@ -249,17 +266,42 @@ namespace PortalTeme.API.Controllers {
             return taskMapper.MapTask(assignmentTask);
         }
 
+
+
         [HttpPut("{assignmentId}/task/{id}")]
-        public async Task<IActionResult> PutTask(Guid id, AssignmentTaskDTO task) {
+        public async Task<IActionResult> PutTask(Guid id, AssignmentTaskUpdateRequest taskRequest) {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (id != task.Id)
+            if (id != taskRequest.Id)
                 return BadRequest();
 
-            var assignmentTask = taskMapper.MapTaskDTO(task);
+            var assignmentTask = taskMapper.MapTaskUpdateRequest(taskRequest);
 
             _context.Entry(assignmentTask).State = EntityState.Modified;
+
+            var assignment = await _context.Assignments.FindAsync(assignmentTask.AssignmentId);
+
+            if (assignment.Type == AssignmentType.CustomAssignedTasks) {
+                var prevAssignedStudents = await _context.StudentAssignedTasks.Where(sat => sat.TaskId == assignmentTask.Id).ToListAsync();
+                if (prevAssignedStudents.Any())
+                    _context.StudentAssignedTasks.RemoveRange(prevAssignedStudents.Where(s => s.StudentId != taskRequest.AssignedTo));
+
+                if (!string.IsNullOrWhiteSpace(taskRequest.AssignedTo) && !prevAssignedStudents.Any(s => s.StudentId == taskRequest.AssignedTo)) {
+                    var studentUser = await _context.Students.FirstOrDefaultAsync(s => s.UserId == taskRequest.AssignedTo);
+
+                    if (studentUser is null) {
+                        ModelState.AddModelError("assignedTo", "The selected student to be assigned could not be found.");
+                        return BadRequest(ModelState);
+                    }
+
+                    assignmentTask.StudentsAssigned.Add(new StudentAssignedTask {
+                        State = StudentAssignedTaskState.Assigned,
+                        Task = assignmentTask,
+                        StudentId = taskRequest.AssignedTo
+                    });
+                }
+            }
 
             try {
                 await _context.SaveChangesAsync();
@@ -292,5 +334,10 @@ namespace PortalTeme.API.Controllers {
         private bool TaskExists(Guid id) {
             return _context.AssignmentTasks.Any(e => e.Id == id);
         }
+
+        private bool ShouldCustomAssignStudent(AssignmentTaskCreateRequest taskRequest, Assignment assginment) {
+            return assginment.Type == AssignmentType.CustomAssignedTasks && !string.IsNullOrWhiteSpace(taskRequest.AssignedTo);
+        }
+
     }
 }

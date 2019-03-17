@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { AssignmentTask, AssignmentTaskEdit } from '../../../models/assignment.model';
+import { AssignmentTask, AssignmentTaskEdit, AssignmentTaskCreateRequest, isTaskUpdateRequest, AssignmentTaskUpdateRequest } from '../../../models/assignment.model';
+import { User } from '../../../models/course.model';
 
 @Component({
   selector: 'app-assignment-tasks-edit',
@@ -9,12 +10,13 @@ import { AssignmentTask, AssignmentTaskEdit } from '../../../models/assignment.m
 })
 export class AssignmentTasksEditComponent implements OnInit, OnDestroy {
 
-  @Input() tasks: Observable<AssignmentTask[]>;
+  @Input() courseStudents: User[];
   @Input() assignmentId: string;
+  @Input() tasks: Observable<AssignmentTask[]>;
   @Input() isCustomAssigned: boolean;
 
-  @Input() create: (newTask: AssignmentTaskEdit) => Promise<AssignmentTask>;
-  @Input() update: (task: AssignmentTask) => Promise<void>;
+  @Input() create: (newTask: AssignmentTaskCreateRequest) => Promise<AssignmentTask>;
+  @Input() update: (task: AssignmentTaskUpdateRequest) => Promise<void>;
   @Input() delete: (task: AssignmentTask) => Promise<void>;
 
   tasksList: BehaviorSubject<AssignmentTaskEdit[]>;
@@ -29,6 +31,12 @@ export class AssignmentTasksEditComponent implements OnInit, OnDestroy {
     this.tasksSub = this.tasks.subscribe(t => this.tasksList.next(t));
   }
 
+  showAssignedStudent(task: AssignmentTaskEdit): boolean {
+    if (task.studentsAssigned.length == 1){
+      return true;
+    }
+  }
+
   add() {
     let newTasks = this.tasksList.value.slice();
     newTasks.push({
@@ -39,10 +47,10 @@ export class AssignmentTasksEditComponent implements OnInit, OnDestroy {
     this.tasksList.next(newTasks);
   }
 
-  submitClick(): (task: AssignmentTaskEdit) => Promise<void> {
+  submitClick(): (task: AssignmentTaskCreateRequest) => Promise<void> {
     return (task) => {
-      if (task.id)
-        return this.update(<AssignmentTask>task);
+      if (isTaskUpdateRequest(task))
+        return this.update(task);
       else
         return this.create(task)
           .then(createdTask => {

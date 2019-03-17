@@ -9,7 +9,7 @@ import { StudyDomain } from '../models/study-domain.model';
 import { StudyGroup } from '../models/study-group.model';
 import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
-import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTaskEdit, AssignmentTask, CreateTaskSubmissionRequest, GradeTaskSubmissionRequest } from '../models/assignment.model';
+import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTask, CreateTaskSubmissionRequest, GradeTaskSubmissionRequest, AssignmentTaskCreateRequest, AssignmentTaskUpdateRequest } from '../models/assignment.model';
 import { FileDownload } from '../models/file-download.model';
 
 @Injectable({
@@ -218,28 +218,22 @@ export class AssignmentsService extends ComplexModelService<Assignment, Assignme
       }));
   }
 
-  public createTask(task: AssignmentTaskEdit): Promise<AssignmentTask> {
+  public createTask(task: AssignmentTaskCreateRequest): Promise<AssignmentTask> {
     return this.http.post<AssignmentTask>(`${this.apiRoot}/${task.assignmentId}/task`, task)
-      .pipe(
-        take(1)
-      )
+      .pipe(take(1))
       .toPromise();
   }
 
-  public updateTask(task: AssignmentTask): Promise<void> {
+  public updateTask(task: AssignmentTaskUpdateRequest): Promise<void> {
     return this.http.put<void>(`${this.apiRoot}/${task.assignmentId}/task/${task.id}`, task)
-      .pipe(
-        take(1)
-      )
-      .toPromise();;
+      .pipe(take(1))
+      .toPromise();
   }
 
   public deleteTask(task: AssignmentTask): Promise<void> {
     return this.http.delete<void>(`${this.apiRoot}/${task.assignmentId}/task/${task.id}`)
-      .pipe(
-        take(1)
-      )
-      .toPromise();;
+      .pipe(take(1))
+      .toPromise();
   }
 
   protected mapResponses(assign: Assignment): void {

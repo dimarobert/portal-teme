@@ -15,7 +15,8 @@
   </mat-toolbar>
 
   <app-tabbed-menu [menuItems]="menuItems"></app-tabbed-menu>
-  <app-assignment-tasks-edit [tasks]="tasks" [assignmentId]="(assignment | async).id" [isCustomAssigned]="isCustomAssigned | async" [create]="create()" [update]="update()"
-    [delete]="delete()" #tasksComp></app-assignment-tasks-edit>
+  <app-assignment-tasks-edit [tasks]="tasks" [courseStudents]="courseStudents" [assignmentId]="(assignment | async).id"
+    [isCustomAssigned]="isCustomAssigned | async" [create]="create()" [update]="update()" [delete]="delete()"
+    #tasksComp></app-assignment-tasks-edit>
 
 </ng-container>

@@ -1,5 +1,5 @@
 import { EditModel, BaseModel, NamedModel } from './base.model';
-import { CourseRef, User } from './course.model';
+import { CourseRef, User, UserRef } from './course.model';
 import { UploadedFile } from '../components/dropzone-file-upload/upload-file.model';
 
 export interface UserAssignment extends Assignment {
@@ -52,20 +52,37 @@ export const AssignmentTypeText = {
     CustomAssignedTasksText: "Each task will be manually assigned to each student."
 }
 
+export interface AssignmentTaskBase {
+    assignmentId: string;
+
+    name: string;
+    description: string;
+}
+
+export interface AssignmentTaskCreateRequest extends AssignmentTaskBase {
+    assignedTo?: string;
+}
+
+export function isTaskUpdateRequest(request: any): request is AssignmentTaskUpdateRequest {
+    if (request.id)
+        return true;
+    return false;
+}
+
+export interface AssignmentTaskUpdateRequest extends AssignmentTaskCreateRequest {
+    id: string;
+}
+
 export interface AssignmentTask extends AssignmentTaskEdit {
     id: string;
 
     studentsAssigned: User[];
 }
 
-export interface AssignmentTaskEdit extends EditModel {
-    assignmentId: string;
-
-    name: string;
-    description: string;
-
-    studentsAssigned?: User[];
+export interface AssignmentTaskEdit extends AssignmentTaskBase, EditModel {
+    studentsAssigned?: UserRef[];
 }
+
 
 export interface StudentAssignedTask extends BaseModel {
 

@@ -63,8 +63,12 @@ namespace PortalTeme.API.Models.Assignments {
 
     }
 
-    public class AssignmentTaskEditDTO : AssignmentTaskBaseDTO {
-        public Guid? Id { get; set; }
+    public class AssignmentTaskUpdateRequest : AssignmentTaskCreateRequest {
+        public Guid Id { get; set; }
+    }
+
+    public class AssignmentTaskCreateRequest : AssignmentTaskBaseDTO {
+        public string AssignedTo { get; set; }
     }
 
     public class AssignmentTaskDTO : AssignmentTaskBaseDTO {
