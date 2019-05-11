@@ -47,16 +47,19 @@ namespace PortalTeme.Auth {
         }
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration) {
-           
 
-            return new List<Client> {
-                BuildClient(configuration, AuthenticationConstants.AngularAppClientId),
-                BuildClient(configuration, "IISAngularClient")
-            };
+            yield return BuildClient(configuration, AuthenticationConstants.AngularAppClientId);
+
+            var iisDevClient = BuildClient(configuration, "IISAngularClient");
+            if (iisDevClient != null)
+                yield return iisDevClient;
         }
 
         private static Client BuildClient(IConfiguration configuration, string clientId) {
             var clientConf = configuration.GetSection(clientId);
+            if (!clientConf.Exists())
+                return null;
+
             var rootUri = clientConf.GetValue<string>("AppUri");
             var secret = clientConf.GetValue<string>("Secret");
 

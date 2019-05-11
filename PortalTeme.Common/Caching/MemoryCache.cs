@@ -43,7 +43,12 @@ namespace PortalTeme.Common.Caching {
     }
 
     public class ExtendedDistributedCacheEntryOptions : DistributedCacheEntryOptions {
-        public IList<CacheKeyDependency> CacheKeyDependecies { get; set; }
+
+        public IList<CacheKeyDependency> CacheKeyDependecies { get; private set; }
+
+        public ExtendedDistributedCacheEntryOptions() {
+            CacheKeyDependecies = new List<CacheKeyDependency>();
+        }
 
         public ExtendedDistributedCacheEntryOptions AddDependencyKey(string key) {
             if (string.IsNullOrWhiteSpace(key))
@@ -57,9 +62,6 @@ namespace PortalTeme.Common.Caching {
         public ExtendedDistributedCacheEntryOptions AddDependencyKey(CacheKeyDependency dependency) {
             if (dependency is null)
                 throw new ArgumentNullException(nameof(dependency));
-
-            if (CacheKeyDependecies is null)
-                CacheKeyDependecies = new List<CacheKeyDependency>();
 
             CacheKeyDependecies.Add(dependency);
 
@@ -90,25 +92,24 @@ namespace PortalTeme.Common.Caching {
     }
 
     public class DependencyToken : IDisposable {
-        public CancellationTokenSource Token { get; set; } = new CancellationTokenSource();
+        private CancellationTokenSource TokenSource { get; set; } = new CancellationTokenSource();
 
         public bool IsPreRegistered { get; set; }
 
         internal void Register(Action<object> onDependencyRemoved, string key) {
-            Token.Token.Register(onDependencyRemoved, key);
+            TokenSource.Token.Register(onDependencyRemoved, key);
         }
 
         internal void Cancel() {
-            Token.Cancel();
+            TokenSource.Cancel();
         }
 
         public void Dispose() {
-            Token.Dispose();
+            TokenSource.Dispose();
         }
     }
 
     public class ExtendedMemoryDistributedCache : IExtendedDistributedCache {
-        private static readonly Task CompletedTask = Task.FromResult<object>(null);
 
         private readonly IMemoryCache _memCache;
         private readonly ConcurrentDictionary<string, DependencyToken> _dependencyTokens;
@@ -129,7 +130,7 @@ namespace PortalTeme.Common.Caching {
             return (byte[])_memCache.Get(key);
         }
 
-        public Task<byte[]> GetAsync(string key, CancellationToken token = default(CancellationToken)) {
+        public Task<byte[]> GetAsync(string key, CancellationToken token = default) {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
@@ -180,11 +181,11 @@ namespace PortalTeme.Common.Caching {
             _memCache.Set(key, value, memoryCacheEntryOptions);
         }
 
-        public async Task SetAsync(string key, byte[] value, ExtendedDistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken)) {
+        public async Task SetAsync(string key, byte[] value, ExtendedDistributedCacheEntryOptions options, CancellationToken token = default) {
             await SetAsync(key, value, options as DistributedCacheEntryOptions, token);
         }
 
-        public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken)) {
+        public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default) {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
@@ -195,22 +196,22 @@ namespace PortalTeme.Common.Caching {
                 throw new ArgumentNullException(nameof(options));
 
             Set(key, value, options);
-            return CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void Refresh(string key) {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            _memCache.TryGetValue(key, out object value);
+            _memCache.TryGetValue(key, out _);
         }
 
-        public Task RefreshAsync(string key, CancellationToken token = default(CancellationToken)) {
+        public Task RefreshAsync(string key, CancellationToken token = default) {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
             Refresh(key);
-            return CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void Remove(string key) {
@@ -220,12 +221,12 @@ namespace PortalTeme.Common.Caching {
             _memCache.Remove(key);
         }
 
-        public Task RemoveAsync(string key, CancellationToken token = default(CancellationToken)) {
+        public Task RemoveAsync(string key, CancellationToken token = default) {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
             Remove(key);
-            return CompletedTask;
+            return Task.CompletedTask;
         }
 
 
@@ -246,7 +247,7 @@ namespace PortalTeme.Common.Caching {
     }
 
     public static class ExtendedMemoryDistributedCacheExtensions {
-        public static async Task SetStringAsync(this IExtendedDistributedCache cache, string key, string value, ExtendedDistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken)) {
+        public static async Task SetStringAsync(this IExtendedDistributedCache cache, string key, string value, ExtendedDistributedCacheEntryOptions options, CancellationToken token = default) {
             if (key is null)
                 throw new ArgumentNullException(nameof(key));
             if (value is null)
