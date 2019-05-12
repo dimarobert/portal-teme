@@ -67,6 +67,12 @@ import { CreateSubmissionPageComponent } from './user-pages/create-submission-pa
 import { DropzoneFileUploadComponent } from './components/dropzone-file-upload/dropzone-file-upload.component';
 import { DiskSizePipe } from './pipes/disk-size.pipe';
 import { GradeSubmissionDialog } from './user-pages/view-assignment-page/grade-assignment.dialog';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from './app.effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from '../environments/environment';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -201,7 +207,13 @@ const httpInterceptorProviders: Provider[] = [
       { path: 'externalRedirect', resolve: { url: externalUrlProvider }, component: NotFoundPageComponent }
     ], {
         relativeLinkResolution: 'corrected'
-      })
+      }),
+
+    StoreModule.forRoot(reducers, { metaReducers }),
+
+    EffectsModule.forRoot([AppEffects]),
+
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
   ],
   providers: [
     SettingsProvider,
