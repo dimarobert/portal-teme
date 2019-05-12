@@ -67,6 +67,7 @@ import { CreateSubmissionPageComponent } from './user-pages/create-submission-pa
 import { DropzoneFileUploadComponent } from './components/dropzone-file-upload/dropzone-file-upload.component';
 import { DiskSizePipe } from './pipes/disk-size.pipe';
 import { GradeSubmissionDialog } from './user-pages/view-assignment-page/grade-assignment.dialog';
+import { DataTableComponent2 } from './components/datatable2/datatable2.component';
 
 const httpInterceptorProviders: Provider[] = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
@@ -79,6 +80,7 @@ const httpInterceptorProviders: Provider[] = [
     TabbedMenuComponent,
 
     DataTableComponent,
+    DataTableComponent2,
     ExternalUrlDirective,
 
     CourseEditAssistantsComponent,

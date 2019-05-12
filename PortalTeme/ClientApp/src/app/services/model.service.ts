@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, Subject, combineLatest } from 'rxjs';
+import { take, map, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { BaseModel, EditModel } from '../models/base.model';
 import { Year } from '../models/year.model';
@@ -11,17 +11,20 @@ import { CourseDefinition } from '../models/course-definition.model';
 import { Course, CourseEdit, User, CourseGroup, CourseAssistant, CourseStudent, CourseRelation } from '../models/course.model';
 import { Assignment, AssignmentEdit, StudentAssignedTask, UserAssignment, AssignmentTask, CreateTaskSubmissionRequest, GradeTaskSubmissionRequest, AssignmentTaskCreateRequest, AssignmentTaskUpdateRequest } from '../models/assignment.model';
 import { FileDownload } from '../models/file-download.model';
+import { ModelState, AppState } from '../store/State';
+import { AppStore } from '../store/AppStore';
+import { nameof } from '../type-guards/nameof.guard';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModelServiceFactory {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private appStore: AppStore) { }
 
-  private _yearsService: ModelService<Year> = null;
-  public get years(): ModelService<Year> {
-    return this._yearsService || (this._yearsService = new ModelService<Year>('AcademicYears', this.http));
+  private _yearsService: AcademicYearsService = null;
+  public get years(): AcademicYearsService {
+    return this._yearsService || (this._yearsService = new AcademicYearsService('AcademicYears', this.http, this.appStore));
   }
 
   private _courseDefinitionsService: ModelService<CourseDefinition> = null;
@@ -117,6 +120,7 @@ export class ModelServiceBase<TModel extends BaseModel> extends AbstractModelSer
   }
 
   protected mapResponses(model: TModel): void { }
+
 }
 
 export class ModelService<TModel extends BaseModel> extends ModelServiceBase<TModel> {
@@ -486,6 +490,108 @@ export class CachedModelService<TModel extends BaseModel> extends ModelService<T
     if (oneSub != null) {
       oneSub.complete();
       delete this.modelOneCache[modelId];
+    }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AcademicYearsService extends AbstractModelService {
+
+  private state$ = this.appStore.state$.pipe(map(state => state.academicYears));
+  private oneTimeState$ = this.state$.pipe(take(1));
+
+  private refreshFromServer$ = new Subject<void>();
+
+  loading$ = this.state$.pipe(map(state => state.loading));
+  model$ = this.state$.pipe(map(state => {
+    if (!state.items)
+      this.refreshFromServer$.next();
+
+    return state.items || [];
+  }), distinctUntilChanged());
+
+  constructor(protected apiController: string, protected http: HttpClient, private appStore: AppStore) {
+    super(apiController, http);
+
+    this.refreshFromServer$
+      .pipe(switchMap(_ => this.getAllInternal()))
+      .subscribe(items => {
+        this.updateState({ items, loading: false });
+      });
+  }
+
+  private getAllInternal() {
+    return this.http.get<Year[]>(this.apiRoot);
+  }
+
+  private updateState(state: ModelState<Year>) {
+    this.appStore.updateModelState(nameof<AppState>('academicYears'), state);
+  }
+
+  private setLoading(value: boolean) {
+    this.oneTimeState$
+      .subscribe(state => this.updateState({ ...state, loading: value }));
+  }
+
+  public add(model: Year) {
+    this.oneTimeState$
+      .subscribe(state => {
+        this.updateState({ ...state, items: [...state.items, model] });
+      });
+  }
+
+  /**
+   * 
+   * @param addedModel The model that is currently in the store, but not saved yet. (this is used in reference comparisons)
+   * @param model The updated model that should be saved
+   */
+  public save(addedModel: Year, model: Year): void {
+    this.setLoading(true);
+
+    combineLatest(
+      this.state$,
+      this.http.post<Year>(this.apiRoot, model)
+    ).pipe(take(1))
+      .subscribe(([modelState, result]) => {
+        this.updateState({ ...modelState, loading: false, items: [...modelState.items.filter(v => v != addedModel), result] });
+      });
+  }
+
+  public update(model: Year): void {
+    this.setLoading(true);
+
+    combineLatest(
+      this.state$,
+      this.http.put<Year>(`${this.apiRoot}/${model.id}`, model)
+    ).pipe(take(1))
+      .subscribe(([modelState, result]) => {
+        result = result || model;
+        
+        const newItems = [...modelState.items];
+        const idx = newItems.findIndex(v => v.id == model.id);
+        newItems[idx] = result;
+        this.updateState({ ...modelState, loading: false, items: newItems });
+      });
+  }
+
+  public delete(model: Year): void {
+    if (!model.id) {
+      this.oneTimeState$
+        .subscribe((modelState) => {
+          this.updateState({ ...modelState, items: modelState.items.filter(v => v.id != model.id) });
+        });
+    } else {
+      this.setLoading(true);
+
+      combineLatest(
+        this.state$,
+        this.http.delete<Year>(`${this.apiRoot}/${model.id}`)
+      ).pipe(take(1))
+        .subscribe(([modelState, result]) => {
+          this.updateState({ ...modelState, loading: false, items: modelState.items.filter(v => v.id != model.id) });
+        });
     }
   }
 }

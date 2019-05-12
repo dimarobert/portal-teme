@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { nameof } from '../../type-guards/nameof.guard';
 
@@ -8,27 +7,28 @@ import { Year } from '../../models/year.model';
 import { ModelServiceFactory } from '../../services/model.service';
 import { ColumnType, EditableColumnDefinition, DataTableColumns } from '../../models/column-definition.model';
 import { ModelAccessor, BaseModelAccessor } from '../../models/model.accessor';
+import { DataTable2Commands } from '../../components/datatable2/datatable2.component';
 
 @Component({
   selector: 'app-academic-years',
   templateUrl: './academic-years.component.html',
   styleUrls: ['./academic-years.component.scss']
 })
-export class AcademicYearsComponent implements OnInit {
+export class AcademicYearsComponent implements OnInit, DataTable2Commands {
+
+  commands = this;
 
   constructor(private modelSvcFactory: ModelServiceFactory) { }
 
   columnDefs: DataTableColumns;
   modelAccessor: ModelAccessor;
-  data: BehaviorSubject<Year[]>;
+  data: Observable<Year[]>;
+  loading: Observable<boolean>;
 
 
   ngOnInit() {
-    this.save = this.save.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
-
-    this.data = new BehaviorSubject([]);
+    this.data = this.modelSvcFactory.years.model$;
+    this.loading = this.modelSvcFactory.years.loading$;
 
     this.modelAccessor = new BaseModelAccessor();
 
@@ -40,23 +40,22 @@ export class AcademicYearsComponent implements OnInit {
       }
     ]);
 
-    this.modelSvcFactory.years.getAll()
-      .pipe(take(1))
-      .subscribe(response => {
-        this.data.next(response);
-      });
   }
 
-  save(element: Year): Promise<Year> {
-    return this.modelSvcFactory.years.save(element);
+  add(element: Year): void {
+    this.modelSvcFactory.years.add(element);
   }
 
-  update(element: Year): Promise<Year> {
-    return this.modelSvcFactory.years.update(element);
+  save(oldElement: Year, element: Year): void {
+    this.modelSvcFactory.years.save(oldElement, element);
   }
 
-  delete(element: Year): Promise<Year> {
-    return this.modelSvcFactory.years.delete(element.id);
+  update(element: Year): void {
+    this.modelSvcFactory.years.update(element);
+  }
+
+  delete(element: Year): void {
+    this.modelSvcFactory.years.delete(element);
   }
 
 }

@@ -1,0 +1,135 @@
+<div class="mat-elevation-z8">
+
+  <mat-table #table [dataSource]="dataSource" matSort [class.mobile]="isHandset$ | async">
+
+    <ng-container *ngFor="let column of columnDefs.columns; first as isFirst" [matColumnDef]="column.id">
+
+      <mat-header-cell *matHeaderCellDef mat-sort-header>{{column.title}}</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span *ngIf="!isInEditMode(element)">
+          <span class="mobile-label" (click)="sortBy(column)">{{column.title}}:</span>
+          <span [innerHTML]="column.itemAccessor.getPropertyText(element, column)"></span>
+        </span>
+        <span *ngIf="isInEditMode(element)">
+
+          <!-- ColumnType switch -->
+          <ng-container [ngSwitch]="getEditableColumn(column).type">
+            <ng-container *ngSwitchCase="ColumnType.Textbox">
+              <mat-form-field>
+                <input matInput type="text" [placeholder]="(isHandset$ | async) ? column.title : ''"
+                  [formControl]="getFormControl(element, column.id)" required />
+
+                <mat-error *ngIf="hasError(element, column.id)">
+                  {{getError(element, column.id)}}
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="ColumnType.Select">
+              <mat-form-field>
+                <mat-select [placeholder]="(isHandset$ | async) ? column.title : ''"
+                  [formControl]="getFormControl(element, column.id)" required>
+                  <mat-option *ngFor="let option of getDatasource(column).getItems() | async"
+                    [value]="getDatasource(column).getValue(option)">
+                    {{getDatasource(column).getTitle(option)}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error *ngIf="hasError(element, column.id)">
+                  {{getError(element, column.id)}}
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+          </ng-container>
+          <!-- End ColumnType switch -->
+
+        </span>
+      </mat-cell>
+
+      <ng-container *ngIf="isFirst">
+        <mat-footer-cell *matFooterCellDef class="center-footer">
+          <div>{{emptyDataMessage || 'No data'}}</div>
+        </mat-footer-cell>
+      </ng-container>
+
+    </ng-container>
+
+    <ng-container matColumnDef="actions" *ngIf="hasActions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span class="fill-space"></span>
+        <span>
+
+          <ng-container *ngIf="canAdd">
+            <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)"
+              (click)="saveElement(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">save</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Save</span>
+            </button>
+            <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="deleteElement(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">cancel</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Cancel</span>
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="canEdit">
+            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
+              (click)="edit(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">edit</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Edit</span>
+            </button>
+            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
+              (click)="saveElement(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">update</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Update</span>
+            </button>
+            <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
+              (click)="cancelEdit(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">cancel</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Cancel</span>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="customEdit">
+            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
+              (click)="customEditAction(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">edit</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Edit</span>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="canDelete && !isInEditMode(element)">
+            <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)"
+              (click)="deleteElement(element)">
+              <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">delete</mat-icon>
+              <span *ngIf="!(isSmallScreen$ | async)">Delete</span>
+            </button>
+          </ng-container>
+        </span>
+
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+    <mat-footer-row *matFooterRowDef="[ displayedColumns[0] ]" [ngClass]="{ 'hide': hasData }"></mat-footer-row>
+  </mat-table>
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+</div>
+
+<button mat-raised-button color="primary" class="grid-add-button" (click)="add()" *ngIf="canAdd">
+  <mat-icon class="mr-1">add_to_photos</mat-icon>
+  <span>Add</span>
+</button>
+
+<mat-list *ngIf="hasAnyError()">
+  <mat-list-item class="text-danger" *ngFor="let error of errors | keys">
+    <div matLine *ngIf="error.key">{{error.key}}:</div>
+    <div matLine *ngFor="let valLine of error.value">
+      <div class="value">
+        <mat-icon class="mr-1">warning</mat-icon>
+        <span>{{valLine}}</span>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+  </mat-list-item>
+</mat-list>

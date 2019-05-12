@@ -60,7 +60,7 @@ export class CourseDefinitionsComponent implements OnInit {
   }
 
   private getData() {
-    let years$ = this.modelSvcFactory.years.getAll();
+    let years$ = this.modelSvcFactory.years.model$;
     let courses$ = this.modelSvcFactory.courseDefinitions.getAll();
 
     forkJoin(

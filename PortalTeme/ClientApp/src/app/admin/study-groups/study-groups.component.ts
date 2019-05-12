@@ -64,7 +64,7 @@ export class StudyGroupsComponent implements OnInit {
   }
 
   private getData() {
-    let years$ = this.modelSvcFactory.years.getAll();
+    let years$ = this.modelSvcFactory.years.model$;
     let domains$ = this.modelSvcFactory.studyDomains.getAll();
     let groups$ = this.modelSvcFactory.studyGroups.getAll();
 
