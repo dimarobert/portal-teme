@@ -542,6 +542,11 @@ export class AcademicYearsService extends AbstractModelService {
       });
   }
 
+  public refresh() {
+    this.setLoading(true);
+    this.refreshFromServer$.next();
+  }
+
   /**
    * 
    * @param addedModel The model that is currently in the store, but not saved yet. (this is used in reference comparisons)
@@ -568,7 +573,7 @@ export class AcademicYearsService extends AbstractModelService {
     ).pipe(take(1))
       .subscribe(([modelState, result]) => {
         result = result || model;
-        
+
         const newItems = [...modelState.items];
         const idx = newItems.findIndex(v => v.id == model.id);
         newItems[idx] = result;

@@ -23,12 +23,13 @@ export class AcademicYearsComponent implements OnInit, DataTable2Commands {
   columnDefs: DataTableColumns;
   modelAccessor: ModelAccessor;
   data: Observable<Year[]>;
-  loading: Observable<boolean>;
+  loading$: Observable<boolean>;
 
 
   ngOnInit() {
     this.data = this.modelSvcFactory.years.model$;
-    this.loading = this.modelSvcFactory.years.loading$;
+    this.modelSvcFactory.years.refresh();
+    this.loading$ = this.modelSvcFactory.years.loading$;
 
     this.modelAccessor = new BaseModelAccessor();
 

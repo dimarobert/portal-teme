@@ -1,4 +1,4 @@
 <app-data-table2 [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No years available'"
-  [loading]="loading | async" [modelAccessor]="modelAccessor" [canAdd]="true" [commands]="commands" [canEdit]="true"
+  [loading]="loading$ | async" [modelAccessor]="modelAccessor" [canAdd]="true" [commands]="commands" [canEdit]="true"
   [canDelete]="true">
 </app-data-table2>
