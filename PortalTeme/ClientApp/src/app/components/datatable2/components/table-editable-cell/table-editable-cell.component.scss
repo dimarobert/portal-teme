@@ -1,0 +1,12 @@
+.mobile-label {
+    display: none;
+}
+
+.mobile {
+    .mobile-label {
+        width: 100px;
+        display: inline-block;
+        font-weight: bold;
+        cursor: pointer;
+    }
+}

@@ -1,15 +1,31 @@
 import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
-import { Observable } from 'rxjs';
+import { Observable, merge, Subject } from 'rxjs';
+import { startWith, map, scan, distinctUntilChanged } from 'rxjs/operators';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';
-import { ColumnDefinition, ColumnType, DataTableColumns, EditableColumnDefinition } from '../../models/column-definition.model';
+import { ColumnDefinition, ColumnType, DataTableColumns } from '../../models/column-definition.model';
 import { ModelAccessor } from "../../models/model.accessor";
-import { ItemDatasource } from '../../datasources/item-datasource';
-import { isDatasourceColumnDefinition, isEditableColumnDefinition } from '../../type-guards/column-definitions.type-guards';
-import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { startWith, map, tap } from 'rxjs/operators';
+import { CellState } from './components/table-editable-cell/table-editable-cell.component';
+
+interface RowState {
+  initialData: any;
+
+  isEdit: boolean;
+  editForm: FormGroup;
+
+  cells: Cells
+}
+
+interface Cells {
+  [key: string]: CellState;
+}
+
+interface TableState {
+  rows: RowState[];
+}
 
 @Component({
   selector: 'app-data-table2',
@@ -48,14 +64,12 @@ export class DataTableComponent2 implements OnInit {
     return cols;
   };
 
-  dataSource: MatTableDataSource<any>;
+  dataSource: MatTableDataSource<RowState>;
   hasData: boolean = true;
 
   errors: { [key: string]: string[] } = {};
 
   @ViewChild(MatSort) sort: MatSort;
-
-  activeForms: Map<object, FormGroup> = new Map<object, FormGroup>();
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 650px)')
     .pipe(
@@ -81,25 +95,22 @@ export class DataTableComponent2 implements OnInit {
     return this.canAdd || this.canEdit;
   }
 
-  isInEditMode(element: any): boolean {
-    if (!this.hasEditCapabilities)
-      return false;
+  private programaticCommands$: Subject<{ cmd: string, [key: string]: any }> = new Subject();
 
-    return this.modelAccessor.isNew(element) || this.getForm(element) != null;
-  }
+  private commands$: Observable<{ cmd: string, [key: string]: any }>;
+
+  private currentState$: Observable<TableState>;
+
+  private rows$: Observable<RowState[]>;
 
   ngOnInit() {
     this.validateInput();
 
     this.loading = this.loading || false;
 
-    this.dataSource = new ObservableDataSource<any>(
-      this.data
-        .pipe(tap(items => {
-          this.hasData = items.length > 0;
-          this.updateAddForms(items);
-        }))
-    );
+    this.initializeObservables();
+
+    this.dataSource = new ObservableDataSource<RowState>(this.rows$);
     this.dataSource.sort = this.sort;
     const initialSort: MatSortable = { id: 'name', disableClear: false, start: 'asc' };
     if (this.initialSorting) {
@@ -107,6 +118,100 @@ export class DataTableComponent2 implements OnInit {
       initialSort.start = this.initialSorting.startDirection || 'asc';
     }
     this.sort.sort(initialSort);
+    const origSDA = this.dataSource.sortingDataAccessor;
+    this.dataSource.sortingDataAccessor = (data, headerId) => {
+      return origSDA(data.initialData, headerId);
+    };
+  }
+
+  private initializeObservables(): void {
+    this.commands$ = merge(
+      this.programaticCommands$.asObservable(),
+      this.data.pipe(map(rows => ({ cmd: 'updateRows', rows: rows })))
+    );
+
+    this.currentState$ = this.commands$.pipe(
+      startWith(<TableState>{
+        rows: []
+      }),
+      scan((cState: TableState, command: { cmd: string, [key: string]: any }): TableState => {
+
+        if (command.cmd == 'updateRows') {
+          const newRows: any[] = command.rows;
+          const rows = newRows.map<RowState>(row => {
+
+            const currentRowState = cState.rows.find(e => e.initialData == row);
+
+            // preserve the previous state as the row did not change
+            if (currentRowState)
+              return currentRowState;
+
+            // this is a new or changed row. create new state
+            let isEdit = false;
+            let editForm: FormGroup;
+
+            // force new (not saved) rows in edit mode
+            if (this.modelAccessor.isNew(row)) {
+              isEdit = true;
+              editForm = this.createForm(row);
+            }
+
+            let cells = this.columnDefs.columns.reduce<Cells>((map, col) => {
+              map[col.id] = {
+                isEdit: isEdit,
+                column: col,
+                rowItem: row,
+                control: isEdit ? editForm.get(col.id) : null
+              };
+              return map;
+            }, {});
+
+            return {
+              isEdit: isEdit,
+              initialData: row,
+              editForm: editForm,
+              cells: cells
+            }
+
+          });
+
+          return { ...cState, rows };
+        } else if (command.cmd == 'setEdit') {
+          const row: RowState = command.state;
+
+          const editForm = this.createForm(row.initialData);
+          const editedRow = { ...row, editForm, isEdit: true };
+          editedRow.cells = Object.keys(editedRow.cells).reduce<Cells>((acc, colName) => {
+            const cell = editedRow.cells[colName];
+            acc[colName] = { ...cell, isEdit: true, control: editForm.get(cell.column.id) };
+            return acc;
+          }, {});
+
+          const rowIndex = cState.rows.indexOf(row);
+          let rows = cState.rows.filter(r => r != row);
+          rows.splice(rowIndex, 0, editedRow);
+          return { ...cState, rows };
+
+        } else if (command.cmd == 'cancelEdit') {
+          const row: RowState = command.state;
+
+          const editedRow = { ...row, editForm: null, isEdit: false };
+          editedRow.cells = Object.keys(editedRow.cells).reduce<Cells>((acc, colName) => {
+            acc[colName] = { ...editedRow.cells[colName], isEdit: false, control: null };
+            return acc;
+          }, {});
+
+          const rowIndex = cState.rows.indexOf(row);
+          let rows = cState.rows.filter(r => r != row);
+          rows.splice(rowIndex, 0, editedRow);
+          return { ...cState, rows };
+        }
+
+        return cState;
+      })
+    );
+
+    this.rows$ = this.currentState$.pipe(map(state => state.rows), distinctUntilChanged());
   }
 
   protected sortBy(column: ColumnDefinition) {
@@ -133,63 +238,8 @@ export class DataTableComponent2 implements OnInit {
       throw new Error('Invalid configuration. The customEdit property is true but the customEditAction callback is null.');
   }
 
-  getDatasource(column: ColumnDefinition): ItemDatasource<any> {
-    if (isDatasourceColumnDefinition(column)) {
-      return column.datasource;
-    }
-    throw new Error(`Column ${column.id} is not a DatasourceColumnDefinition`);
-  }
-
-  getEditableColumn(column: ColumnDefinition): EditableColumnDefinition {
-    if (isEditableColumnDefinition(column))
-      return column;
-    throw new Error(`Column ${column.id} is not an EditableColumnDefinition`);
-  }
-
   hasAnyError(): boolean {
     return Object.keys(this.errors).length > 0;
-  }
-
-  hasError(element: object, field: string): boolean {
-    const control = this.getFormControl(element, field);
-    return control.touched && control.invalid;
-  }
-
-  getError(element: object, field: string): string {
-    let control = this.getFormControl(element, field);
-    if (control.valid)
-      return '';
-
-    if (control.hasError('server'))
-      return control.getError('server');
-
-    if (control.hasError('required'))
-      return `The ${field} field is required.`;
-
-    return '';
-  }
-
-  getForm(row: object): AbstractControl {
-    return this.activeForms.get(row);
-  }
-
-  getFormControl(row: object, field: string): AbstractControl {
-    return this.getForm(row).get(field);
-  }
-
-  private updateAddForms(items: any[]) {
-    const oldForms = new Map<object, FormGroup>(this.activeForms);
-    this.activeForms = new Map<object, FormGroup>();
-    items.forEach(item => {
-      let form = oldForms.get(item);
-      const isNewItem = this.modelAccessor.isNew(item);
-      if (form) {
-        this.activeForms.set(item, form);
-      } else if (isNewItem) {
-        form = this.createForm(item);
-        this.activeForms.set(item, form);
-      }
-    });
   }
 
   private createForm(item: any): FormGroup {
@@ -207,25 +257,20 @@ export class DataTableComponent2 implements OnInit {
     this.commands.add(newItem);
   }
 
-  edit(element: any) {
-    const newEditForm = new FormGroup({});
-
-    this.columnDefs.columns.forEach(column => {
-      newEditForm.addControl(column.id, new FormControl(element[column.id]));
-    });
-
-    this.activeForms.set(element, newEditForm);
+  edit(state: RowState) {
+    this.programaticCommands$.next({ cmd: 'setEdit', state: state });
   }
 
-  cancelEdit(element: any) {
-    this.activeForms.delete(element);
+  cancelEdit(state: RowState) {
+    this.programaticCommands$.next({ cmd: 'cancelEdit', state: state });
+
     this.errors = {};
   }
 
-  saveElement(element: any) {
+  saveElement(state: RowState) {
     this.errors = {};
-    let form = this.getForm(element);
-    let itemToSave = this.modelAccessor.create(element);
+    let form = state.editForm;
+    let itemToSave = this.modelAccessor.create(state.initialData);
 
     this.columnDefs.columns.forEach(column => {
       const value = form.get(column.id).value;
@@ -233,8 +278,8 @@ export class DataTableComponent2 implements OnInit {
     });
 
     if (!this.modelAccessor.isNew(itemToSave))
-      this.cancelEdit(element);
-    this.executeSaveOrUpdate(element, itemToSave);
+      this.cancelEdit(state);
+    this.executeSaveOrUpdate(state.initialData, itemToSave);
     // .then(sGroup => {
     //   var newData = this.data.value.slice();
     //   var index = newData.indexOf(element);
@@ -269,8 +314,8 @@ export class DataTableComponent2 implements OnInit {
       : this.commands.update(newValue);
   }
 
-  deleteElement(element: any) {
-    this.commands.delete(element);
+  deleteElement(state: RowState) {
+    this.commands.delete(state.initialData);
   }
 
 }

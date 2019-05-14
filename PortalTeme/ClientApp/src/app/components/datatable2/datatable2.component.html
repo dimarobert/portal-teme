@@ -5,45 +5,11 @@
     <ng-container *ngFor="let column of columnDefs.columns; first as isFirst" [matColumnDef]="column.id">
 
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{column.title}}</mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <span *ngIf="!isInEditMode(element)">
-          <span class="mobile-label" (click)="sortBy(column)">{{column.title}}:</span>
-          <span [innerHTML]="column.itemAccessor.getPropertyText(element, column)"></span>
-        </span>
-        <span *ngIf="isInEditMode(element)">
 
-          <!-- ColumnType switch -->
-          <ng-container [ngSwitch]="getEditableColumn(column).type">
-            <ng-container *ngSwitchCase="ColumnType.Textbox">
-              <mat-form-field>
-                <input matInput type="text" [placeholder]="(isHandset$ | async) ? column.title : ''"
-                  [formControl]="getFormControl(element, column.id)" required />
-
-                <mat-error *ngIf="hasError(element, column.id)">
-                  {{getError(element, column.id)}}
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
-
-            <ng-container *ngSwitchCase="ColumnType.Select">
-              <mat-form-field>
-                <mat-select [placeholder]="(isHandset$ | async) ? column.title : ''"
-                  [formControl]="getFormControl(element, column.id)" required>
-                  <mat-option *ngFor="let option of getDatasource(column).getItems() | async"
-                    [value]="getDatasource(column).getValue(option)">
-                    {{getDatasource(column).getTitle(option)}}
-                  </mat-option>
-                </mat-select>
-
-                <mat-error *ngIf="hasError(element, column.id)">
-                  {{getError(element, column.id)}}
-                </mat-error>
-              </mat-form-field>
-            </ng-container>
-          </ng-container>
-          <!-- End ColumnType switch -->
-
-        </span>
+      <mat-cell *matCellDef="let rowState">
+        <app-table-editable-cell [cellState]="rowState.cells[column.id]" (sortBy)="sortBy($event)"
+          [isHandset$]="isHandset$">
+        </app-table-editable-cell>
       </mat-cell>
 
       <ng-container *ngIf="isFirst">
@@ -56,49 +22,50 @@
 
     <ng-container matColumnDef="actions" *ngIf="hasActions">
       <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-      <mat-cell *matCellDef="let element">
+      <mat-cell *matCellDef="let rowState">
         <span class="fill-space"></span>
         <span>
 
           <ng-container *ngIf="canAdd">
-            <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(element)"
-              (click)="saveElement(element)">
+            <button mat-raised-button color="accent" *ngIf="modelAccessor.isNew(rowState.initialData)"
+              (click)="saveElement(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">save</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Save</span>
             </button>
-            <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(element)" (click)="deleteElement(element)">
+            <button mat-raised-button color="basic" *ngIf="modelAccessor.isNew(rowState.initialData)"
+              (click)="deleteElement(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">cancel</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Cancel</span>
             </button>
           </ng-container>
 
           <ng-container *ngIf="canEdit">
-            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-              (click)="edit(element)">
+            <button mat-raised-button color="accent" *ngIf="!rowState.isEdit && !modelAccessor.isNew(rowState.initialData)"
+              (click)="edit(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">edit</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Edit</span>
             </button>
-            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
-              (click)="saveElement(element)">
+            <button mat-raised-button color="accent" *ngIf="rowState.isEdit && !modelAccessor.isNew(rowState.initialData)"
+              (click)="saveElement(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">update</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Update</span>
             </button>
-            <button mat-raised-button color="basic" *ngIf="!modelAccessor.isNew(element) && isInEditMode(element)"
-              (click)="cancelEdit(element)">
+            <button mat-raised-button color="basic" *ngIf="rowState.isEdit && !modelAccessor.isNew(rowState.initialData)"
+              (click)="cancelEdit(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">cancel</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Cancel</span>
             </button>
           </ng-container>
           <ng-container *ngIf="customEdit">
-            <button mat-raised-button color="accent" *ngIf="!modelAccessor.isNew(element) && !isInEditMode(element)"
-              (click)="customEditAction(element)">
+            <button mat-raised-button color="accent" *ngIf="rowState.isEdit && !modelAccessor.isNew(rowState.initialData)"
+              (click)="customEditAction(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">edit</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Edit</span>
             </button>
           </ng-container>
-          <ng-container *ngIf="canDelete && !isInEditMode(element)">
-            <button mat-raised-button color="warn" *ngIf="canDelete && !isInEditMode(element)"
-              (click)="deleteElement(element)">
+          <ng-container *ngIf="canDelete && !rowState.isEdit">
+            <button mat-raised-button color="warn" *ngIf="canDelete && !rowState.isEdit"
+              (click)="deleteElement(rowState)">
               <mat-icon [class.mr-1]="!(isSmallScreen$ | async)">delete</mat-icon>
               <span *ngIf="!(isSmallScreen$ | async)">Delete</span>
             </button>

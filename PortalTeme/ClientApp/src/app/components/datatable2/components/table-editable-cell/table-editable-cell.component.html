@@ -1,0 +1,38 @@
+<ng-container *ngIf="!cellState.isEdit">
+  <span class="mobile-label" (click)="sortBy.emit(cellState.column)">{{cellState.column.title}}:</span>
+  <span [innerHTML]="cellState.column.itemAccessor.getPropertyText(cellState.rowItem, cellState.column)"></span>
+</ng-container>
+<ng-container *ngIf="cellState.isEdit">
+
+  <!-- ColumnType switch -->
+  <ng-container [ngSwitch]="editableColumn.type">
+    <ng-container *ngSwitchCase="ColumnType.Textbox">
+      <mat-form-field>
+        <input matInput type="text" [placeholder]="(isHandset$ | async) ? cellState.column.title : ''"
+          [formControl]="cellState.control" required />
+
+        <mat-error *ngIf="hasError">
+          {{controlError}}
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="ColumnType.Select">
+      <mat-form-field>
+        <mat-select [placeholder]="(isHandset$ | async) ? cellState.column.title : ''" [formControl]="cellState.control"
+          required>
+          <mat-option *ngFor="let option of datasourceColumn.getItems() | async"
+            [value]="datasourceColumn.getValue(option)">
+            {{datasourceColumn.getTitle(option)}}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="hasError">
+          {{controlError}}
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+  </ng-container>
+  <!-- End ColumnType switch -->
+
+</ng-container>
