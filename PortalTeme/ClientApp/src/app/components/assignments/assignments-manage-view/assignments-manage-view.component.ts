@@ -1,9 +1,8 @@
-import { Component, OnInit, Input, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, Input, Inject } from '@angular/core';
 import { ModelServiceFactory } from '../../../services/model.service';
 import { take } from 'rxjs/operators';
 import { Assignment, AssignmentTypeText, AssignmentType } from '../../../models/assignment.model';
 import { BehaviorSubject } from 'rxjs';
-import { DataTableComponent } from '../../datatable/datatable.component';
 import { DataTableColumns } from '../../../models/column-definition.model';
 import { nameof } from '../../../type-guards/nameof.guard';
 import { CustomItemAccessor } from '../../../models/item.accesor';
@@ -25,8 +24,7 @@ export class AssignmentsManageViewComponent implements OnInit {
   modelAccessor: ModelAccessor;
 
   initialSorting: { columnId: string };
-
-  @ViewChild('assignmentsTable') assignmentsTable: DataTableComponent;
+  loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory, @Inject(MAT_DATE_LOCALE) private matDateLocale: string) { }
 
@@ -71,15 +69,14 @@ export class AssignmentsManageViewComponent implements OnInit {
     this.delete = this.delete.bind(this);
     this.edit = this.edit.bind(this);
 
-
-    this.assignmentsTable.loading = true;
+    this.loading$.next(true);
 
     this.modelSvcFactory.assignments.getByCourse(this.courseId)
       .pipe(take(1))
       .subscribe(courseAssignments => {
         this.assignments.next(courseAssignments);
 
-        this.assignmentsTable.loading = false;
+        this.loading$.next(false);
       });
   }
 

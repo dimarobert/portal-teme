@@ -9,7 +9,7 @@
     </mat-card-header>
     <mat-card-content>
       <app-data-table #groupsTable [columnDefs]="groupColumnDefs" [data]="groupList" [emptyDataMessage]="'No groups are added to this course'"
-        [modelAccessor]="groupsModelAccessor" [canAdd]="true" [save]="saveGroup" [canDelete]="true" [delete]="deleteGroup">
+        [modelAccessor]="groupsModelAccessor" [canAdd]="true" [save]="saveGroup" [canDelete]="true" [delete]="deleteGroup" [loading]="loading$ | async">
       </app-data-table>
     </mat-card-content>
   </mat-card>
@@ -22,7 +22,7 @@
     </mat-card-header>
     <mat-card-content>
       <app-data-table #studentsTable [columnDefs]="studentColumnDefs" [data]="studentList" [emptyDataMessage]="'No students are added to this course'"
-        [modelAccessor]="studentsModelAccessor" [canAdd]="true" [save]="saveStudent" [canDelete]="true" [delete]="deleteStudent">
+        [modelAccessor]="studentsModelAccessor" [canAdd]="true" [save]="saveStudent" [canDelete]="true" [delete]="deleteStudent" [loading]="loading$ | async">
       </app-data-table>
     </mat-card-content>
   </mat-card>

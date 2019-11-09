@@ -13,19 +13,19 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "7.1.2",
+    "@angular/animations": "8.2.13",
     "@angular/cdk": "7.1.1",
-    "@angular/common": "7.1.2",
-    "@angular/compiler": "7.1.2",
-    "@angular/core": "7.1.2",
+    "@angular/common": "8.2.13",
+    "@angular/compiler": "8.2.13",
+    "@angular/core": "8.2.13",
     "@angular/flex-layout": "^7.0.0-beta.23",
-    "@angular/forms": "7.1.2",
+    "@angular/forms": "8.2.13",
     "@angular/http": "7.1.2",
     "@angular/material": "7.1.1",
-    "@angular/platform-browser": "7.1.2",
-    "@angular/platform-browser-dynamic": "7.1.2",
-    "@angular/platform-server": "7.1.2",
-    "@angular/router": "7.1.2",
+    "@angular/platform-browser": "8.2.13",
+    "@angular/platform-browser-dynamic": "8.2.13",
+    "@angular/platform-server": "8.2.13",
+    "@angular/router": "8.2.13",
     "@auth0/angular-jwt": "2.1.0",
     "@ckeditor/ckeditor5-angular": "1.0.1",
     "@nguniversal/module-map-ngfactory-loader": "^7.0.2",
@@ -38,13 +38,13 @@
     "normalize.css": "8.0.0",
     "rxjs": "^6.3.3",
     "tslib": "^1.9.0",
-    "zone.js": "0.8.26"
+    "zone.js": "0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.10.0",
-    "@angular/cli": "7.1.2",
-    "@angular/compiler-cli": "7.1.2",
-    "@angular/language-service": "7.1.2",
+    "@angular/cli": "8.3.18",
+    "@angular/compiler-cli": "8.2.13",
+    "@angular/language-service": "8.2.13",
     "@types/file-saver": "^2.0.0",
     "@types/jasmine": "~2.8.9",
     "@types/jasminewd2": "~2.0.5",
@@ -61,7 +61,7 @@
     "rxjs-tslint": "0.1.5",
     "ts-node": "~7.0.1",
     "tslint": "~5.11.0",
-    "typescript": "3.1.6"
+    "typescript": "3.5.3"
   },
   "optionalDependencies": {
     "node-sass": "^4.9.1"

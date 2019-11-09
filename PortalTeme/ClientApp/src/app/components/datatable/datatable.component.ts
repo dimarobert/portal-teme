@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -17,7 +17,7 @@ import { startWith, map } from 'rxjs/operators';
   templateUrl: './datatable.component.html',
   styleUrls: ['./datatable.component.scss']
 })
-export class DataTableComponent implements OnInit {
+export class DataTableComponent implements OnInit, AfterViewInit {
 
   ColumnType = ColumnType;
 
@@ -55,7 +55,7 @@ export class DataTableComponent implements OnInit {
 
   errors: { [key: string]: string[] };
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   activeForms: Map<object, FormGroup> = new Map<object, FormGroup>();
 
@@ -105,7 +105,9 @@ export class DataTableComponent implements OnInit {
       } else
         this.hasData = items.length > 0;
     });
+  }
 
+  ngAfterViewInit(): void {
     this.dataSource = new ObservableDataSource<any>(this.data);
     this.dataSource.sort = this.sort;
     const initialSort: MatSortable = { id: 'name', disableClear: false, start: 'asc' };

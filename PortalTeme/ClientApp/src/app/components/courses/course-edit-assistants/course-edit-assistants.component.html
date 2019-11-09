@@ -8,7 +8,7 @@
   </mat-card-header>
   <mat-card-content>
     <app-data-table #assistantsTable [columnDefs]="columnDefs" [data]="data" [emptyDataMessage]="'No assistants assigned to the course'"
-      [modelAccessor]="modelAccessor" [canAdd]="true" [save]="save" [canDelete]="true" [delete]="delete">
+      [modelAccessor]="modelAccessor" [canAdd]="true" [save]="save" [canDelete]="true" [delete]="delete" [loading]="loading$ | async">
     </app-data-table>
   </mat-card-content>
 </mat-card>

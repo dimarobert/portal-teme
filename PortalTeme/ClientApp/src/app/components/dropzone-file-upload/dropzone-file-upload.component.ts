@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType, HttpRequest } from '@angular/common/http';
-import { map, last, tap, take, first } from 'rxjs/operators';
+import { map, tap, take, first } from 'rxjs/operators';
 import { UploadedFile } from './upload-file.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class DropzoneFileUploadComponent implements OnInit, AfterViewInit {
   progress: BehaviorSubject<number> = new BehaviorSubject(0);
   total: number = 0;
 
-  @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef<HTMLInputElement>;
 
   onDragStart($event: DragEvent) {
     this.noPropagation($event);

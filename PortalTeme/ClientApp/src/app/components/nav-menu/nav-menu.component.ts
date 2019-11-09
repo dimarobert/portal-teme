@@ -39,8 +39,8 @@ import { CdkAccordionItem } from '@angular/cdk/accordion';
 })
 export class NavMenuComponent implements AfterViewInit, OnInit, OnDestroy {
 
-  @ViewChild('sidenav') sidenav: MatSidenav;
-  @ViewChild('panelCourses') panelCourses: CdkAccordionItem;
+  @ViewChild('sidenav', { static: false }) sidenav: MatSidenav;
+  @ViewChild('panelCourses', { static: false }) panelCourses: CdkAccordionItem;
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(

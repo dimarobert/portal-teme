@@ -22,9 +22,9 @@ export class CourseManagePageComponent implements OnInit, OnDestroy {
   private courseSlug: string;
   course: Course;
 
-  @ViewChild('assistants') assistants: CourseEditAssistantsComponent;
-  @ViewChild('attendees') attendees: CourseEditAttendeesComponent;
-  @ViewChild('assignments') assignments: AssignmentsManageViewComponent;
+  @ViewChild('assistants', { static: false }) assistants: CourseEditAssistantsComponent;
+  @ViewChild('attendees', { static: false }) attendees: CourseEditAttendeesComponent;
+  @ViewChild('assignments', { static: false }) assignments: AssignmentsManageViewComponent;
 
   isAssignmentsTab: boolean;
 

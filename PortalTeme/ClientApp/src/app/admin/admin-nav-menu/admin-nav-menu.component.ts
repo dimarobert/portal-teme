@@ -13,7 +13,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 })
 export class AdminNavMenuComponent implements OnInit, OnDestroy {
 
-  @ViewChild('tabsGroup') tabsGroup: MatTabGroup;
+  @ViewChild('tabsGroup', { static: false }) tabsGroup: MatTabGroup;
 
   private adminLinks: NavLink[];
   private editCourseLinks: NavLink[];

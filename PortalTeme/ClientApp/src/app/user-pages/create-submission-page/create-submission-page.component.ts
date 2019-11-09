@@ -15,7 +15,7 @@ import { nameof } from '../../type-guards/nameof.guard';
 })
 export class CreateSubmissionPageComponent implements OnInit, OnDestroy {
 
-  @ViewChild('dropzone') dropzone: DropzoneFileUploadComponent;
+  @ViewChild('dropzone', { static: false }) dropzone: DropzoneFileUploadComponent;
   constructor(private route: ActivatedRoute, private router: Router, private modelSvcFactory: ModelServiceFactory) { }
 
   private courseSlug: string;

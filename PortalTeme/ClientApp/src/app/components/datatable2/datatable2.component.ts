@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
@@ -33,7 +33,7 @@ interface TableState {
   styleUrls: ['./datatable2.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DataTableComponent2 implements OnInit {
+export class DataTableComponent2 implements OnInit, AfterViewInit {
 
   ColumnType = ColumnType;
 
@@ -69,7 +69,7 @@ export class DataTableComponent2 implements OnInit {
 
   errors: { [key: string]: string[] } = {};
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe('(max-width: 650px)')
     .pipe(
@@ -109,7 +109,9 @@ export class DataTableComponent2 implements OnInit {
     this.loading = this.loading || false;
 
     this.initializeObservables();
+  }
 
+  ngAfterViewInit(): void {
     this.dataSource = new ObservableDataSource<RowState>(this.rows$);
     this.dataSource.sort = this.sort;
     const initialSort: MatSortable = { id: 'name', disableClear: false, start: 'asc' };

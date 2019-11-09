@@ -1,6 +1,5 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
 import { nameof } from '../../../type-guards/nameof.guard';
 import { ModelServiceFactory } from '../../../services/model.service';
@@ -11,7 +10,6 @@ import { DataTableColumns, DatasourceColumnDefinition, ColumnType } from '../../
 import { CourseAssistant, User, Course } from '../../../models/course.model';
 import { CustomModelItemDatasource } from '../../../datasources/named-model.item-datasource';
 import { take } from 'rxjs/operators';
-import { DataTableComponent } from '../../datatable/datatable.component';
 import { MenuService } from '../../../services/menu.service';
 
 @Component({
@@ -31,7 +29,7 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
   modelAccessor: BaseModelAccessor;
   assistants: BehaviorSubject<User[]>;
 
-  @ViewChild('assistantsTable') assistantsTable: DataTableComponent;
+  loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   private currentCourse: Course;
 
@@ -73,7 +71,7 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
     const assistants$ = this.modelSvcFactory.users.getAssistants();
     const currentCourse$ = this.modelSvcFactory.courses.get(this.courseId);
 
-    this.assistantsTable.loading = true;
+    this.loading$.next(true);
 
     forkJoin(
       assistants$.pipe(take(1)),
@@ -84,7 +82,7 @@ export class CourseEditAssistantsComponent implements OnInit, OnDestroy {
 
       this.data.next(this.currentCourse.assistants);
 
-      this.assistantsTable.loading = false;
+      this.loading$.next(false);
     });
   }
 

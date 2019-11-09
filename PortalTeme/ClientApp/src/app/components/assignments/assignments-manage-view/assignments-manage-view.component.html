@@ -1,2 +1,2 @@
 <app-data-table #assignmentsTable [data]="assignments" [modelAccessor]="modelAccessor" [columnDefs]="columnDefs" [initialSorting]="initialSorting"
-  [customEdit]="true" [customEditAction]="edit" [canDelete]="true" [delete]="delete"></app-data-table>
+  [customEdit]="true" [customEditAction]="edit" [canDelete]="true" [delete]="delete" [loading]="loading$ | async"></app-data-table>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, Input, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material';
@@ -10,9 +10,9 @@ import { NavLink } from '../../models/nav-link.model';
   templateUrl: './tabbed-menu.component.html',
   styleUrls: ['./tabbed-menu.component.scss']
 })
-export class TabbedMenuComponent implements OnInit, OnDestroy {
+export class TabbedMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('tabsGroup') tabsGroup: MatTabGroup;
+  @ViewChild('tabsGroup', { static: false }) tabsGroup: MatTabGroup;
 
   @Input() menuItems: Observable<NavLink[]>;
 
@@ -20,8 +20,12 @@ export class TabbedMenuComponent implements OnInit, OnDestroy {
 
   private _menuItemsSub: Subscription;
   private _currentMenu: NavLink[];
+
   ngOnInit() {
     this._currentMenu = [];
+  }
+
+  ngAfterViewInit(): void {
     this._menuItemsSub = this.menuItems.subscribe(menu => {
       if (this._currentMenu != menu)
         this.updateSelectedTab(menu);

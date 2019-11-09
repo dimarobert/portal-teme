@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { nameof } from '../../../type-guards/nameof.guard';
@@ -13,7 +13,6 @@ import { CustomItemAccessor } from '../../..//models/item.accesor';
 import { StudyGroup } from './../../../models/study-group.model';
 import { Course, User, CourseGroup, CourseStudent } from './../../../models/course.model';
 import { DataTableColumns } from '../../../models/column-definition.model';
-import { DataTableComponent } from '../../datatable/datatable.component';
 import { MenuService } from '../../../services/menu.service';
 
 
@@ -42,8 +41,7 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
   groupsModelAccessor: ModelAccessor;
   studentsModelAccessor: ModelAccessor;
 
-  @ViewChild('groupsTable') groupsTable: DataTableComponent;
-  @ViewChild('studentsTable') studentsTable: DataTableComponent;
+  loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   ngOnInit() {
     this.saveGroup = this.saveGroup.bind(this);
@@ -100,8 +98,7 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
     const students$ = this.modelSvcFactory.users.getStudents();
     const currentCourse$ = this.modelSvcFactory.courses.get(this.courseId);
 
-    this.groupsTable.loading = true;
-    this.studentsTable.loading = true;
+    this.loading$.next(true);
 
     forkJoin(
       studyGroups$.pipe(take(1)),
@@ -115,8 +112,7 @@ export class CourseEditAttendeesComponent implements OnInit, OnDestroy {
       this.groupList.next(this.currentCourse.groups);
       this.studentList.next(this.currentCourse.students);
 
-      this.groupsTable.loading = false;
-      this.studentsTable.loading = false;
+      this.loading$.next(false);
     });
   }
 
