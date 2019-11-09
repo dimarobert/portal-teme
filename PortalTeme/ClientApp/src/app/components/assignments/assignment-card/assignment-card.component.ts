@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { Assignment } from '../../../models/assignment.model';
-import { MAT_DATE_LOCALE } from '@angular/material';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-assignment-card',

@@ -4,7 +4,8 @@ import { Subscription, combineLatest, Observable, of, BehaviorSubject } from 'rx
 import { ModelServiceFactory } from '../../services/model.service';
 import { take, map } from 'rxjs/operators';
 import { AssignmentType, UserAssignment, AssignmentTask, StudentAssignedTask, StudentAssignedTaskState, TaskSubmissionFileType, TaskSubmissionFileTypeText, TaskSubmissionFile, TaskSubmission, TaskSubmissionState } from '../../models/assignment.model';
-import { MAT_DATE_LOCALE, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { saveAs } from 'file-saver';
 import { AuthService } from '../../authentication/services/auth.service';

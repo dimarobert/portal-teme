@@ -6,7 +6,7 @@ import { take } from 'rxjs/operators';
 
 import { Course } from '../../../models/course.model';
 import { ModelServiceFactory } from '../../../services/model.service';
-import { MatTabChangeEvent } from '@angular/material';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { CourseEditAssistantsComponent } from '../../../components/courses/course-edit-assistants/course-edit-assistants.component';
 import { CourseEditAttendeesComponent } from '../../../components/courses/course-edit-attendees/course-edit-attendees.component';
 import { AssignmentsManageViewComponent } from '../../../components/assignments/assignments-manage-view/assignments-manage-view.component';

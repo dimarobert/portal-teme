@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
-import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ObservableDataSource } from '../../datasources/observable.datasource';

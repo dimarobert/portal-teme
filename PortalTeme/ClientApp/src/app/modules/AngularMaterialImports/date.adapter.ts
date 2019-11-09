@@ -1,6 +1,6 @@
-import { NativeDateAdapter, MAT_DATE_LOCALE } from '@angular/material';
 import { Injectable, Optional, Inject } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
+import { NativeDateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 
 
 @Injectable({

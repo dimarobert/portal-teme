@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy, Input, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { MatTabChangeEvent, MatTabGroup } from '@angular/material';
+import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { Subscription, Observable } from 'rxjs';
 import { NavLink } from '../../models/nav-link.model';
 

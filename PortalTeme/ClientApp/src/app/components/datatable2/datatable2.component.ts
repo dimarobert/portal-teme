@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { MatTableDataSource, MatSort, MatSortable } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { Observable, merge, Subject } from 'rxjs';
 import { startWith, map, scan, distinctUntilChanged } from 'rxjs/operators';
 

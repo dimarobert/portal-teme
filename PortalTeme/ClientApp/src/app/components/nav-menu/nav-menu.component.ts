@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreakpointObserver, BreakpointState, Breakpoints } from '@angular/cdk/layout';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav } from '@angular/material/sidenav';
 
 import { trigger, state, style, transition, animate } from '@angular/animations';
 

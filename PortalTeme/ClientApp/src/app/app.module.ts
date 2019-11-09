@@ -57,7 +57,7 @@ import { AssignmentEditFormComponent } from './components/assignments/assignment
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { EnumKeysPipe } from './pipes/enum-keys.pipe';
 import { AssignmentCardComponent } from './components/assignments/assignment-card/assignment-card.component';
-import { MAT_HAMMER_OPTIONS } from '@angular/material';
+import { MAT_HAMMER_OPTIONS } from '@angular/material/core';
 import { TabbedMenuComponent } from './components/tabbed-menu/tabbed-menu.component';
 import { AssignmentEditTasksPageComponent } from './user-pages/course-manage/assignment-edit-tasks-page/assignment-edit-tasks-page.component';
 import { AssignmentTasksEditComponent } from './components/assignments/assignment-tasks-edit/assignment-tasks-edit.component';

@@ -8,7 +8,7 @@ import { nameof } from '../../../type-guards/nameof.guard';
 import { CustomItemAccessor } from '../../../models/item.accesor';
 import { ModelAccessor, BaseModelAccessor } from '../../../models/model.accessor';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MAT_DATE_LOCALE } from '@angular/material';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @Component({
   selector: 'app-assignments-manage-view',
