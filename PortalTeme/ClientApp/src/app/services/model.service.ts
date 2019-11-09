@@ -494,9 +494,6 @@ export class CachedModelService<TModel extends BaseModel> extends ModelService<T
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
 export class AcademicYearsService extends AbstractModelService {
 
   private state$ = this.appStore.state$.pipe(map(state => state.academicYears));
